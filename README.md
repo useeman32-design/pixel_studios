@@ -1,5 +1,7 @@
 # Pixel Studios — Official App
 
+> 🌐 **Live web preview:** https://useeman32-design.github.io/pixel_studios/
+
 The digital front door of **Pixel Studios**, a modern creative & technology company based in Gusau, Zamfara State, Nigeria.
 
 > **Design. Print. Build. Grow.** — creative, printing and technology solutions for modern businesses.
@@ -24,6 +26,20 @@ npx expo start
 ```
 
 Then press `w` for web, `a` for Android or `i` for iOS (or scan the QR code with Expo Go).
+
+## 🌐 GitHub Pages deployment
+
+The web build is deployed to GitHub Pages from the `gh-pages` branch:
+
+```bash
+npx expo export --platform web        # builds dist/ (baseUrl is set to /pixel_studios)
+# push the contents of dist/ to the gh-pages branch
+```
+
+Notes:
+- `app.json` sets `experiments.baseUrl: "/pixel_studios"` so all assets resolve under the repo subpath.
+- Root-level route files are copied to `<route>/index.html` so deep links like `/shop/` work.
+- `.nojekyll` is included so GitHub serves the `_expo` asset folder untouched.
 
 ## 📱 Builds (EAS)
 

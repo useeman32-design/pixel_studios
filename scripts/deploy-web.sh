@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# Build the web app and deploy it to the gh-pages branch (GitHub Pages).
+# Usage: bash scripts/deploy-web.sh
+set -e
+cd "$(dirname "$0")/.."
+
+echo "▸ Exporting web build…"
+npx expo export --platform web
+
+cd dist
+
+# Clean URLs: expose each root-level route as <route>/index.html
+for f in *.html; do
+  case "$f" in
+    index.html|404.html|+not-found.html|_sitemap.html) ;;
+    *) name="${f%.html}"; mkdir -p "$name"; cp "$f" "$name/index.html" ;;
+  esac
+done
+cp "+not-found.html" 404.html
+touch .nojekyll
+
+TMP=$(mktemp -d)
+git -C "$TMP" init -q
+git -C "$TMP" checkout -q -b gh-pages
+cp -r . "$TMP"/
+git -C "$TMP" add -A
+git -C "$TMP" -c user.name="Pixel Studios Bot" -c user.email="bot@pixelstudios.ng" \
+  commit -qm "deploy: web build $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+git -C "$TMP" remote add origin "$(git remote get-url origin)"
+git -C "$TMP" push -q -f origin gh-pages
+rm -rf "$TMP"
+
+echo "✅ Deployed → https://useeman32-design.github.io/pixel_studios/"
