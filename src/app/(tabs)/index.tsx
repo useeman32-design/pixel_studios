@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Animated,
   Easing,
@@ -17,7 +17,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button, Container, Eyebrow, FadeIn, LogoMark } from '../../components/ui';
 import { fonts, Palette, radius, sp, useTheme } from '../../constants/theme';
 
-const heroImage = require('../../../assets/images/hero.jpg');
+const heroImages = [
+  require('../../../assets/images/hero.jpg'),
+  require('../../../assets/images/cat-smart.jpg'),
+  require('../../../assets/images/cat-digital.jpg'),
+];
 const nfcImage = require('../../../assets/images/nfc-card.jpg');
 const brandingImage = require('../../../assets/images/portfolio/branding.jpg');
 const digitalImage = require('../../../assets/images/portfolio/app.jpg');
@@ -28,13 +32,49 @@ const HERO_H = 560;
 const quickActions = [
   { label: 'Print', icon: 'print-outline', target: '/service/print' },
   { label: 'Design', icon: 'color-palette-outline', target: '/service/creative' },
-  { label: 'NFC', icon: 'wifi-outline', target: '/nfc' },
-  { label: 'Web', icon: 'code-slash-outline', target: '/service/digital' },
+  { label: 'Smart Cards', icon: 'wifi-outline', target: '/nfc' },
+  { label: 'Mobile & Web Development', icon: 'code-slash-outline', target: '/service/digital' },
 ];
+
+const AnimatedImage = Animated.createAnimatedComponent(Image);
+
+/* Rotating hero background — smooth crossfade between 3 images */
+function HeroCarousel() {
+  const [active, setActive] = useState(0);
+  const fades = useRef(heroImages.map(() => new Animated.Value(1))).current;
+
+  useEffect(() => {
+    fades.forEach((f, i) =>
+      Animated.timing(f, {
+        toValue: i === active ? 1 : 0,
+        duration: 1000,
+        useNativeDriver: true,
+      }).start(),
+    );
+  }, [active, fades]);
+
+  useEffect(() => {
+    const t = setInterval(() => setActive((a) => (a + 1) % heroImages.length), 5000);
+    return () => clearInterval(t);
+  }, []);
+
+  return (
+    <>
+      {heroImages.map((src, i) => (
+        <AnimatedImage
+          key={i}
+          source={src}
+          resizeMode="cover"
+          style={{ position: 'absolute', width: '100%', height: '100%', opacity: fades[i] }}
+        />
+      ))}
+    </>
+  );
+}
 
 const featured = [
   {
-    title: 'Smart NFC Business Cards',
+    title: 'Smart Cards',
     sub: 'One tap. Your entire business.',
     image: nfcImage,
     target: '/nfc',
@@ -162,7 +202,7 @@ export default function HomeScreen() {
       showsVerticalScrollIndicator={false}>
       {/* =============================== HERO =============================== */}
       <View style={styles.hero}>
-        <Image source={heroImage} style={styles.heroImage} resizeMode="cover" />
+        <HeroCarousel />
         <LinearGradient
           colors={[colors.overlay, 'rgba(0,0,0,0.15)', colors.bg]}
           locations={[0, 0.45, 1]}
@@ -381,7 +421,7 @@ function useStyles(colors: Palette) {
         },
         aiChipText: { fontFamily: fonts.semi, fontSize: 15, color: '#FFFFFF' },
         actionsRow: { flexDirection: 'row', justifyContent: 'space-between' },
-        actionItem: { alignItems: 'center', gap: sp.x1 },
+        actionItem: { alignItems: 'center', gap: sp.x1, flex: 1, maxWidth: 96 },
         actionIcon: {
           width: 62,
           height: 62,
@@ -392,7 +432,13 @@ function useStyles(colors: Palette) {
           alignItems: 'center',
           justifyContent: 'center',
         },
-        actionLabel: { fontFamily: fonts.medium, fontSize: 13.5, color: colors.subtext },
+        actionLabel: {
+          fontFamily: fonts.medium,
+          fontSize: 12,
+          lineHeight: 15,
+          color: colors.subtext,
+          textAlign: 'center',
+        },
         aiCard: {
           flexDirection: 'row',
           alignItems: 'center',

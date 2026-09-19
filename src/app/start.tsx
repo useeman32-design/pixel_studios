@@ -16,12 +16,11 @@ import { waLink } from '../constants/contact';
 import { fonts, Palette, radius, sp, useTheme } from '../constants/theme';
 
 const needOptions = [
-  'Printing',
+  'Print',
   'Design',
+  'Smart Cards',
+  'Mobile & Web Development',
   'Branding',
-  'NFC Card',
-  'Website',
-  'Mobile App',
   'Packaging',
   'Other',
 ];
@@ -35,8 +34,15 @@ export default function StartProjectScreen() {
   const { colors } = useTheme();
   const styles = useStyles(colors);
 
-  const [need, setNeed] = useState('');
+  const [needs, setNeeds] = useState<string[]>([]);
+  const [otherNeed, setOtherNeed] = useState('');
   const [description, setDescription] = useState('');
+
+  const toggleNeed = (option: string) => {
+    setNeeds((prev) =>
+      prev.includes(option) ? prev.filter((n) => n !== option) : [...prev, option],
+    );
+  };
   const [quantity, setQuantity] = useState('');
   const [deadline, setDeadline] = useState('');
   const [budget, setBudget] = useState('');
@@ -44,11 +50,20 @@ export default function StartProjectScreen() {
   const [phone, setPhone] = useState('');
   const [done, setDone] = useState(false);
 
-  const canContinue = useMemo(() => !!need && description.trim().length > 5, [need, description]);
+  const canContinue = useMemo(() => {
+    if (needs.length === 0) return false;
+    if (needs.includes('Other') && otherNeed.trim().length === 0) return false;
+    return description.trim().length > 5;
+  }, [needs, otherNeed, description]);
+
+  const needSummary = [
+    ...needs.filter((n) => n !== 'Other'),
+    ...(needs.includes('Other') ? [`Other — ${otherNeed.trim()}`] : []),
+  ].join(', ');
 
   const brief = `*Project request — Pixel Studios app*
 
-Need: ${need || '-'}
+Services: ${needSummary || '-'}
 
 About the project:
 ${description || '-'}
@@ -105,14 +120,14 @@ Phone: ${phone || '-'}`;
         </FadeIn>
 
         <FadeIn delay={80}>
-          <Text style={styles.question}>What do you need?</Text>
+          <Text style={styles.question}>What do you need? <Text style={styles.questionHint}>(select all that apply)</Text></Text>
           <View style={styles.needGrid}>
             {needOptions.map((option) => {
-              const active = need === option;
+              const active = needs.includes(option);
               return (
                 <Pressable
                   key={option}
-                  onPress={() => setNeed(option)}
+                  onPress={() => toggleNeed(option)}
                   style={[styles.needTile, active && { borderColor: colors.lime, backgroundColor: colors.limeDim }]}>
                   <Text style={[styles.needText, active && { color: colors.text }]}>{option}</Text>
                   {active && <Ionicons name="checkmark" size={16} color={colors.isDark ? colors.lime : '#5E8A0D'} />}
@@ -120,6 +135,15 @@ Phone: ${phone || '-'}`;
               );
             })}
           </View>
+          {needs.includes('Other') && (
+            <TextInput
+              value={otherNeed}
+              onChangeText={setOtherNeed}
+              placeholder="Describe what you need…"
+              placeholderTextColor={colors.muted}
+              style={[styles.input, { marginTop: sp.x2_ }]}
+            />
+          )}
         </FadeIn>
 
         <FadeIn delay={120}>
@@ -246,6 +270,7 @@ function useStyles(colors: Palette) {
       marginTop: sp.x5,
       marginBottom: sp.x2_,
     },
+    questionHint: { fontFamily: fonts.regular, fontSize: 13.5, color: colors.muted },
     needGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: sp.x2_ },
     needTile: {
       flexDirection: 'row',

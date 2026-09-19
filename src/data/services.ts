@@ -3,65 +3,32 @@ export type ServiceCategory = {
   name: string;
   subtitle: string;
   image: any;
-  services: string[];
 };
 
 export const serviceCategories: ServiceCategory[] = [
   {
     id: 'creative',
-    name: 'Creative',
-    subtitle: 'Graphic Design / Branding / Social Media',
+    name: 'Design',
+    subtitle: 'Logos / Branding / Social Media / Menus',
     image: require('../../assets/images/cat-creative.jpg'),
-    services: [
-      'Logo design',
-      'Brand identity',
-      'Social media design',
-      'Marketing graphics',
-      'Invitations & menus',
-      'Packaging design',
-    ],
   },
   {
     id: 'print',
     name: 'Print',
-    subtitle: 'Business Cards / Flyers / Stickers / Apparel',
+    subtitle: 'Business Cards / Flyers / Stickers / Apparel / Packaging',
     image: require('../../assets/images/cat-print.jpg'),
-    services: [
-      'Business cards',
-      'Flyers & posters',
-      'Stickers & labels',
-      'T-shirts & apparel',
-      'Mugs & merchandise',
-      'Invitation cards',
-    ],
   },
   {
     id: 'smart',
-    name: 'Smart Business',
-    subtitle: 'NFC Cards / QR Solutions / Digital Profiles',
+    name: 'Smart Cards',
+    subtitle: 'Direct Link Cards / Premium Portfolio Cards / QR',
     image: require('../../assets/images/cat-smart.jpg'),
-    services: [
-      'NFC business cards',
-      'NFC review cards',
-      'Digital business profiles',
-      'QR / NFC menus',
-      'Smart staff cards',
-      'Event NFC products',
-    ],
   },
   {
     id: 'digital',
-    name: 'Digital',
-    subtitle: 'Websites / Mobile Apps / Business Systems',
+    name: 'Mobile & Web Development',
+    subtitle: 'Websites / E-commerce / Mobile Apps / Business Systems',
     image: require('../../assets/images/cat-digital.jpg'),
-    services: [
-      'Website development',
-      'Mobile applications',
-      'E-commerce stores',
-      'Business systems',
-      'Dashboards',
-      'Hosting & maintenance',
-    ],
   },
 ];
 

@@ -5,7 +5,7 @@ import React, { useEffect, useRef } from 'react';
 import { Animated, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { fonts, isWeb, sp, useTheme } from '../../constants/theme';
+import { fonts, isWeb, useTheme } from '../../constants/theme';
 
 const tabs = [
   { name: 'index', label: 'Home', icon: 'home-outline', activeIcon: 'home' },
@@ -16,33 +16,17 @@ const tabs = [
 ];
 
 const ITEM_W = 58;
-const BAR_H = 66;
+const BAR_H = 64;
 
-function LiquidBar({
-  index,
-  onNavigate,
-  onStart,
-  onAi,
-}: {
-  index: number;
-  onNavigate: (name: string) => void;
-  onStart: () => void;
-  onAi: () => void;
-}) {
+/* -------------------------------- Glass bar -------------------------------- */
+
+function GlassBar({ index, onNavigate }: { index: number; onNavigate: (name: string) => void }) {
   const { colors, isDark } = useTheme();
-  const insets = useSafeAreaInsets();
   const anim = useRef(new Animated.Value(index)).current;
-  const pressScale = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    // Liquid spring — slight overshoot gives the blob its settle.
-    Animated.spring(anim, {
-      toValue: index,
-      useNativeDriver: true,
-      damping: 13,
-      stiffness: 170,
-      mass: 0.9,
-    }).start();
+    // Gentle, calm slide — no bounce.
+    Animated.timing(anim, { toValue: index, duration: 260, useNativeDriver: true }).start();
   }, [index, anim]);
 
   const translateX = anim.interpolate({
@@ -64,11 +48,9 @@ function LiquidBar({
           position: 'absolute',
           left: 8 + 5,
           width: ITEM_W - 10,
-          height: 48,
-          borderRadius: 16,
+          height: 46,
+          borderRadius: 15,
           backgroundColor: colors.limeDim,
-          borderWidth: 1,
-          borderColor: isDark ? 'rgba(191,245,73,0.35)' : 'rgba(120,180,20,0.4)',
           transform: [{ translateX }],
         }}
       />
@@ -80,14 +62,11 @@ function LiquidBar({
             onPress={() => onNavigate(tab.name)}
             style={{ width: ITEM_W, height: BAR_H, alignItems: 'center', justifyContent: 'center' }}
             accessibilityLabel={tab.label}>
-            <Animated.View
-              style={{ transform: [{ scale: focused ? 1.06 : 1 }] }}>
-              <Ionicons
-                name={focused ? (tab.activeIcon as any) : (tab.icon as any)}
-                size={22}
-                color={focused ? colors.text : colors.muted}
-              />
-            </Animated.View>
+            <Ionicons
+              name={focused ? (tab.activeIcon as any) : (tab.icon as any)}
+              size={22}
+              color={focused ? colors.text : colors.muted}
+            />
             <View
               style={{
                 width: 4,
@@ -105,126 +84,135 @@ function LiquidBar({
 
   return (
     <View
-      pointerEvents="box-none"
       style={{
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        bottom: Math.max(insets.bottom, 12) + 10,
-        alignItems: 'center',
+        borderRadius: 32,
+        overflow: 'hidden',
+        borderWidth: StyleSheet.hairlineWidth,
+        borderColor: colors.hairlineStrong,
+        ...Platform.select({
+          ios: {
+            shadowColor: '#000',
+            shadowOpacity: isDark ? 0.5 : 0.15,
+            shadowRadius: 22,
+            shadowOffset: { width: 0, height: 8 },
+          },
+          android: { elevation: 10 },
+        }),
       }}>
-      {/* Floating AI + Start buttons */}
-      <View
-        pointerEvents="box-none"
-        style={{
-          position: 'absolute',
-          top: -26,
-          left: 24,
-          right: 24,
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-        }}>
-        <Pressable
-          onPress={onAi}
-          style={[
-            styles.fabGhost,
-            {
-              backgroundColor: isDark ? 'rgba(20,20,22,0.72)' : 'rgba(255,255,255,0.82)',
-              borderColor: isDark ? 'rgba(255,255,255,0.14)' : 'rgba(12,12,14,0.12)',
-            },
-          ]}>
-          <Ionicons name="sparkles" size={19} color={colors.lime} />
-          <Text style={{ fontFamily: fonts.semi, fontSize: 12.5, color: colors.text, marginLeft: 6 }}>
-            Pixel AI
-          </Text>
-        </Pressable>
-        <Animated.View style={{ transform: [{ scale: pressScale }] }}>
-          <Pressable
-            onPress={onStart}
-            onPressIn={() =>
-              Animated.spring(pressScale, { toValue: 0.9, useNativeDriver: true }).start()
-            }
-            onPressOut={() =>
-              Animated.spring(pressScale, { toValue: 1, useNativeDriver: true }).start()
-            }
-            style={[styles.fabLime, { backgroundColor: colors.lime }]}>
-            <Ionicons name="add" size={28} color={colors.onLime} />
-          </Pressable>
-        </Animated.View>
-      </View>
-
-      {/* Glass pill */}
-      <View
-        style={{
-          borderRadius: 33,
-          overflow: 'hidden',
-          borderWidth: StyleSheet.hairlineWidth,
-          borderColor: colors.hairlineStrong,
-          ...Platform.select({
-            ios: {
-              shadowColor: '#000',
-              shadowOpacity: isDark ? 0.55 : 0.18,
-              shadowRadius: 24,
-              shadowOffset: { width: 0, height: 10 },
-            },
-            android: { elevation: 12 },
-          }),
-        }}>
-        {isWeb ? (
-          <View
-            style={{
-              backgroundColor: colors.navGlass,
-              ...( { backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)' } as any),
-            }}>
-            {glassInner}
-          </View>
-        ) : (
-          <BlurView intensity={55} tint={isDark ? 'dark' : 'light'} style={{ overflow: 'hidden' }}>
-            {glassInner}
-          </BlurView>
-        )}
-      </View>
+      {isWeb ? (
+        <View
+          style={{
+            backgroundColor: colors.navGlass,
+            ...({ backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)' } as any),
+          }}>
+          {glassInner}
+        </View>
+      ) : (
+        <BlurView intensity={55} tint={isDark ? 'dark' : 'light'} style={{ overflow: 'hidden' }}>
+          {glassInner}
+        </BlurView>
+      )}
     </View>
   );
 }
 
+/* ------------------------------ Ask AI button ------------------------------ */
+/**
+ * Floating button on the right that loops: icon → expands to reveal "Ask AI"
+ * → text hides → icon. Smooth, subtle, never in the way.
+ */
+function AskAiButton({ onPress }: { onPress: () => void }) {
+  const { colors, isDark } = useTheme();
+  const expand = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.delay(1600),
+        Animated.timing(expand, { toValue: 1, duration: 550, useNativeDriver: false }),
+        Animated.delay(2200),
+        Animated.timing(expand, { toValue: 0, duration: 550, useNativeDriver: false }),
+      ]),
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [expand]);
+
+  const width = expand.interpolate({ inputRange: [0, 1], outputRange: [54, 128] });
+  const labelOpacity = expand.interpolate({ inputRange: [0, 0.4, 1], outputRange: [0, 0, 1] });
+
+  return (
+    <Animated.View style={{ width, height: 54, borderRadius: 27 }}>
+      <Pressable
+        onPress={onPress}
+        style={[
+          StyleSheet.absoluteFill,
+          styles.askAi,
+          {
+            backgroundColor: isDark ? 'rgba(20,20,22,0.78)' : 'rgba(255,255,255,0.85)',
+            borderColor: isDark ? 'rgba(255,255,255,0.14)' : 'rgba(12,12,14,0.12)',
+          },
+        ]}>
+        <Ionicons name="sparkles" size={20} color={colors.lime} />
+        <Animated.Text
+          style={[styles.askAiText, { color: colors.text, opacity: labelOpacity }]}
+          numberOfLines={1}>
+          Ask AI
+        </Animated.Text>
+      </Pressable>
+    </Animated.View>
+  );
+}
+
 const styles = StyleSheet.create({
-  fabLime: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...Platform.select({
-      ios: { shadowColor: '#000', shadowOpacity: 0.4, shadowRadius: 14, shadowOffset: { width: 0, height: 6 } },
-      android: { elevation: 8 },
-    }),
-  },
-  fabGhost: {
+  askAi: {
     flexDirection: 'row',
     alignItems: 'center',
-    height: 42,
-    borderRadius: 21,
-    paddingHorizontal: 16,
+    justifyContent: 'center',
+    gap: 8,
+    borderRadius: 27,
     borderWidth: StyleSheet.hairlineWidth,
+    overflow: 'hidden',
+    ...Platform.select({
+      ios: { shadowColor: '#000', shadowOpacity: 0.35, shadowRadius: 12, shadowOffset: { width: 0, height: 5 } },
+      android: { elevation: 6 },
+    }),
   },
+  askAiText: { fontFamily: fonts.semi, fontSize: 14.5, width: 58, textAlign: 'left' },
 });
+
+/* ---------------------------------- Layout --------------------------------- */
 
 export default function TabsLayout() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   return (
     <Tabs
       screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: 'transparent' } }}
       tabBar={(props) => {
         const { state, navigation } = props;
+        const bottom = Math.max(insets.bottom, 12) + 10;
         return (
-          <LiquidBar
-            index={state.index}
-            onNavigate={(name) => navigation.navigate(name)}
-            onStart={() => router.push('/start')}
-            onAi={() => router.push('/ai')}
-          />
+          <View pointerEvents="box-none" style={{ position: 'absolute', left: 0, right: 0, bottom }}>
+            {/* Ask AI — floating on the right, above the bar */}
+            <View
+              pointerEvents="box-none"
+              style={{
+                position: 'absolute',
+                top: -66,
+                left: 20,
+                right: 20,
+                flexDirection: 'row',
+                justifyContent: 'flex-end',
+              }}>
+              <AskAiButton onPress={() => router.push('/ai')} />
+            </View>
+
+            <View style={{ alignItems: 'center' }}>
+              <GlassBar index={state.index} onNavigate={(name) => navigation.navigate(name)} />
+            </View>
+          </View>
         );
       }}>
       <Tabs.Screen name="index" />
