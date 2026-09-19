@@ -1,475 +1,285 @@
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import {
-  Image,
-  ImageBackground,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Button, Container, FadeIn, GlassCard, SectionHeader, Stars } from '../../components/ui';
-import { CONTACT, waDefaultMessage, waLink } from '../../constants/contact';
-import { colors, fonts, gradients, radius } from '../../constants/theme';
-import { portfolioItems } from '../../data/portfolio';
-import { formatNaira, products } from '../../data/products';
-import { serviceCategories } from '../../data/services';
-import { testimonials } from '../../data/testimonials';
+import { Button, Container, Eyebrow, FadeIn, LogoMark } from '../../components/ui';
+import { colors, fonts, radius, sp } from '../../constants/theme';
 
 const heroImage = require('../../../assets/images/hero.jpg');
+const nfcImage = require('../../../assets/images/nfc-card.jpg');
+const brandingImage = require('../../../assets/images/portfolio/branding.jpg');
+const digitalImage = require('../../../assets/images/portfolio/app.jpg');
+const avatarImage = require('../../../assets/images/avatar.jpg');
 
-const paths = [
-  {
-    emoji: '🎨',
-    title: 'I need something designed',
-    subtitle: 'Logos, branding & graphics',
-    route: '/service/creative',
-    gradient: gradients.rose,
-  },
-  {
-    emoji: '🖨️',
-    title: 'I need something printed',
-    subtitle: 'Cards, flyers & merchandise',
-    route: '/service/print',
-    gradient: gradients.sky,
-  },
-  {
-    emoji: '💻',
-    title: 'I need a digital solution',
-    subtitle: 'Websites, apps & systems',
-    route: '/service/digital',
-    gradient: gradients.primary,
-  },
+const quickActions = [
+  { label: 'Print', icon: 'print-outline', target: '/service/print' },
+  { label: 'Design', icon: 'color-palette-outline', target: '/service/creative' },
+  { label: 'NFC', icon: 'wifi-outline', target: '/nfc' },
+  { label: 'Web', icon: 'code-slash-outline', target: '/service/digital' },
 ];
 
-const whyUs = [
-  { icon: 'flash-outline', title: 'Fast delivery', text: 'Quick turnarounds without cutting corners.' },
-  { icon: 'diamond-outline', title: 'Premium quality', text: 'Work that makes your business look world-class.' },
-  { icon: 'apps-outline', title: 'One-stop studio', text: 'Design, print, tech and marketing under one roof.' },
-  { icon: 'shield-checkmark-outline', title: 'Reliable support', text: 'We stay with you from idea to launch and beyond.' },
+const featured = [
+  {
+    title: 'Smart NFC Business Cards',
+    sub: 'One tap. Your entire business.',
+    image: nfcImage,
+    target: '/nfc',
+  },
+  {
+    title: 'Premium Branding',
+    sub: 'Identity that earns trust.',
+    image: brandingImage,
+    target: '/service/creative',
+  },
+  {
+    title: 'Websites & Apps',
+    sub: 'From idea to launch.',
+    image: digitalImage,
+    target: '/service/digital',
+  },
 ];
 
 export default function HomeScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const popularProducts = products.filter((p) => p.popular);
 
   return (
-    <ScrollView style={styles.screen} showsVerticalScrollIndicator={false}>
-      {/* ================================ HERO ================================ */}
-      <ImageBackground source={heroImage} style={styles.hero} resizeMode="cover">
-        <LinearGradient
-          colors={['rgba(7,7,13,0.35)', 'rgba(7,7,13,0.55)', colors.bg]}
-          style={styles.heroOverlay}>
-          <Container style={{ paddingTop: insets.top + 28 }}>
-            <FadeIn>
-              <View style={styles.heroBadge}>
-                <View style={styles.heroBadgeDot} />
-                <Text style={styles.heroBadgeText}>Creative · Print · Technology — Gusau, Nigeria</Text>
-              </View>
-            </FadeIn>
-            <FadeIn delay={120}>
-              <Text style={styles.heroTitle}>
-                Design. Print.{'\n'}Build. <Text style={styles.heroAccent}>Grow.</Text>
-              </Text>
-            </FadeIn>
-            <FadeIn delay={240}>
-              <Text style={styles.heroSubtitle}>
-                Creative, printing and technology solutions for modern businesses — from a single
-                business card to complete software systems.
-              </Text>
-            </FadeIn>
-            <FadeIn delay={360}>
-              <View style={styles.heroButtons}>
-                <Button title="Start a Project" icon="rocket-outline" onPress={() => router.push('/start')} />
-                <Button
-                  title="Explore Services"
-                  variant="glass"
-                  icon="grid-outline"
-                  onPress={() => router.push('/services')}
-                />
-              </View>
-            </FadeIn>
-          </Container>
-        </LinearGradient>
-      </ImageBackground>
-
+    <ScrollView
+      style={styles.screen}
+      contentContainerStyle={{ paddingBottom: sp.x8 }}
+      showsVerticalScrollIndicator={false}>
+      {/* ============================== HEADER ============================== */}
       <Container>
-        {/* ============================ THREE PATHS ============================ */}
-        <FadeIn delay={80}>
-          <SectionHeader
-            title="What do you need today?"
-            subtitle="Three simple ways we can help."
-          />
-          <View style={{ gap: 12 }}>
-            {paths.map((p) => (
-              <GlassCard key={p.title} onPress={() => router.push(p.route as any)} style={styles.pathCard}>
-                <LinearGradient
-                  colors={[p.gradient[0], p.gradient[1]]}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
-                  style={styles.pathEmojiWrap}>
-                  <Text style={styles.pathEmoji}>{p.emoji}</Text>
-                </LinearGradient>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.pathTitle}>{p.title}</Text>
-                  <Text style={styles.pathSubtitle}>{p.subtitle}</Text>
-                </View>
-                <Ionicons name="chevron-forward" size={20} color={colors.muted} />
-              </GlassCard>
-            ))}
+        <View style={[styles.header, { marginTop: insets.top + sp.x2 }]}>
+          <LogoMark size={26} />
+          <View style={{ flex: 1, marginLeft: sp.x2_ }}>
+            <Text style={styles.wordmark}>PIXEL STUDIOS</Text>
           </View>
+          <Pressable style={styles.headerIcon} onPress={() => router.push('/chat')}>
+            <Ionicons name="chatbubble-outline" size={19} color={colors.text} />
+          </Pressable>
+          <Pressable style={styles.headerIcon} onPress={() => router.push('/profile')}>
+            <Image source={avatarImage} style={styles.headerAvatar} />
+          </Pressable>
+        </View>
+
+        <Pressable onPress={() => {}} style={styles.location}>
+          <Ionicons name="location-outline" size={13} color={colors.muted} />
+          <Text style={styles.locationText}>Gusau, Zamfara</Text>
+        </Pressable>
+      </Container>
+
+      {/* =============================== HERO =============================== */}
+      <Container>
+        <FadeIn delay={60}>
+          <Text style={styles.heroTitle}>Bring your ideas to life.</Text>
         </FadeIn>
-
-        {/* ========================= FEATURED SERVICES ======================== */}
-        <View style={styles.section}>
-          <SectionHeader
-            title="Explore our divisions"
-            subtitle="Seven specialized teams, one studio."
-            actionLabel="View all"
-            onAction={() => router.push('/services')}
-          />
-        </View>
+        <FadeIn delay={140}>
+          <Text style={styles.heroSub}>
+            Design, print and digital solutions for modern businesses.
+          </Text>
+        </FadeIn>
+        <FadeIn delay={220} style={{ marginTop: sp.x4 }}>
+          <Button title="Start a Project" icon="arrow-forward" onPress={() => router.push('/start')} />
+        </FadeIn>
+        <FadeIn delay={300}>
+          <Image source={heroImage} style={styles.heroImage} resizeMode="cover" />
+        </FadeIn>
       </Container>
 
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.hScroll}>
-        {serviceCategories.map((cat) => (
-            <Pressable
-              key={cat.id}
-              onPress={() => router.push(`/service/${cat.id}` as any)}
-              style={styles.serviceCard}>
-              <LinearGradient
-                colors={[cat.gradient[0], cat.gradient[1]]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={styles.serviceIcon}>
-                <Text style={{ fontSize: 22 }}>{cat.emoji}</Text>
-              </LinearGradient>
-              <Text style={styles.serviceName}>{cat.shortName}</Text>
-              <Text style={styles.serviceTag} numberOfLines={2}>
-                {cat.tagline}
-              </Text>
-              <Text style={styles.serviceCount}>{cat.services.length} services →</Text>
-            </Pressable>
-          ))}
-      </ScrollView>
-
-      <Container>
-        {/* ========================= POPULAR PRODUCTS ========================= */}
-        <View style={styles.section}>
-          <SectionHeader
-            title="Popular products"
-            subtitle="Order ready — quality guaranteed."
-            actionLabel="Open shop"
-            onAction={() => router.push('/shop')}
-          />
-        </View>
-      </Container>
-
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.hScroll}>
-          {popularProducts.map((product) => (
-            <Pressable
-              key={product.id}
-              onPress={() => router.push(`/product/${product.id}` as any)}
-              style={styles.productCard}>
-              <Image source={product.image} style={styles.productImage} resizeMode="cover" />
-              <View style={styles.productInfo}>
-                <Text style={styles.productName} numberOfLines={1}>
-                  {product.name}
-                </Text>
-                <Text style={styles.productPrice}>
-                  From {formatNaira(product.price ?? 0)}{' '}
-                  <Text style={styles.productPriceNote}>{product.priceNote}</Text>
-                </Text>
-              </View>
-            </Pressable>
-          ))}
-      </ScrollView>
-
-      <Container>
-        {/* ============================= WHY US ============================== */}
-        <View style={styles.section}>
-          <SectionHeader title="Why Pixel Studios?" />
-          <View style={styles.whyGrid}>
-            {whyUs.map((w) => (
-              <GlassCard key={w.title} style={styles.whyCard}>
-                <View style={styles.whyIconWrap}>
-                  <Ionicons name={w.icon as any} size={20} color={colors.cyan} />
+      {/* =========================== QUICK ACTIONS =========================== */}
+      <Container style={{ marginTop: sp.x6 }}>
+        <FadeIn delay={80}>
+          <View style={styles.actionsRow}>
+            {quickActions.map((a) => (
+              <Pressable
+                key={a.label}
+                onPress={() => router.push(a.target as any)}
+                style={styles.actionItem}>
+                <View style={styles.actionIcon}>
+                  <Ionicons name={a.icon as any} size={22} color={colors.text} />
                 </View>
-                <Text style={styles.whyTitle}>{w.title}</Text>
-                <Text style={styles.whyText}>{w.text}</Text>
-              </GlassCard>
-            ))}
-          </View>
-        </View>
-
-        {/* ========================== PORTFOLIO PREVIEW ======================= */}
-        <View style={styles.section}>
-          <SectionHeader
-            title="Recent work"
-            subtitle="Quality you can see."
-            actionLabel="Full portfolio"
-            onAction={() => router.push('/portfolio')}
-          />
-          <View style={styles.portfolioGrid}>
-            {portfolioItems.slice(0, 4).map((item) => (
-              <Pressable key={item.id} onPress={() => router.push('/portfolio')} style={styles.portfolioTile}>
-                <Image source={item.image} style={styles.portfolioImage} resizeMode="cover" />
-                <LinearGradient
-                  colors={['transparent', 'rgba(7,7,13,0.92)']}
-                  style={styles.portfolioOverlay}>
-                  <Text style={styles.portfolioCategory}>{item.category}</Text>
-                  <Text style={styles.portfolioTitle} numberOfLines={1}>
-                    {item.title}
-                  </Text>
-                </LinearGradient>
+                <Text style={styles.actionLabel}>{a.label}</Text>
               </Pressable>
             ))}
           </View>
+        </FadeIn>
+      </Container>
+
+      {/* ============================= FEATURED ============================= */}
+      <Container style={{ marginTop: sp.x7 }}>
+        <View style={styles.sectionHead}>
+          <Text style={styles.sectionTitle}>Featured</Text>
+          <Pressable onPress={() => router.push('/services')} hitSlop={8}>
+            <Text style={styles.viewAll}>View all services</Text>
+          </Pressable>
         </View>
 
-        {/* ============================ TESTIMONIALS ========================== */}
-        <View style={styles.section}>
-          <SectionHeader title="What clients say" subtitle="Trusted across Nigeria." />
+        <View style={{ gap: sp.x3 }}>
+          {featured.map((f, i) => (
+            <FadeIn key={f.title} delay={i * 80}>
+              <Pressable onPress={() => router.push(f.target as any)} style={styles.featuredCard}>
+                <Image source={f.image} style={styles.featuredImage} resizeMode="cover" />
+                <View style={styles.featuredOverlay} />
+                <View style={styles.featuredTextWrap}>
+                  <Text style={styles.featuredTitle}>{f.title}</Text>
+                  <Text style={styles.featuredSub}>{f.sub}</Text>
+                </View>
+                <View style={styles.featuredArrow}>
+                  <Ionicons name="arrow-forward" size={18} color={colors.onLime} />
+                </View>
+              </Pressable>
+            </FadeIn>
+          ))}
         </View>
       </Container>
 
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.hScroll}>
-          {testimonials.map((t) => (
-            <GlassCard key={t.id} style={styles.testimonialCard}>
-              <Stars rating={t.rating} />
-              <Text style={styles.testimonialQuote}>“{t.quote}”</Text>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 14 }}>
-                <View style={styles.avatar}>
-                  <Text style={styles.avatarText}>{t.name.charAt(0)}</Text>
-                </View>
-                <View>
-                  <Text style={styles.testimonialName}>{t.name}</Text>
-                  <Text style={styles.testimonialRole}>{t.role}</Text>
-                </View>
-              </View>
-            </GlassCard>
-          ))}
-      </ScrollView>
-
-      <Container>
-        {/* =============================== CTA ================================ */}
-        <View style={styles.section}>
-          <LinearGradient
-            colors={['#7C3AED', '#5B4BE0', '#0E7490']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.ctaCard}>
-            <Text style={styles.ctaTitle}>Have an idea?</Text>
-            <Text style={styles.ctaText}>
-              Bring it to Pixel Studios — we'll design it, print it, build it and help it grow.
-            </Text>
-            <View style={styles.ctaButtons}>
-              <Button
-                title="Chat on WhatsApp"
-                variant="dark"
-                icon="logo-whatsapp"
-                href={waLink(waDefaultMessage)}
-              />
-              <Button title="Start a Project" variant="glass" onPress={() => router.push('/start')} />
-            </View>
-          </LinearGradient>
-        </View>
-
-        {/* ============================== FOOTER ============================== */}
-        <View style={styles.footer}>
-          <Text style={styles.footerLogo}>PIXEL STUDIOS</Text>
-          <Text style={styles.footerText}>{CONTACT.location}</Text>
-          <Text style={styles.footerText}>
-            {CONTACT.hours[0].days}: {CONTACT.hours[0].time}
-          </Text>
-          <Pressable onPress={() => router.push('/contact')} hitSlop={8}>
-            <Text style={styles.footerLink}>Contact us →</Text>
+      {/* ============================ WORK TEASER ============================ */}
+      <Container style={{ marginTop: sp.x7 }}>
+        <FadeIn>
+          <Eyebrow>Selected work</Eyebrow>
+          <Text style={styles.teaserTitle}>Work that speaks before you do.</Text>
+          <Pressable onPress={() => router.push('/portfolio')} style={styles.textLink}>
+            <Text style={styles.textLinkText}>Explore the portfolio</Text>
+            <Ionicons name="arrow-forward" size={16} color={colors.lime} />
           </Pressable>
-          <Text style={styles.footerCopy}>© {new Date().getFullYear()} Pixel Studios. All rights reserved.</Text>
-        </View>
+        </FadeIn>
       </Container>
     </ScrollView>
   );
 }
 
-const CARD_W = 240;
-
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg },
-  hero: { width: '100%' },
-  heroOverlay: { paddingBottom: 34 },
-  heroBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'flex-start',
-    backgroundColor: 'rgba(255,255,255,0.08)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.14)',
-    borderRadius: radius.pill,
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    marginBottom: 18,
-  },
-  heroBadgeDot: {
-    width: 7,
-    height: 7,
-    borderRadius: 4,
-    backgroundColor: colors.success,
-    marginRight: 8,
-  },
-  heroBadgeText: { color: colors.text, fontFamily: fonts.bodyMedium, fontSize: 12.5 },
-  heroTitle: {
-    color: colors.text,
-    fontFamily: fonts.display,
-    fontSize: 44,
-    lineHeight: 50,
-    letterSpacing: -1.2,
-  },
-  heroAccent: { color: colors.cyan },
-  heroSubtitle: {
-    color: colors.subtext,
-    fontFamily: fonts.body,
-    fontSize: 16,
-    lineHeight: 24,
-    marginTop: 14,
-    maxWidth: 520,
-  },
-  heroButtons: { flexDirection: 'row', gap: 12, marginTop: 26, flexWrap: 'wrap' },
-  section: { marginTop: 42 },
-  pathCard: { flexDirection: 'row', alignItems: 'center', padding: 16, gap: 14 },
-  pathEmojiWrap: {
-    width: 52,
-    height: 52,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  pathEmoji: { fontSize: 24 },
-  pathTitle: { color: colors.text, fontFamily: fonts.displaySemi, fontSize: 16.5 },
-  pathSubtitle: { color: colors.subtext, fontFamily: fonts.body, fontSize: 13.5, marginTop: 2 },
-  hScroll: { paddingHorizontal: 20, gap: 14, paddingBottom: 6 },
-  serviceCard: {
-    width: CARD_W,
-    backgroundColor: colors.card,
-    borderColor: colors.border,
-    borderWidth: 1,
-    borderRadius: radius.lg,
-    padding: 18,
-    marginRight: 0,
-    marginLeft: 0,
-  },
-  serviceIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 14,
-  },
-  serviceName: { color: colors.text, fontFamily: fonts.displaySemi, fontSize: 18 },
-  serviceTag: { color: colors.subtext, fontFamily: fonts.body, fontSize: 13, lineHeight: 18, marginTop: 4 },
-  serviceCount: { color: colors.cyan, fontFamily: fonts.bodyMedium, fontSize: 12.5, marginTop: 12 },
-  productCard: {
-    width: CARD_W,
-    backgroundColor: colors.card,
-    borderColor: colors.border,
-    borderWidth: 1,
-    borderRadius: radius.lg,
-    overflow: 'hidden',
-  },
-  productImage: { width: '100%', height: 150 },
-  productInfo: { padding: 14 },
-  productName: { color: colors.text, fontFamily: fonts.displaySemi, fontSize: 15.5 },
-  productPrice: { color: colors.cyan, fontFamily: fonts.bodySemi, fontSize: 13.5, marginTop: 5 },
-  productPriceNote: { color: colors.muted, fontFamily: fonts.body, fontSize: 12 },
-  whyGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
-  whyCard: { padding: 18, width: '48%', flexGrow: 1 },
-  whyIconWrap: {
+  header: { flexDirection: 'row', alignItems: 'center' },
+  wordmark: { fontFamily: fonts.bold, fontSize: 12, letterSpacing: 3, color: colors.text },
+  headerIcon: {
     width: 40,
     height: 40,
-    borderRadius: 12,
-    backgroundColor: colors.cyanSoft,
+    borderRadius: radius.sm,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.hairline,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 12,
+    marginLeft: sp.x1,
+    overflow: 'hidden',
   },
-  whyTitle: { color: colors.text, fontFamily: fonts.displaySemi, fontSize: 15.5 },
-  whyText: { color: colors.subtext, fontFamily: fonts.body, fontSize: 13, lineHeight: 18, marginTop: 4 },
-  portfolioGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
-  portfolioTile: {
-    width: '48%',
-    flexGrow: 1,
-    aspectRatio: 1,
+  headerAvatar: { width: '100%', height: '100%' },
+  location: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    marginTop: sp.x2_ + 2,
+    alignSelf: 'flex-start',
+  },
+  locationText: { fontFamily: fonts.medium, fontSize: 12.5, color: colors.muted },
+  heroTitle: {
+    fontFamily: fonts.semi,
+    fontSize: 44,
+    lineHeight: 48,
+    letterSpacing: -1.6,
+    color: colors.text,
+    marginTop: sp.x6,
+  },
+  heroSub: {
+    fontFamily: fonts.regular,
+    fontSize: 18,
+    lineHeight: 26,
+    color: colors.subtext,
+    marginTop: sp.x2_,
+    maxWidth: 420,
+  },
+  heroImage: {
+    width: '100%',
+    height: 300,
+    borderRadius: radius.xl,
+    marginTop: sp.x5,
+    backgroundColor: colors.surface,
+  },
+  actionsRow: { flexDirection: 'row', justifyContent: 'space-between' },
+  actionItem: { alignItems: 'center', gap: sp.x1 },
+  actionIcon: {
+    width: 62,
+    height: 62,
     borderRadius: radius.lg,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.hairline,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  actionLabel: { fontFamily: fonts.medium, fontSize: 13.5, color: colors.subtext },
+  sectionHead: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    justifyContent: 'space-between',
+    marginBottom: sp.x3,
+  },
+  sectionTitle: { fontFamily: fonts.semi, fontSize: 22, letterSpacing: -0.4, color: colors.text },
+  viewAll: { fontFamily: fonts.medium, fontSize: 14, color: colors.subtext },
+  featuredCard: {
+    height: 210,
+    borderRadius: radius.xl,
     overflow: 'hidden',
     backgroundColor: colors.surface,
   },
-  portfolioImage: { width: '100%', height: '100%' },
-  portfolioOverlay: {
+  featuredImage: { width: '100%', height: '100%' },
+  featuredOverlay: {
     position: 'absolute',
     left: 0,
     right: 0,
     bottom: 0,
-    padding: 14,
-    paddingTop: 30,
+    height: '60%',
+    backgroundColor: 'transparent',
+    // subtle legibility gradient via layered opacity block
+    opacity: 0.85,
+    borderBottomLeftRadius: radius.xl,
+    borderBottomRightRadius: radius.xl,
   },
-  portfolioCategory: {
-    color: colors.cyan,
-    fontFamily: fonts.bodySemi,
-    fontSize: 11,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
+  featuredTextWrap: { position: 'absolute', left: 20, bottom: 20, right: 76 },
+  featuredTitle: {
+    fontFamily: fonts.semi,
+    fontSize: 21,
+    letterSpacing: -0.3,
+    color: '#fff',
+    textShadowColor: 'rgba(0,0,0,0.6)',
+    textShadowRadius: 12,
+    textShadowOffset: { width: 0, height: 2 },
   },
-  portfolioTitle: { color: colors.text, fontFamily: fonts.displaySemi, fontSize: 14, marginTop: 3 },
-  testimonialCard: { width: 320, padding: 20 },
-  testimonialQuote: { color: colors.text, fontFamily: fonts.body, fontSize: 14.5, lineHeight: 22, marginTop: 12 },
-  avatar: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    backgroundColor: colors.violetSoft,
-    borderWidth: 1,
-    borderColor: 'rgba(139,92,246,0.5)',
+  featuredSub: {
+    fontFamily: fonts.regular,
+    fontSize: 14,
+    color: 'rgba(255,255,255,0.75)',
+    marginTop: 3,
+  },
+  featuredArrow: {
+    position: 'absolute',
+    right: 20,
+    bottom: 20,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: colors.lime,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  avatarText: { color: '#C4B5FD', fontFamily: fonts.displaySemi, fontSize: 16 },
-  testimonialName: { color: colors.text, fontFamily: fonts.bodySemi, fontSize: 14 },
-  testimonialRole: { color: colors.muted, fontFamily: fonts.body, fontSize: 12, marginTop: 1 },
-  ctaCard: { borderRadius: radius.xl, padding: 28, alignItems: 'flex-start' },
-  ctaTitle: { color: '#fff', fontFamily: fonts.display, fontSize: 30, letterSpacing: -0.5 },
-  ctaText: {
-    color: 'rgba(255,255,255,0.85)',
-    fontFamily: fonts.body,
-    fontSize: 15,
-    lineHeight: 22,
-    marginTop: 8,
-    maxWidth: 480,
-  },
-  ctaButtons: { flexDirection: 'row', gap: 12, marginTop: 22, flexWrap: 'wrap' },
-  footer: { marginTop: 56, paddingBottom: 40, alignItems: 'center', gap: 6 },
-  footerLogo: {
+  teaserTitle: {
+    fontFamily: fonts.semi,
+    fontSize: 30,
+    lineHeight: 34,
+    letterSpacing: -0.8,
     color: colors.text,
-    fontFamily: fonts.display,
-    fontSize: 16,
-    letterSpacing: 4,
-    marginBottom: 6,
+    marginTop: sp.x1,
+    maxWidth: 420,
   },
-  footerText: { color: colors.muted, fontFamily: fonts.body, fontSize: 13 },
-  footerLink: { color: colors.cyan, fontFamily: fonts.bodySemi, fontSize: 14, marginTop: 8 },
-  footerCopy: { color: colors.muted, fontFamily: fonts.body, fontSize: 12, marginTop: 16, opacity: 0.7 },
+  textLink: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: sp.x3,
+    alignSelf: 'flex-start',
+  },
+  textLinkText: { fontFamily: fonts.semi, fontSize: 15, color: colors.lime },
 });

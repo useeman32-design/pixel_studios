@@ -1,18 +1,17 @@
-import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useRef } from 'react';
 import {
   Animated,
   Linking,
-  Platform,
   Pressable,
   StyleSheet,
   Text,
   View,
   ViewStyle,
+  TextStyle,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
-import { colors, fonts, isWeb, MAX_CONTENT_WIDTH, radius } from '../constants/theme';
+import { colors, fonts, radius, MAX_CONTENT_WIDTH, isWeb } from '../constants/theme';
 
 /* ---------------------------------- FadeIn --------------------------------- */
 
@@ -26,86 +25,123 @@ export function FadeIn({
   style?: ViewStyle;
 }) {
   const opacity = useRef(new Animated.Value(0)).current;
-  const translateY = useRef(new Animated.Value(14)).current;
+  const y = useRef(new Animated.Value(12)).current;
 
   useEffect(() => {
-    const timer = setTimeout(() => {
+    const t = setTimeout(() => {
       Animated.parallel([
-        Animated.timing(opacity, { toValue: 1, duration: 450, useNativeDriver: true }),
-        Animated.timing(translateY, { toValue: 0, duration: 450, useNativeDriver: true }),
+        Animated.timing(opacity, { toValue: 1, duration: 480, useNativeDriver: true }),
+        Animated.timing(y, { toValue: 0, duration: 480, useNativeDriver: true }),
       ]).start();
     }, delay);
-    return () => clearTimeout(timer);
-  }, [delay, opacity, translateY]);
+    return () => clearTimeout(t);
+  }, [delay, opacity, y]);
 
   return (
-    <Animated.View style={[{ opacity, transform: [{ translateY }] }, style]}>
+    <Animated.View style={[{ opacity, transform: [{ translateY: y }] }, style]}>
       {children}
     </Animated.View>
   );
 }
 
-/* ------------------------------- Container --------------------------------- */
+/* -------------------------------- Container -------------------------------- */
 
 export function Container({ children, style }: { children: React.ReactNode; style?: ViewStyle }) {
+  return <View style={[styles.container, style]}>{children}</View>;
+}
+
+const styles = StyleSheet.create({
+  container: {
+    maxWidth: MAX_CONTENT_WIDTH,
+    width: '100%',
+    alignSelf: 'center',
+    paddingHorizontal: 24,
+  },
+});
+
+/* ----------------------------------- Logo ---------------------------------- */
+/** The Pixel Studios mark: a P drawn from a grid of pixels. */
+export function LogoMark({ size = 30, accent = colors.lime }: { size?: number; accent?: string }) {
+  // 4 cols x 6 rows — cells that form a "P"
+  const P = [
+    [1, 1, 1, 0],
+    [1, 0, 0, 1],
+    [1, 0, 0, 1],
+    [1, 1, 1, 0],
+    [1, 0, 0, 0],
+    [1, 0, 0, 0],
+  ];
+  const cell = size / 5;
+  const gap = cell * 0.28;
   return (
-    <View style={[styles.container, style]}>{children}</View>
+    <View style={{ width: size, height: (size / 5) * 6 * 0.86 }}>
+      {P.map((row, r) => (
+        <View key={r} style={{ flexDirection: 'row' }}>
+          {row.map((on, c) => {
+            const isAccent = r === 5 && c === 0;
+            return (
+              <View
+                key={c}
+                style={{
+                  width: cell - gap,
+                  height: cell - gap,
+                  borderRadius: (cell - gap) * 0.3,
+                  marginRight: gap,
+                  marginBottom: gap,
+                  backgroundColor: on ? (isAccent ? accent : colors.text) : 'transparent',
+                }}
+              />
+            );
+          })}
+        </View>
+      ))}
+    </View>
   );
 }
 
-/* -------------------------------- GlassCard -------------------------------- */
-
-export function GlassCard({
-  children,
-  style,
-  onPress,
-}: {
-  children: React.ReactNode;
-  style?: ViewStyle;
-  onPress?: () => void;
-}) {
-  const scale = useRef(new Animated.Value(1)).current;
-  const pressIn = () => Animated.spring(scale, { toValue: 0.97, useNativeDriver: true }).start();
-  const pressOut = () => Animated.spring(scale, { toValue: 1, useNativeDriver: true }).start();
-
-  const content = <View style={[styles.card, style]}>{children}</View>;
-
-  if (!onPress) return content;
+export function Wordmark({ size = 13 }: { size?: number }) {
   return (
-    <Animated.View style={{ transform: [{ scale }] }}>
-      <Pressable onPress={onPress} onPressIn={pressIn} onPressOut={pressOut}>
-        {content}
-      </Pressable>
-    </Animated.View>
+    <Text
+      style={{
+        fontFamily: fonts.bold,
+        fontSize: size,
+        letterSpacing: 3.2,
+        color: colors.text,
+      }}>
+      PIXEL STUDIOS
+    </Text>
   );
 }
 
 /* ---------------------------------- Button --------------------------------- */
 
-type ButtonVariant = 'gradient' | 'glass' | 'outline' | 'whatsapp' | 'dark';
+type Variant = 'primary' | 'secondary' | 'ghost' | 'outline';
 
 export function Button({
   title,
   onPress,
-  variant = 'gradient',
+  variant = 'primary',
   icon,
   href,
   style,
-  compact,
+  full = true,
+  disabled,
 }: {
   title: string;
   onPress?: () => void;
-  variant?: ButtonVariant;
+  variant?: Variant;
   icon?: keyof typeof Ionicons.glyphMap;
   href?: string;
   style?: ViewStyle;
-  compact?: boolean;
+  full?: boolean;
+  disabled?: boolean;
 }) {
   const scale = useRef(new Animated.Value(1)).current;
-  const pressIn = () => Animated.spring(scale, { toValue: 0.96, useNativeDriver: true }).start();
+  const pressIn = () => Animated.spring(scale, { toValue: 0.97, useNativeDriver: true }).start();
   const pressOut = () => Animated.spring(scale, { toValue: 1, useNativeDriver: true }).start();
 
   const handle = () => {
+    if (disabled) return;
     if (href) {
       Linking.openURL(href);
       return;
@@ -113,86 +149,48 @@ export function Button({
     onPress?.();
   };
 
-  const row = (
-    <View
-      style={[
-        styles.buttonRow,
-        compact && styles.buttonRowCompact,
-        variant === 'glass' && styles.buttonGlass,
-        variant === 'outline' && styles.buttonOutline,
-        variant === 'whatsapp' && { backgroundColor: colors.whatsapp },
-        variant === 'dark' && { backgroundColor: '#0A0B12' },
-        style,
-      ]}>
-      {icon && (
-        <Ionicons
-          name={icon}
-          size={compact ? 16 : 18}
-          color={variant === 'gradient' || variant === 'outline' ? '#fff' : variant === 'whatsapp' ? '#fff' : colors.text}
-          style={{ marginRight: 8 }}
-        />
-      )}
-      <Text
-        style={[
-          styles.buttonText,
-          compact && { fontSize: 14 },
-          (variant === 'glass' || variant === 'outline') && { color: colors.text },
-        ]}>
-        {title}
-      </Text>
-    </View>
-  );
+  const base: ViewStyle = {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 17,
+    paddingHorizontal: 28,
+    borderRadius: radius.md,
+    ...(full ? {} : { alignSelf: 'flex-start' }),
+  };
 
-  const pressable = (
-    <Animated.View style={{ transform: [{ scale }] }}>
+  const variants: Record<Variant, ViewStyle> = {
+    primary: { backgroundColor: colors.lime },
+    secondary: { backgroundColor: colors.surface2 },
+    ghost: { backgroundColor: 'transparent' },
+    outline: { backgroundColor: 'transparent', borderWidth: 1, borderColor: colors.hairlineStrong },
+  };
+
+  const textStyles: Record<Variant, TextStyle> = {
+    primary: { color: colors.onLime, fontFamily: fonts.semi, fontSize: 16 },
+    secondary: { color: colors.text, fontFamily: fonts.semi, fontSize: 16 },
+    ghost: { color: colors.text, fontFamily: fonts.semi, fontSize: 16 },
+    outline: { color: colors.text, fontFamily: fonts.semi, fontSize: 16 },
+  };
+
+  return (
+    <Animated.View style={{ transform: [{ scale }], ...(full ? {} : { alignSelf: 'flex-start' }) }}>
       <Pressable
         onPress={handle}
         onPressIn={pressIn}
         onPressOut={pressOut}
-        style={isWeb ? ({ hovered }: any) => ({ opacity: hovered ? 0.92 : 1 }) : undefined}>
-        {variant === 'gradient' ? (
-          <LinearGradient
-            colors={['#7C3AED', '#6D5BF0', '#22D3EE']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={{ borderRadius: radius.pill }}>
-            {row}
-          </LinearGradient>
-        ) : (
-          row
+        style={[base, variants[variant], disabled && { opacity: 0.4 }, style]}>
+        {icon && (
+          <Ionicons
+            name={icon}
+            size={18}
+            color={variant === 'primary' ? colors.onLime : colors.text}
+          />
         )}
+        <Text style={textStyles[variant]}>{title}</Text>
       </Pressable>
     </Animated.View>
-  );
-
-  return pressable;
-}
-
-/* ------------------------------- SectionHeader ------------------------------ */
-
-export function SectionHeader({
-  title,
-  subtitle,
-  actionLabel,
-  onAction,
-}: {
-  title: string;
-  subtitle?: string;
-  actionLabel?: string;
-  onAction?: () => void;
-}) {
-  return (
-    <View style={styles.sectionHeader}>
-      <View style={{ flex: 1 }}>
-        <Text style={styles.sectionTitle}>{title}</Text>
-        {subtitle ? <Text style={styles.sectionSubtitle}>{subtitle}</Text> : null}
-      </View>
-      {actionLabel && (
-        <Pressable onPress={onAction} hitSlop={8}>
-          <Text style={styles.sectionAction}>{actionLabel} →</Text>
-        </Pressable>
-      )}
-    </View>
   );
 }
 
@@ -210,163 +208,154 @@ export function Chip({
   return (
     <Pressable
       onPress={onPress}
-      style={[styles.chip, active && styles.chipActive]}>
-      <Text style={[styles.chipText, active && styles.chipTextActive]}>{label}</Text>
+      style={{
+        paddingHorizontal: 18,
+        paddingVertical: 10,
+        borderRadius: radius.md,
+        backgroundColor: active ? colors.text : colors.surface,
+        borderWidth: 1,
+        borderColor: active ? colors.text : colors.hairline,
+      }}>
+      <Text
+        style={{
+          fontFamily: fonts.medium,
+          fontSize: 14,
+          color: active ? colors.bg : colors.subtext,
+        }}>
+        {label}
+      </Text>
     </Pressable>
   );
 }
 
-/* ---------------------------------- Stars ---------------------------------- */
+/* ---------------------------------- Stepper -------------------------------- */
 
-export function Stars({ rating }: { rating: number }) {
+export function Stepper({
+  value,
+  onChange,
+}: {
+  value: number;
+  onChange: (v: number) => void;
+}) {
+  const btn: ViewStyle = {
+    width: 44,
+    height: 44,
+    borderRadius: radius.sm,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.hairline,
+    alignItems: 'center',
+    justifyContent: 'center',
+  };
   return (
-    <View style={{ flexDirection: 'row', gap: 2 }}>
-      {[1, 2, 3, 4, 5].map((i) => (
-        <Ionicons
-          key={i}
-          name={i <= rating ? 'star' : 'star-outline'}
-          size={14}
-          color={colors.amber}
-        />
-      ))}
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
+      <Pressable style={btn} onPress={() => onChange(Math.max(1, value - 1))}>
+        <Ionicons name="remove" size={18} color={colors.text} />
+      </Pressable>
+      <Text style={{ fontFamily: fonts.semi, fontSize: 18, color: colors.text, minWidth: 32, textAlign: 'center' }}>
+        {value}
+      </Text>
+      <Pressable style={btn} onPress={() => onChange(value + 1)}>
+        <Ionicons name="add" size={18} color={colors.text} />
+      </Pressable>
     </View>
   );
 }
 
-/* -------------------------------- BackHeader ------------------------------- */
-
-export function BackHeader({
-  title,
-  onBack,
+/* -------------------------------- RowItem ---------------------------------- */
+/** Minimal list row with hairline separator — used for menus & feature lists. */
+export function RowItem({
+  icon,
+  label,
+  sub,
+  onPress,
   right,
+  isLast,
 }: {
-  title: string;
-  onBack: () => void;
+  icon?: keyof typeof Ionicons.glyphMap;
+  label: string;
+  sub?: string;
+  onPress?: () => void;
   right?: React.ReactNode;
+  isLast?: boolean;
 }) {
   return (
-    <View style={styles.backHeader}>
-      <Pressable onPress={onBack} style={styles.backButton} hitSlop={10}>
-        <Ionicons name="arrow-back" size={20} color={colors.text} />
+    <Pressable
+      onPress={onPress}
+      disabled={!onPress}
+      style={({ pressed }) => ({
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 16,
+        paddingVertical: 18,
+        borderBottomWidth: isLast ? 0 : StyleSheet.hairlineWidth,
+        borderBottomColor: colors.hairline,
+        opacity: pressed ? 0.6 : 1,
+      })}>
+      {icon && (
+        <View
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: radius.sm,
+            backgroundColor: colors.surface,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+          <Ionicons name={icon} size={18} color={colors.text} />
+        </View>
+      )}
+      <View style={{ flex: 1 }}>
+        <Text style={{ fontFamily: fonts.medium, fontSize: 16, color: colors.text }}>{label}</Text>
+        {sub ? (
+          <Text style={{ fontFamily: fonts.regular, fontSize: 13.5, color: colors.muted, marginTop: 2 }}>
+            {sub}
+          </Text>
+        ) : null}
+      </View>
+      {right ?? (onPress ? <Ionicons name="chevron-forward" size={16} color={colors.muted} /> : null)}
+    </Pressable>
+  );
+}
+
+/* -------------------------------- BackBar ---------------------------------- */
+
+export function BackBar({ title, onBack }: { title?: string; onBack: () => void }) {
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 8 }}>
+      <Pressable
+        onPress={onBack}
+        style={{
+          width: 40,
+          height: 40,
+          borderRadius: radius.sm,
+          backgroundColor: colors.surface,
+          borderWidth: 1,
+          borderColor: colors.hairline,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+        hitSlop={8}>
+        <Ionicons name="arrow-back" size={18} color={colors.text} />
       </Pressable>
-      <Text style={styles.backTitle} numberOfLines={1}>
-        {title}
-      </Text>
-      <View style={{ width: 40, alignItems: 'flex-end' }}>{right}</View>
+      {title ? <Text style={{ fontFamily: fonts.semi, fontSize: 17, color: colors.text }}>{title}</Text> : null}
     </View>
   );
 }
 
-/* ---------------------------------- styles --------------------------------- */
+/* --------------------------------- Eyebrow --------------------------------- */
 
-const styles = StyleSheet.create({
-  container: {
-    maxWidth: MAX_CONTENT_WIDTH,
-    width: '100%',
-    alignSelf: 'center',
-  },
-  card: {
-    backgroundColor: colors.card,
-    borderColor: colors.border,
-    borderWidth: StyleSheet.hairlineWidth * 2,
-    borderRadius: radius.lg,
-    overflow: 'hidden',
-    ...Platform.select({ web: { backdropFilter: 'blur(12px)' } as any }),
-  },
-  buttonRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 15,
-    paddingHorizontal: 26,
-    borderRadius: radius.pill,
-  },
-  buttonRowCompact: {
-    paddingVertical: 11,
-    paddingHorizontal: 18,
-  },
-  buttonGlass: {
-    backgroundColor: 'rgba(255,255,255,0.07)',
-    borderWidth: StyleSheet.hairlineWidth * 2,
-    borderColor: colors.borderStrong,
-  },
-  buttonOutline: {
-    backgroundColor: 'transparent',
-    borderWidth: 1.4,
-    borderColor: 'rgba(124,58,237,0.65)',
-  },
-  buttonText: {
-    color: '#fff',
-    fontFamily: fonts.bodySemi,
-    fontSize: 15.5,
-    letterSpacing: 0.2,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    justifyContent: 'space-between',
-    marginBottom: 18,
-  },
-  sectionTitle: {
-    color: colors.text,
-    fontFamily: fonts.displaySemi,
-    fontSize: 24,
-    letterSpacing: -0.3,
-  },
-  sectionSubtitle: {
-    color: colors.subtext,
-    fontFamily: fonts.body,
-    fontSize: 14.5,
-    marginTop: 4,
-    lineHeight: 20,
-  },
-  sectionAction: {
-    color: colors.cyan,
-    fontFamily: fonts.bodySemi,
-    fontSize: 14,
-    marginBottom: 3,
-  },
-  chip: {
-    paddingHorizontal: 16,
-    paddingVertical: 9,
-    borderRadius: radius.pill,
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  chipActive: {
-    backgroundColor: colors.violetSoft,
-    borderColor: 'rgba(139,92,246,0.7)',
-  },
-  chipText: {
-    color: colors.subtext,
-    fontFamily: fonts.bodyMedium,
-    fontSize: 13.5,
-  },
-  chipTextActive: {
-    color: '#C4B5FD',
-  },
-  backHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(255,255,255,0.06)',
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  backTitle: {
-    flex: 1,
-    color: colors.text,
-    fontFamily: fonts.displaySemi,
-    fontSize: 18,
-    textAlign: 'center',
-  },
-});
+export function Eyebrow({ children }: { children: React.ReactNode }) {
+  return (
+    <Text
+      style={{
+        fontFamily: fonts.semi,
+        fontSize: 12,
+        letterSpacing: 2.2,
+        color: colors.lime,
+        textTransform: 'uppercase',
+      }}>
+      {children}
+    </Text>
+  );
+}

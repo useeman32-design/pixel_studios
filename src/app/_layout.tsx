@@ -1,13 +1,11 @@
 import {
-  Inter_400Regular,
-  Inter_500Medium,
-  Inter_600SemiBold,
-} from '@expo-google-fonts/inter';
-import {
-  SpaceGrotesk_500Medium,
-  SpaceGrotesk_600SemiBold,
-  SpaceGrotesk_700Bold,
-} from '@expo-google-fonts/space-grotesk';
+  Outfit_300Light,
+  Outfit_400Regular,
+  Outfit_500Medium,
+  Outfit_600SemiBold,
+  Outfit_700Bold,
+  Outfit_800ExtraBold,
+} from '@expo-google-fonts/outfit';
 import { DarkTheme, ThemeProvider, Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
@@ -23,23 +21,23 @@ const PixelTheme = {
   ...DarkTheme,
   colors: {
     ...DarkTheme.colors,
-    primary: colors.cyan,
+    primary: colors.lime,
     background: colors.bg,
-    card: colors.bgElevated,
+    card: colors.bg,
     text: colors.text,
-    border: colors.border,
-    notification: colors.primary,
+    border: colors.hairline,
+    notification: colors.lime,
   },
 };
 
 export default function RootLayout() {
   const [loaded] = useFonts({
-    SpaceGrotesk_500Medium,
-    SpaceGrotesk_600SemiBold,
-    SpaceGrotesk_700Bold,
-    Inter_400Regular,
-    Inter_500Medium,
-    Inter_600SemiBold,
+    Outfit_300Light,
+    Outfit_400Regular,
+    Outfit_500Medium,
+    Outfit_600SemiBold,
+    Outfit_700Bold,
+    Outfit_800ExtraBold,
   });
 
   useEffect(() => {
