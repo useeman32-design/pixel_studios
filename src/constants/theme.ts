@@ -1,25 +1,83 @@
+import React, { createContext, useContext } from 'react';
 import { Platform } from 'react-native';
 
 /**
- * Pixel Studios design system — v2
- * Minimal, editorial, premium. Charcoal + off-white + electric lime.
- * Lime is reserved for primary actions, active states and brand accents.
+ * Pixel Studios design system — v3
+ * Dual theme (charcoal dark / gallery light) with electric lime accents.
  */
-export const colors = {
+
+export type Palette = {
+  bg: string;
+  surface: string;
+  surface2: string;
+  hairline: string;
+  hairlineStrong: string;
+  text: string;
+  subtext: string;
+  muted: string;
+  lime: string;
+  limeDim: string;
+  onLime: string;
+  overlay: string;
+  navGlass: string;
+  isDark: boolean;
+};
+
+export const darkPalette: Palette = {
   bg: '#0A0A0B',
-  surface: '#131315',
-  surface2: '#1A1A1D',
+  surface: '#141416',
+  surface2: '#1C1C1F',
   hairline: 'rgba(255,255,255,0.08)',
-  hairlineStrong: 'rgba(255,255,255,0.14)',
+  hairlineStrong: 'rgba(255,255,255,0.16)',
   text: '#F4F4F2',
   subtext: '#9B9BA1',
   muted: '#5E5E66',
   lime: '#BFF549',
-  limeDim: 'rgba(191,245,73,0.12)',
+  limeDim: 'rgba(191,245,73,0.13)',
   onLime: '#0A0A0B',
-  white: '#FFFFFF',
-  offwhite: '#EDEDEA',
-} as const;
+  overlay: 'rgba(6,6,8,0.55)',
+  navGlass: 'rgba(18,18,20,0.62)',
+  isDark: true,
+};
+
+export const lightPalette: Palette = {
+  bg: '#F5F5F1',
+  surface: '#FFFFFF',
+  surface2: '#ECECE7',
+  hairline: 'rgba(12,12,14,0.08)',
+  hairlineStrong: 'rgba(12,12,14,0.16)',
+  text: '#131316',
+  subtext: '#5D5E64',
+  muted: '#9C9DA3',
+  lime: '#A5E22C',
+  limeDim: 'rgba(150,215,40,0.16)',
+  onLime: '#101208',
+  overlay: 'rgba(20,20,24,0.42)',
+  navGlass: 'rgba(255,255,255,0.66)',
+  isDark: false,
+};
+
+export type ThemeMode = 'dark' | 'light';
+
+export type Theme = {
+  mode: ThemeMode;
+  colors: Palette;
+  isDark: boolean;
+  toggleTheme: () => void;
+  setTheme: (m: ThemeMode) => void;
+};
+
+export const ThemeContext = createContext<Theme>({
+  mode: 'dark',
+  colors: darkPalette,
+  isDark: true,
+  toggleTheme: () => {},
+  setTheme: () => {},
+});
+
+export function useTheme(): Theme {
+  return useContext(ThemeContext);
+}
 
 export const fonts = {
   /** Outfit — modern geometric sans. Each weight is its own family. */
@@ -54,14 +112,3 @@ export const radius = {
 export const MAX_CONTENT_WIDTH = 760;
 
 export const isWeb = Platform.OS === 'web';
-
-/** Type scale — large, confident, readable. */
-export const type = {
-  hero: { fontFamily: fonts.semi, fontSize: 42, lineHeight: 46, letterSpacing: -1.4, color: colors.text },
-  title: { fontFamily: fonts.semi, fontSize: 32, lineHeight: 36, letterSpacing: -0.9, color: colors.text },
-  heading: { fontFamily: fonts.semi, fontSize: 24, lineHeight: 28, letterSpacing: -0.5, color: colors.text },
-  subtitle: { fontFamily: fonts.regular, fontSize: 17, lineHeight: 25, color: colors.subtext },
-  body: { fontFamily: fonts.regular, fontSize: 16, lineHeight: 23, color: colors.text },
-  small: { fontFamily: fonts.regular, fontSize: 14, lineHeight: 20, color: colors.subtext },
-  label: { fontFamily: fonts.medium, fontSize: 13, lineHeight: 18, letterSpacing: 0.4, color: colors.subtext },
-} as const;

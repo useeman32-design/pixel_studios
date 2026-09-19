@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   Outfit_300Light,
   Outfit_400Regular,
@@ -6,31 +7,28 @@ import {
   Outfit_700Bold,
   Outfit_800ExtraBold,
 } from '@expo-google-fonts/outfit';
-import { DarkTheme, ThemeProvider, Stack } from 'expo-router';
+import { DarkTheme, DefaultTheme, ThemeProvider, Stack, useRouter } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
-import { useEffect } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
 
-import { colors } from '../constants/theme';
+import {
+  darkPalette,
+  lightPalette,
+  Palette,
+  ThemeContext,
+  ThemeMode,
+} from '../constants/theme';
 
 SplashScreen.preventAutoHideAsync();
 
-const PixelTheme = {
-  ...DarkTheme,
-  colors: {
-    ...DarkTheme.colors,
-    primary: colors.lime,
-    background: colors.bg,
-    card: colors.bg,
-    text: colors.text,
-    border: colors.hairline,
-    notification: colors.lime,
-  },
-};
-
 export default function RootLayout() {
+  const router = useRouter();
+  const [mode, setMode] = useState<ThemeMode>('dark');
+  const [booted, setBooted] = useState(false);
+
   const [loaded] = useFonts({
     Outfit_300Light,
     Outfit_400Regular,
@@ -40,26 +38,88 @@ export default function RootLayout() {
     Outfit_800ExtraBold,
   });
 
+  // Restore persisted preferences, then route first-time users to onboarding.
   useEffect(() => {
-    if (loaded) {
+    (async () => {
+      try {
+        const savedTheme = await AsyncStorage.getItem('ps_theme');
+        if (savedTheme === 'light' || savedTheme === 'dark') setMode(savedTheme);
+        const onboarded = await AsyncStorage.getItem('ps_onboarded');
+        if (onboarded !== '1') {
+          router.replace('/onboarding');
+        }
+      } catch {
+        // storage unavailable — defaults are fine
+      } finally {
+        setBooted(true);
+      }
+    })();
+  }, [router]);
+
+  useEffect(() => {
+    if (loaded && booted) {
       SplashScreen.hideAsync();
     }
-  }, [loaded]);
+  }, [loaded, booted]);
 
-  if (!loaded) {
-    return <View style={{ flex: 1, backgroundColor: colors.bg }} />;
+  const toggleTheme = useCallback(() => {
+    setMode((m) => {
+      const next = m === 'dark' ? 'light' : 'dark';
+      AsyncStorage.setItem('ps_theme', next);
+      return next;
+    });
+  }, []);
+
+  const setTheme = useCallback((m: ThemeMode) => {
+    setMode(m);
+    AsyncStorage.setItem('ps_theme', m);
+  }, []);
+
+  const themeValue = useMemo(() => {
+    const base = mode === 'dark' ? darkPalette : lightPalette;
+    const colors: Palette = { ...base, isDark: mode === 'dark' };
+    return {
+      mode,
+      colors,
+      isDark: mode === 'dark',
+      toggleTheme,
+      setTheme,
+    };
+  }, [mode, toggleTheme, setTheme]);
+
+  const navTheme = useMemo(() => {
+    const base = mode === 'dark' ? DarkTheme : DefaultTheme;
+    const p = mode === 'dark' ? darkPalette : lightPalette;
+    return {
+      ...base,
+      colors: {
+        ...base.colors,
+        primary: p.lime,
+        background: p.bg,
+        card: p.bg,
+        text: p.text,
+        border: p.hairline,
+        notification: p.lime,
+      },
+    };
+  }, [mode]);
+
+  if (!loaded || !booted) {
+    return <View style={{ flex: 1, backgroundColor: darkPalette.bg }} />;
   }
 
   return (
-    <ThemeProvider value={PixelTheme}>
-      <StatusBar style="light" />
-      <Stack
-        screenOptions={{
-          headerShown: false,
-          contentStyle: { backgroundColor: colors.bg },
-          animation: 'fade',
-        }}
-      />
-    </ThemeProvider>
+    <ThemeContext.Provider value={themeValue}>
+      <ThemeProvider value={navTheme}>
+        <StatusBar style={mode === 'dark' ? 'light' : 'dark'} />
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            contentStyle: { backgroundColor: themeValue.colors.bg },
+            animation: 'fade',
+          }}
+        />
+      </ThemeProvider>
+    </ThemeContext.Provider>
   );
 }

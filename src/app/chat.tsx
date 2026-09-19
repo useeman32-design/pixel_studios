@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -14,7 +14,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BackBar, Container, LogoMark } from '../components/ui';
-import { colors, fonts, radius, sp } from '../constants/theme';
+import { fonts, Palette, radius, sp, useTheme } from '../constants/theme';
 
 type Msg = { id: number; from: 'studio' | 'me'; text: string };
 
@@ -29,6 +29,8 @@ const initialMessages: Msg[] = [
 export default function ChatScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { colors } = useTheme();
+  const styles = useStyles(colors);
   const [messages, setMessages] = useState<Msg[]>(initialMessages);
   const [draft, setDraft] = useState('');
 
@@ -51,18 +53,18 @@ export default function ChatScreen() {
 
   return (
     <KeyboardAvoidingView
-      style={styles.screen}
+      style={{ flex: 1, backgroundColor: colors.bg }}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <Container style={{ marginTop: insets.top + sp.x1 }}>
+      <Container style={{ marginTop: insets.top + sp.x3 }}>
         <View style={styles.head}>
           <BackBar onBack={() => router.back()} />
           <View style={styles.headInfo}>
             <LogoMark size={16} />
             <View>
-              <Text style={styles.headTitle}>Pixel Studios</Text>
-              <View style={styles.onlineRow}>
-                <View style={styles.onlineDot} />
-                <Text style={styles.onlineText}>Online now</Text>
+              <Text style={{ fontFamily: fonts.semi, fontSize: 15.5, color: colors.text }}>Pixel Studios</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 2 }}>
+                <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: colors.lime }} />
+                <Text style={{ fontFamily: fonts.regular, fontSize: 12, color: colors.muted }}>Online now</Text>
               </View>
             </View>
           </View>
@@ -70,26 +72,19 @@ export default function ChatScreen() {
         </View>
       </Container>
 
-      <ScrollView
-        contentContainerStyle={{ paddingVertical: sp.x3 }}
-        showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={{ paddingVertical: sp.x3 }} showsVerticalScrollIndicator={false}>
         <Container style={{ gap: sp.x2_ }}>
           {messages.map((m) => (
             <View
               key={m.id}
-              style={[
-                styles.bubble,
-                m.from === 'me' ? styles.bubbleMe : styles.bubbleStudio,
-              ]}>
-              <Text style={[styles.bubbleText, m.from === 'me' && styles.bubbleTextMe]}>
-                {m.text}
-              </Text>
+              style={[styles.bubble, m.from === 'me' ? styles.bubbleMe : styles.bubbleStudio]}>
+              <Text style={[styles.bubbleText, m.from === 'me' && { color: colors.onLime }]}>{m.text}</Text>
             </View>
           ))}
         </Container>
       </ScrollView>
 
-      <View style={[styles.inputBar, { paddingBottom: Math.max(insets.bottom, 12) }]}>
+      <View style={[styles.inputBar, { paddingBottom: Math.max(insets.bottom, 12), borderColor: colors.hairline }]}>
         <Container style={{ flexDirection: 'row', alignItems: 'center', gap: sp.x2_ }}>
           <Pressable style={styles.attachBtn}>
             <Ionicons name="attach-outline" size={20} color={colors.subtext} />
@@ -103,7 +98,7 @@ export default function ChatScreen() {
             multiline
             onSubmitEditing={send}
           />
-          <Pressable style={styles.sendBtn} onPress={send}>
+          <Pressable style={[styles.sendBtn, { backgroundColor: colors.lime }]} onPress={send}>
             <Ionicons name="arrow-up" size={20} color={colors.onLime} />
           </Pressable>
         </Container>
@@ -112,69 +107,48 @@ export default function ChatScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.bg },
-  head: { flexDirection: 'row', alignItems: 'center' },
-  headInfo: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: sp.x2_ },
-  headTitle: { fontFamily: fonts.semi, fontSize: 15.5, color: colors.text },
-  onlineRow: { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 2 },
-  onlineDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: colors.lime },
-  onlineText: { fontFamily: fonts.regular, fontSize: 12, color: colors.muted },
-  bubble: {
-    maxWidth: '82%',
-    borderRadius: radius.lg,
-    paddingHorizontal: 18,
-    paddingVertical: 14,
-  },
-  bubbleStudio: {
-    alignSelf: 'flex-start',
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.hairline,
-    borderBottomLeftRadius: 6,
-  },
-  bubbleMe: {
-    alignSelf: 'flex-end',
-    backgroundColor: colors.lime,
-    borderBottomRightRadius: 6,
-  },
-  bubbleText: { fontFamily: fonts.regular, fontSize: 15.5, lineHeight: 23, color: colors.text },
-  bubbleTextMe: { color: colors.onLime },
-  inputBar: {
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: colors.hairline,
-    backgroundColor: colors.bg,
-    paddingTop: sp.x2_,
-  },
-  attachBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.hairline,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  input: {
-    flex: 1,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.hairline,
-    borderRadius: radius.md,
-    paddingHorizontal: 18,
-    paddingVertical: 13,
-    color: colors.text,
-    fontFamily: fonts.regular,
-    fontSize: 15.5,
-    maxHeight: 100,
-  },
-  sendBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: colors.lime,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+function useStyles(colors: Palette) {
+  return StyleSheet.create({
+    head: { flexDirection: 'row', alignItems: 'center' },
+    headInfo: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: sp.x2_, marginLeft: sp.x2_ },
+    bubble: { maxWidth: '82%', borderRadius: radius.lg, paddingHorizontal: 18, paddingVertical: 14 },
+    bubbleStudio: {
+      alignSelf: 'flex-start',
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.hairline,
+      borderBottomLeftRadius: 6,
+    },
+    bubbleMe: { alignSelf: 'flex-end', backgroundColor: colors.lime, borderBottomRightRadius: 6 },
+    bubbleText: { fontFamily: fonts.regular, fontSize: 15.5, lineHeight: 23, color: colors.text },
+    inputBar: {
+      borderTopWidth: StyleSheet.hairlineWidth,
+      backgroundColor: colors.bg,
+      paddingTop: sp.x2_,
+    },
+    attachBtn: {
+      width: 44,
+      height: 44,
+      borderRadius: 22,
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.hairline,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    input: {
+      flex: 1,
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.hairline,
+      borderRadius: radius.md,
+      paddingHorizontal: 18,
+      paddingVertical: 13,
+      color: colors.text,
+      fontFamily: fonts.regular,
+      fontSize: 15.5,
+      maxHeight: 100,
+    },
+    sendBtn: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
+  });
+}

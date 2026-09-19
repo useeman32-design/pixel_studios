@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Pressable,
   ScrollView,
@@ -13,7 +13,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BackBar, Button, Container, FadeIn } from '../components/ui';
 import { waLink } from '../constants/contact';
-import { colors, fonts, radius, sp } from '../constants/theme';
+import { fonts, Palette, radius, sp, useTheme } from '../constants/theme';
 
 const needOptions = [
   'Printing',
@@ -32,6 +32,9 @@ const deadlines = ['ASAP', '1 week', '2 weeks', '1 month', 'Flexible'];
 export default function StartProjectScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { colors } = useTheme();
+  const styles = useStyles(colors);
+
   const [need, setNeed] = useState('');
   const [description, setDescription] = useState('');
   const [quantity, setQuantity] = useState('');
@@ -41,10 +44,7 @@ export default function StartProjectScreen() {
   const [phone, setPhone] = useState('');
   const [done, setDone] = useState(false);
 
-  const canContinue = useMemo(
-    () => !!need && description.trim().length > 5,
-    [need, description],
-  );
+  const canContinue = useMemo(() => !!need && description.trim().length > 5, [need, description]);
 
   const brief = `*Project request — Pixel Studios app*
 
@@ -61,16 +61,16 @@ Phone: ${phone || '-'}`;
 
   if (done) {
     return (
-      <View style={[styles.screen, { paddingTop: insets.top + sp.x7 }]}>
+      <View style={[{ flex: 1, backgroundColor: colors.bg }, { paddingTop: insets.top + sp.x7 }]}>
         <Container style={{ alignItems: 'center' }}>
           <FadeIn>
-            <View style={styles.doneIcon}>
+            <View style={[styles.doneIcon, { backgroundColor: colors.lime }]}>
               <Ionicons name="checkmark" size={40} color={colors.onLime} />
             </View>
           </FadeIn>
           <FadeIn delay={120}>
-            <Text style={styles.doneTitle}>Almost there.</Text>
-            <Text style={styles.doneText}>
+            <Text style={[styles.doneTitle, { color: colors.text }]}>Almost there.</Text>
+            <Text style={[styles.doneText, { color: colors.subtext }]}>
               Send your brief to the studio on WhatsApp and we'll reply with a quotation — usually
               within 24 hours.
             </Text>
@@ -86,20 +86,24 @@ Phone: ${phone || '-'}`;
 
   return (
     <ScrollView
-      style={styles.screen}
+      style={{ flex: 1, backgroundColor: colors.bg }}
       contentContainerStyle={{ paddingBottom: sp.x8 }}
       showsVerticalScrollIndicator={false}
       keyboardShouldPersistTaps="handled">
-      <Container style={{ marginTop: insets.top + sp.x1 }}>
+      <Container style={{ marginTop: insets.top + sp.x3 }}>
         <BackBar onBack={() => router.back()} />
       </Container>
 
       <Container style={{ marginTop: sp.x3 }}>
         <FadeIn>
           <Text style={styles.title}>Let's build something.</Text>
+          <Text style={styles.intro}>Tell us what you need — Pixel AI can also help you decide.</Text>
+          <Pressable onPress={() => router.push('/ai')} style={styles.aiLink}>
+            <Ionicons name="sparkles" size={14} color={colors.isDark ? colors.lime : '#5E8A0D'} />
+            <Text style={styles.aiLinkText}>Ask Pixel AI instead</Text>
+          </Pressable>
         </FadeIn>
 
-        {/* What do you need */}
         <FadeIn delay={80}>
           <Text style={styles.question}>What do you need?</Text>
           <View style={styles.needGrid}>
@@ -109,16 +113,15 @@ Phone: ${phone || '-'}`;
                 <Pressable
                   key={option}
                   onPress={() => setNeed(option)}
-                  style={[styles.needTile, active && styles.needTileActive]}>
-                  <Text style={[styles.needText, active && styles.needTextActive]}>{option}</Text>
-                  {active && <Ionicons name="checkmark" size={16} color={colors.lime} />}
+                  style={[styles.needTile, active && { borderColor: colors.lime, backgroundColor: colors.limeDim }]}>
+                  <Text style={[styles.needText, active && { color: colors.text }]}>{option}</Text>
+                  {active && <Ionicons name="checkmark" size={16} color={colors.isDark ? colors.lime : '#5E8A0D'} />}
                 </Pressable>
               );
             })}
           </View>
         </FadeIn>
 
-        {/* Description */}
         <FadeIn delay={120}>
           <Text style={styles.question}>Tell us about your project</Text>
           <TextInput
@@ -131,7 +134,6 @@ Phone: ${phone || '-'}`;
           />
         </FadeIn>
 
-        {/* Upload */}
         <FadeIn delay={140}>
           <Pressable style={styles.upload}>
             <Ionicons name="cloud-upload-outline" size={22} color={colors.subtext} />
@@ -140,7 +142,6 @@ Phone: ${phone || '-'}`;
           </Pressable>
         </FadeIn>
 
-        {/* Quantity */}
         <FadeIn delay={160}>
           <Text style={styles.question}>Quantity</Text>
           <TextInput
@@ -152,7 +153,6 @@ Phone: ${phone || '-'}`;
           />
         </FadeIn>
 
-        {/* Deadline */}
         <FadeIn delay={180}>
           <Text style={styles.question}>Deadline</Text>
           <View style={styles.chipRow}>
@@ -160,16 +160,13 @@ Phone: ${phone || '-'}`;
               <Pressable
                 key={d}
                 onPress={() => setDeadline(d)}
-                style={[styles.optChip, deadline === d && styles.optChipActive]}>
-                <Text style={[styles.optChipText, deadline === d && styles.optChipTextActive]}>
-                  {d}
-                </Text>
+                style={[styles.optChip, deadline === d && { borderColor: colors.lime, backgroundColor: colors.limeDim }]}>
+                <Text style={[styles.optChipText, deadline === d && { color: colors.isDark ? colors.lime : '#5E8A0D' }]}>{d}</Text>
               </Pressable>
             ))}
           </View>
         </FadeIn>
 
-        {/* Budget */}
         <FadeIn delay={200}>
           <Text style={styles.question}>Budget</Text>
           <View style={styles.chipRow}>
@@ -177,16 +174,13 @@ Phone: ${phone || '-'}`;
               <Pressable
                 key={b}
                 onPress={() => setBudget(b)}
-                style={[styles.optChip, budget === b && styles.optChipActive]}>
-                <Text style={[styles.optChipText, budget === b && styles.optChipTextActive]}>
-                  {b}
-                </Text>
+                style={[styles.optChip, budget === b && { borderColor: colors.lime, backgroundColor: colors.limeDim }]}>
+                <Text style={[styles.optChipText, budget === b && { color: colors.isDark ? colors.lime : '#5E8A0D' }]}>{b}</Text>
               </Pressable>
             ))}
           </View>
         </FadeIn>
 
-        {/* Contact */}
         <FadeIn delay={220}>
           <Text style={styles.question}>How do we reach you?</Text>
           <TextInput
@@ -219,109 +213,120 @@ Phone: ${phone || '-'}`;
   );
 }
 
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.bg },
-  title: {
-    fontFamily: fonts.semi,
-    fontSize: 38,
-    lineHeight: 42,
-    letterSpacing: -1.2,
-    color: colors.text,
-  },
-  question: {
-    fontFamily: fonts.semi,
-    fontSize: 17,
-    color: colors.text,
-    marginTop: sp.x5,
-    marginBottom: sp.x2_,
-  },
-  needGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: sp.x2_ },
-  needTile: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingHorizontal: 22,
-    paddingVertical: 16,
-    borderRadius: radius.md,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.hairline,
-  },
-  needTileActive: { borderColor: colors.lime, backgroundColor: colors.limeDim },
-  needText: { fontFamily: fonts.medium, fontSize: 15.5, color: colors.subtext },
-  needTextActive: { color: colors.text },
-  textArea: {
-    backgroundColor: colors.surface,
-    borderColor: colors.hairline,
-    borderWidth: 1,
-    borderRadius: radius.md,
-    padding: 18,
-    color: colors.text,
-    fontFamily: fonts.regular,
-    fontSize: 16,
-    lineHeight: 24,
-    minHeight: 140,
-    textAlignVertical: 'top',
-  },
-  upload: {
-    marginTop: sp.x3,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: colors.hairline,
-    borderStyle: 'dashed',
-    padding: sp.x4,
-    alignItems: 'center',
-    gap: 6,
-  },
-  uploadText: { fontFamily: fonts.medium, fontSize: 15.5, color: colors.subtext },
-  uploadHint: { fontFamily: fonts.regular, fontSize: 12.5, color: colors.muted },
-  input: {
-    backgroundColor: colors.surface,
-    borderColor: colors.hairline,
-    borderWidth: 1,
-    borderRadius: radius.md,
-    paddingHorizontal: 18,
-    paddingVertical: 16,
-    color: colors.text,
-    fontFamily: fonts.regular,
-    fontSize: 16,
-  },
-  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: sp.x1 },
-  optChip: {
-    paddingHorizontal: 18,
-    paddingVertical: 11,
-    borderRadius: radius.md,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.hairline,
-  },
-  optChipActive: { backgroundColor: colors.limeDim, borderColor: colors.lime },
-  optChipText: { fontFamily: fonts.medium, fontSize: 14, color: colors.subtext },
-  optChipTextActive: { color: colors.lime },
-  doneIcon: {
-    width: 88,
-    height: 88,
-    borderRadius: 44,
-    backgroundColor: colors.lime,
-    alignItems: 'center',
-    justifyContent: 'center',
-    alignSelf: 'center',
-  },
-  doneTitle: {
-    fontFamily: fonts.semi,
-    fontSize: 32,
-    letterSpacing: -0.8,
-    color: colors.text,
-    textAlign: 'center',
-    marginTop: sp.x4,
-  },
-  doneText: {
-    fontFamily: fonts.regular,
-    fontSize: 16,
-    lineHeight: 24,
-    color: colors.subtext,
-    textAlign: 'center',
-    marginTop: sp.x1,
-    maxWidth: 400,
-  },
-});
+function useStyles(colors: Palette) {
+  return StyleSheet.create({
+    title: {
+      fontFamily: fonts.semi,
+      fontSize: 38,
+      lineHeight: 42,
+      letterSpacing: -1.2,
+      color: colors.text,
+    },
+    intro: { fontFamily: fonts.regular, fontSize: 15.5, color: colors.subtext, marginTop: sp.x1 },
+    aiLink: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+      alignSelf: 'flex-start',
+      marginTop: sp.x2_,
+      backgroundColor: colors.limeDim,
+      borderRadius: 999,
+      paddingHorizontal: 14,
+      paddingVertical: 8,
+    },
+    aiLinkText: {
+      fontFamily: fonts.semi,
+      fontSize: 13,
+      color: colors.isDark ? colors.lime : '#5E8A0D',
+    },
+    question: {
+      fontFamily: fonts.semi,
+      fontSize: 17,
+      color: colors.text,
+      marginTop: sp.x5,
+      marginBottom: sp.x2_,
+    },
+    needGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: sp.x2_ },
+    needTile: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+      paddingHorizontal: 22,
+      paddingVertical: 16,
+      borderRadius: radius.md,
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.hairline,
+    },
+    needText: { fontFamily: fonts.medium, fontSize: 15.5, color: colors.subtext },
+    textArea: {
+      backgroundColor: colors.surface,
+      borderColor: colors.hairline,
+      borderWidth: 1,
+      borderRadius: radius.md,
+      padding: 18,
+      color: colors.text,
+      fontFamily: fonts.regular,
+      fontSize: 16,
+      lineHeight: 24,
+      minHeight: 140,
+      textAlignVertical: 'top',
+    },
+    upload: {
+      marginTop: sp.x3,
+      borderRadius: radius.md,
+      borderWidth: 1,
+      borderColor: colors.hairline,
+      borderStyle: 'dashed',
+      padding: sp.x4,
+      alignItems: 'center',
+      gap: 6,
+    },
+    uploadText: { fontFamily: fonts.medium, fontSize: 15.5, color: colors.subtext },
+    uploadHint: { fontFamily: fonts.regular, fontSize: 12.5, color: colors.muted },
+    input: {
+      backgroundColor: colors.surface,
+      borderColor: colors.hairline,
+      borderWidth: 1,
+      borderRadius: radius.md,
+      paddingHorizontal: 18,
+      paddingVertical: 16,
+      color: colors.text,
+      fontFamily: fonts.regular,
+      fontSize: 16,
+    },
+    chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: sp.x1 },
+    optChip: {
+      paddingHorizontal: 18,
+      paddingVertical: 11,
+      borderRadius: radius.md,
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.hairline,
+    },
+    optChipText: { fontFamily: fonts.medium, fontSize: 14, color: colors.subtext },
+    doneIcon: {
+      width: 88,
+      height: 88,
+      borderRadius: 44,
+      alignItems: 'center',
+      justifyContent: 'center',
+      alignSelf: 'center',
+    },
+    doneTitle: {
+      fontFamily: fonts.semi,
+      fontSize: 32,
+      letterSpacing: -0.8,
+      textAlign: 'center',
+      marginTop: sp.x4,
+    },
+    doneText: {
+      fontFamily: fonts.regular,
+      fontSize: 16,
+      lineHeight: 24,
+      textAlign: 'center',
+      marginTop: sp.x1,
+      maxWidth: 400,
+    },
+  });
+}

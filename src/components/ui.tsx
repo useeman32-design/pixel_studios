@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import {
   Animated,
   Linking,
@@ -7,11 +7,10 @@ import {
   Text,
   View,
   ViewStyle,
-  TextStyle,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import { colors, fonts, radius, MAX_CONTENT_WIDTH, isWeb } from '../constants/theme';
+import { fonts, radius, MAX_CONTENT_WIDTH, useTheme } from '../constants/theme';
 
 /* ---------------------------------- FadeIn --------------------------------- */
 
@@ -61,8 +60,9 @@ const styles = StyleSheet.create({
 
 /* ----------------------------------- Logo ---------------------------------- */
 /** The Pixel Studios mark: a P drawn from a grid of pixels. */
-export function LogoMark({ size = 30, accent = colors.lime }: { size?: number; accent?: string }) {
-  // 4 cols x 6 rows — cells that form a "P"
+export function LogoMark({ size = 30, accent }: { size?: number; accent?: string }) {
+  const { colors } = useTheme();
+  const accentColor = accent ?? colors.lime;
   const P = [
     [1, 1, 1, 0],
     [1, 0, 0, 1],
@@ -88,7 +88,7 @@ export function LogoMark({ size = 30, accent = colors.lime }: { size?: number; a
                   borderRadius: (cell - gap) * 0.3,
                   marginRight: gap,
                   marginBottom: gap,
-                  backgroundColor: on ? (isAccent ? accent : colors.text) : 'transparent',
+                  backgroundColor: on ? (isAccent ? accentColor : colors.text) : 'transparent',
                 }}
               />
             );
@@ -96,20 +96,6 @@ export function LogoMark({ size = 30, accent = colors.lime }: { size?: number; a
         </View>
       ))}
     </View>
-  );
-}
-
-export function Wordmark({ size = 13 }: { size?: number }) {
-  return (
-    <Text
-      style={{
-        fontFamily: fonts.bold,
-        fontSize: size,
-        letterSpacing: 3.2,
-        color: colors.text,
-      }}>
-      PIXEL STUDIOS
-    </Text>
   );
 }
 
@@ -124,7 +110,6 @@ export function Button({
   icon,
   href,
   style,
-  full = true,
   disabled,
 }: {
   title: string;
@@ -133,9 +118,9 @@ export function Button({
   icon?: keyof typeof Ionicons.glyphMap;
   href?: string;
   style?: ViewStyle;
-  full?: boolean;
   disabled?: boolean;
 }) {
+  const { colors } = useTheme();
   const scale = useRef(new Animated.Value(1)).current;
   const pressIn = () => Animated.spring(scale, { toValue: 0.97, useNativeDriver: true }).start();
   const pressOut = () => Animated.spring(scale, { toValue: 1, useNativeDriver: true }).start();
@@ -149,38 +134,33 @@ export function Button({
     onPress?.();
   };
 
-  const base: ViewStyle = {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    paddingVertical: 17,
-    paddingHorizontal: 28,
-    borderRadius: radius.md,
-    ...(full ? {} : { alignSelf: 'flex-start' }),
-  };
-
-  const variants: Record<Variant, ViewStyle> = {
+  const variantStyles: Record<Variant, ViewStyle> = {
     primary: { backgroundColor: colors.lime },
     secondary: { backgroundColor: colors.surface2 },
     ghost: { backgroundColor: 'transparent' },
     outline: { backgroundColor: 'transparent', borderWidth: 1, borderColor: colors.hairlineStrong },
   };
 
-  const textStyles: Record<Variant, TextStyle> = {
-    primary: { color: colors.onLime, fontFamily: fonts.semi, fontSize: 16 },
-    secondary: { color: colors.text, fontFamily: fonts.semi, fontSize: 16 },
-    ghost: { color: colors.text, fontFamily: fonts.semi, fontSize: 16 },
-    outline: { color: colors.text, fontFamily: fonts.semi, fontSize: 16 },
-  };
-
   return (
-    <Animated.View style={{ transform: [{ scale }], ...(full ? {} : { alignSelf: 'flex-start' }) }}>
+    <Animated.View style={{ transform: [{ scale }] }}>
       <Pressable
         onPress={handle}
         onPressIn={pressIn}
         onPressOut={pressOut}
-        style={[base, variants[variant], disabled && { opacity: 0.4 }, style]}>
+        style={[
+          {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
+            paddingVertical: 17,
+            paddingHorizontal: 28,
+            borderRadius: radius.md,
+          },
+          variantStyles[variant],
+          disabled && { opacity: 0.4 },
+          style,
+        ]}>
         {icon && (
           <Ionicons
             name={icon}
@@ -188,55 +168,23 @@ export function Button({
             color={variant === 'primary' ? colors.onLime : colors.text}
           />
         )}
-        <Text style={textStyles[variant]}>{title}</Text>
+        <Text
+          style={{
+            fontFamily: fonts.semi,
+            fontSize: 16,
+            color: variant === 'primary' ? colors.onLime : colors.text,
+          }}>
+          {title}
+        </Text>
       </Pressable>
     </Animated.View>
   );
 }
 
-/* ----------------------------------- Chip ---------------------------------- */
-
-export function Chip({
-  label,
-  active,
-  onPress,
-}: {
-  label: string;
-  active?: boolean;
-  onPress?: () => void;
-}) {
-  return (
-    <Pressable
-      onPress={onPress}
-      style={{
-        paddingHorizontal: 18,
-        paddingVertical: 10,
-        borderRadius: radius.md,
-        backgroundColor: active ? colors.text : colors.surface,
-        borderWidth: 1,
-        borderColor: active ? colors.text : colors.hairline,
-      }}>
-      <Text
-        style={{
-          fontFamily: fonts.medium,
-          fontSize: 14,
-          color: active ? colors.bg : colors.subtext,
-        }}>
-        {label}
-      </Text>
-    </Pressable>
-  );
-}
-
 /* ---------------------------------- Stepper -------------------------------- */
 
-export function Stepper({
-  value,
-  onChange,
-}: {
-  value: number;
-  onChange: (v: number) => void;
-}) {
+export function Stepper({ value, onChange }: { value: number; onChange: (v: number) => void }) {
+  const { colors } = useTheme();
   const btn: ViewStyle = {
     width: 44,
     height: 44,
@@ -252,7 +200,14 @@ export function Stepper({
       <Pressable style={btn} onPress={() => onChange(Math.max(1, value - 1))}>
         <Ionicons name="remove" size={18} color={colors.text} />
       </Pressable>
-      <Text style={{ fontFamily: fonts.semi, fontSize: 18, color: colors.text, minWidth: 32, textAlign: 'center' }}>
+      <Text
+        style={{
+          fontFamily: fonts.semi,
+          fontSize: 18,
+          color: colors.text,
+          minWidth: 32,
+          textAlign: 'center',
+        }}>
         {value}
       </Text>
       <Pressable style={btn} onPress={() => onChange(value + 1)}>
@@ -263,7 +218,7 @@ export function Stepper({
 }
 
 /* -------------------------------- RowItem ---------------------------------- */
-/** Minimal list row with hairline separator — used for menus & feature lists. */
+
 export function RowItem({
   icon,
   label,
@@ -279,6 +234,7 @@ export function RowItem({
   right?: React.ReactNode;
   isLast?: boolean;
 }) {
+  const { colors } = useTheme();
   return (
     <Pressable
       onPress={onPress}
@@ -299,6 +255,8 @@ export function RowItem({
             height: 40,
             borderRadius: radius.sm,
             backgroundColor: colors.surface,
+            borderWidth: 1,
+            borderColor: colors.hairline,
             alignItems: 'center',
             justifyContent: 'center',
           }}>
@@ -321,6 +279,7 @@ export function RowItem({
 /* -------------------------------- BackBar ---------------------------------- */
 
 export function BackBar({ title, onBack }: { title?: string; onBack: () => void }) {
+  const { colors } = useTheme();
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 8 }}>
       <Pressable
@@ -338,7 +297,9 @@ export function BackBar({ title, onBack }: { title?: string; onBack: () => void 
         hitSlop={8}>
         <Ionicons name="arrow-back" size={18} color={colors.text} />
       </Pressable>
-      {title ? <Text style={{ fontFamily: fonts.semi, fontSize: 17, color: colors.text }}>{title}</Text> : null}
+      {title ? (
+        <Text style={{ fontFamily: fonts.semi, fontSize: 17, color: colors.text }}>{title}</Text>
+      ) : null}
     </View>
   );
 }
@@ -346,16 +307,52 @@ export function BackBar({ title, onBack }: { title?: string; onBack: () => void 
 /* --------------------------------- Eyebrow --------------------------------- */
 
 export function Eyebrow({ children }: { children: React.ReactNode }) {
+  const { colors } = useTheme();
   return (
     <Text
       style={{
         fontFamily: fonts.semi,
         fontSize: 12,
         letterSpacing: 2.2,
-        color: colors.lime,
+        color: colors.isDark ? colors.lime : '#6B9B0F',
         textTransform: 'uppercase',
       }}>
       {children}
     </Text>
+  );
+}
+
+/* ------------------------------- OptChip ----------------------------------- */
+
+export function OptChip({
+  label,
+  active,
+  onPress,
+}: {
+  label: string;
+  active?: boolean;
+  onPress?: () => void;
+}) {
+  const { colors } = useTheme();
+  return (
+    <Pressable
+      onPress={onPress}
+      style={{
+        paddingHorizontal: 18,
+        paddingVertical: 11,
+        borderRadius: radius.md,
+        backgroundColor: active ? colors.limeDim : colors.surface,
+        borderWidth: 1,
+        borderColor: active ? colors.lime : colors.hairline,
+      }}>
+      <Text
+        style={{
+          fontFamily: fonts.medium,
+          fontSize: 14,
+          color: active ? (colors.isDark ? colors.lime : '#5E8A0D') : colors.subtext,
+        }}>
+        {label}
+      </Text>
+    </Pressable>
   );
 }
