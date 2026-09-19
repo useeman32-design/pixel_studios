@@ -2,71 +2,71 @@
 
 > 🌐 **Live web preview:** https://useeman32-design.github.io/pixel_studios/
 
-The digital front door of **Pixel Studios**, a modern creative & technology company based in Gusau, Zamfara State, Nigeria.
+The digital front door of **Pixel Studios**, a creative technology and printing company in Gusau, Zamfara State, Nigeria.
 
-> **Design. Print. Build. Grow.** — creative, printing and technology solutions for modern businesses.
+**Design. Print. Build. Grow.**
 
 Built with **React Native + Expo** — one codebase running on **iOS, Android and Web**.
 
-## ✨ Features
+## Design
 
-- **Home** — hero, three simple customer paths (Design / Print / Digital), featured services, popular products, portfolio preview, testimonials and CTAs
-- **Services** — 7 divisions (Creative, Print, Digital, Smart, Marketing, Systems, AI) each with a full service list and instant WhatsApp enquiry
-- **Shop** — product catalog with Naira (₦) pricing, options, quantity selection and ordering via WhatsApp
-- **Start a Project** — guided 4-step wizard that compiles a complete project brief and delivers it straight to the Pixel Studios WhatsApp
-- **Portfolio** — filterable project gallery across branding, print, packaging, web, apps, systems, NFC and marketing
-- **About** — vision, mission, values, team and the "idea to business" story
-- **Contact** — WhatsApp-first contact hub with phone, email, Instagram, Facebook, location and business hours
+A premium, editorial, minimal creative-tech interface:
 
-## 🚀 Running the app
+- Deep charcoal + off-white neutrals with **electric lime** reserved for primary actions, active states and brand accents
+- **Outfit** geometric typeface, large confident headlines, 8pt spacing scale
+- Pixel-grid **P** brand mark (app icon + in-app logo component)
+
+## Screens
+
+| Screen | Route |
+| --- | --- |
+| Home — editorial hero, quick actions, featured | `/` |
+| Services — 4 visual studios | `/services` |
+| Service detail | `/service/[id]` |
+| Signature NFC Smart Business Card | `/nfc` |
+| Shop — search, categories, products | `/shop` |
+| Product detail — selectors + Add to Cart | `/product/[id]` |
+| Start a Project — agency intake flow | `/start` |
+| Orders + tracking timeline | `/orders`, `/order/[id]` |
+| NFC digital profile | `/nfc-profile` |
+| Portfolio — selected work | `/portfolio` |
+| Studio chat | `/chat` |
+| Profile | `/profile` |
+
+Bottom navigation: **Home · Services · Shop · Orders · Profile** with a floating lime **Start Project** button.
+
+## Running locally
 
 ```bash
 npm install
-npx expo start
+npx expo start        # press w for web, a for Android, i for iOS
 ```
 
-Then press `w` for web, `a` for Android or `i` for iOS (or scan the QR code with Expo Go).
-
-## 🌐 GitHub Pages deployment
-
-The web build is deployed to GitHub Pages from the `gh-pages` branch:
+## Deploying the web preview
 
 ```bash
-npx expo export --platform web        # builds dist/ (baseUrl is set to /pixel_studios)
-# push the contents of dist/ to the gh-pages branch
+bash scripts/deploy-web.sh
 ```
 
-Notes:
-- `app.json` sets `experiments.baseUrl: "/pixel_studios"` so all assets resolve under the repo subpath.
-- Root-level route files are copied to `<route>/index.html` so deep links like `/shop/` work.
-- `.nojekyll` is included so GitHub serves the `_expo` asset folder untouched.
+Builds the static web export (with `baseUrl: /pixel_studios`), prepares clean-URL routes + `404.html` + `.nojekyll`, and force-pushes to the `gh-pages` branch that GitHub Pages serves.
 
-## 📱 Builds (EAS)
-
-```bash
-npm install -g eas-cli
-eas login
-eas build --platform android --profile preview   # APK for testing
-eas build --platform all --profile production    # Store builds
-```
-
-## ⚙️ Before going live
+## Before going live
 
 Update the placeholder contact details in `src/constants/contact.ts`:
 
 - Phone & WhatsApp number
 - Email address
 - Instagram / Facebook handles
-- Exact location & Google Maps link
+- Location & Google Maps link
 
-Prices and product details live in `src/data/products.ts` — adjust freely.
+Prices and product copy live in `src/data/products.ts`. Demo orders in `src/data/orders.ts`.
 
-## 🧱 Tech stack
+## Tech
 
-- Expo SDK 57 + expo-router (file-based routing)
-- TypeScript
-- expo-linear-gradient, expo-font (Space Grotesk + Inter)
+- Expo SDK 57 · expo-router · TypeScript
+- expo-linear-gradient · expo-font (Outfit)
 - WhatsApp deep links for orders, quotes and project briefs
+- EAS build profiles (`eas.json`) for iOS/Android
 
 ---
 
