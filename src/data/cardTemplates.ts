@@ -70,3 +70,90 @@ export function slugify(input: string): string {
       .replace(/^-+|-+$/g, '') || 'your-name'
   );
 }
+
+/* ---------------------------------------------------------------------------
+ * Per-profession landing designs — every business type gets its own layout,
+ * sections and call-to-action, themed by the chosen card template.
+ * ------------------------------------------------------------------------- */
+
+export type LandingConfig = {
+  headline: string;
+  cta: string;
+  ctaIcon: string;
+  layout: 'gallery' | 'shop' | 'menu' | 'services' | 'urgent';
+  items: { label: string; price?: string }[];
+  urgentNote?: string;
+};
+
+export const landingConfigs: Record<string, LandingConfig> = {
+  catering: {
+    headline: 'Sweet treats for every celebration',
+    cta: 'Order on WhatsApp',
+    ctaIcon: 'logo-whatsapp',
+    layout: 'gallery',
+    items: [{ label: 'Signature Cakes' }, { label: 'Cupcake Boxes' }, { label: 'Small Chops' }],
+  },
+  tailor: {
+    headline: 'Tailored to fit you perfectly',
+    cta: 'Book a Fitting',
+    ctaIcon: 'calendar-outline',
+    layout: 'gallery',
+    items: [{ label: 'Senator Wear' }, { label: 'Agbada' }, { label: 'Aso Ebi' }],
+  },
+  salon: {
+    headline: 'Look your best, every day',
+    cta: 'Book Appointment',
+    ctaIcon: 'calendar-outline',
+    layout: 'services',
+    items: [
+      { label: 'Box Braids', price: '₦8,000' },
+      { label: 'Wig Install', price: '₦5,500' },
+      { label: 'Makeup', price: '₦12,000' },
+    ],
+  },
+  plumber: {
+    headline: 'Fast fixes, day or night',
+    cta: 'Call Now',
+    ctaIcon: 'call',
+    layout: 'urgent',
+    items: [{ label: 'Pipe Repairs' }, { label: 'Water Heaters' }, { label: 'Bathroom Fitting' }],
+    urgentNote: '24/7 Emergency Service',
+  },
+  doctor: {
+    headline: 'Quality care, close to home',
+    cta: 'Book Consultation',
+    ctaIcon: 'calendar-outline',
+    layout: 'services',
+    items: [
+      { label: 'General Check-up', price: '₦5,000' },
+      { label: 'Pediatrics', price: '₦6,000' },
+      { label: 'Lab Tests', price: 'From ₦2,500' },
+    ],
+  },
+  restaurant: {
+    headline: 'Fresh. Local. Delicious.',
+    cta: 'Order Food',
+    ctaIcon: 'logo-whatsapp',
+    layout: 'menu',
+    items: [
+      { label: 'Jollof Rice', price: '₦2,500' },
+      { label: 'Suya Platter', price: '₦4,000' },
+      { label: 'Zobo Drink', price: '₦800' },
+    ],
+  },
+  boutique: {
+    headline: 'New arrivals every week',
+    cta: 'Shop on WhatsApp',
+    ctaIcon: 'bag-outline',
+    layout: 'shop',
+    items: [{ label: 'Dresses' }, { label: 'Bags' }, { label: 'Accessories' }, { label: 'Shoes' }],
+  },
+  general: {
+    headline: 'Your business, one beautiful page',
+    cta: 'Contact on WhatsApp',
+    ctaIcon: 'logo-whatsapp',
+    layout: 'gallery',
+    items: [{ label: 'Our Work' }, { label: 'Reviews' }, { label: 'Location' }],
+  },
+};
+

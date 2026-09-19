@@ -5,6 +5,7 @@ import React, { useMemo, useState } from 'react';
 import {
   Image,
   Linking,
+  Modal,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -14,6 +15,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import LandingPage from '../components/LandingPage';
 import LandingPreview from '../components/LandingPreview';
 import SmartCard from '../components/SmartCard';
 import { BackBar, Button, Container, Eyebrow, FadeIn, OptChip } from '../components/ui';
@@ -56,6 +58,7 @@ export default function NFCScreen() {
   const [name, setName] = useState('');
   const [business, setBusiness] = useState('');
   const [orderId, setOrderId] = useState<string | null>(null);
+  const [previewVisible, setPreviewVisible] = useState(false);
 
   const bizType = getBusinessType(bizTypeId);
   const template = cardTemplates.find((t) => t.id === templateId) ?? cardTemplates[0];
@@ -144,6 +147,7 @@ Total: ₦${price.toLocaleString('en-NG')}. Please share payment details!`;
   }
 
   return (
+    <>
     <ScrollView
       style={{ flex: 1, backgroundColor: colors.bg }}
       contentContainerStyle={{ paddingBottom: sp.x8 + 40 }}
@@ -250,6 +254,17 @@ Total: ₦${price.toLocaleString('en-NG')}. Please share payment details!`;
                 ))}
               </View>
             </ScrollView>
+
+            <View style={{ flexDirection: 'row', gap: sp.x2_, marginTop: sp.x3 }}>
+              <View style={{ flex: 1 }}>
+                <Button
+                  title="Preview your page"
+                  variant="secondary"
+                  icon="eye-outline"
+                  onPress={() => setPreviewVisible(true)}
+                />
+              </View>
+            </View>
           </>
         )}
 
@@ -355,6 +370,59 @@ Total: ₦${price.toLocaleString('en-NG')}. Please share payment details!`;
         </View>
       </Container>
     </ScrollView>
+
+    {/* Full landing-page preview */}
+    <Modal
+      visible={previewVisible}
+      transparent
+      animationType="slide"
+      onRequestClose={() => setPreviewVisible(false)}>
+      <View style={[styles.modalBackdrop, { backgroundColor: 'rgba(5,5,7,0.7)' }]}>
+        <View style={[styles.modalSheet, { backgroundColor: colors.bg, borderColor: colors.hairlineStrong }]}>
+          <View style={styles.modalHead}>
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.modalTitle, { color: colors.text }]}>Your landing page</Text>
+              <Text style={[styles.modalUrl, { color: colors.isDark ? colors.lime : '#5E8A0D' }]}>
+                pixelstudios.com/card/{username}
+              </Text>
+            </View>
+            <Pressable
+              onPress={() => setPreviewVisible(false)}
+              hitSlop={8}
+              style={[styles.modalClose, { backgroundColor: colors.surface2 }]}>
+              <Ionicons name="close" size={20} color={colors.text} />
+            </Pressable>
+          </View>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ padding: 16, paddingBottom: 36 }}>
+            <View
+              style={{
+                maxWidth: 420,
+                width: '100%',
+                alignSelf: 'center',
+                borderRadius: 24,
+                overflow: 'hidden',
+                borderWidth: StyleSheet.hairlineWidth,
+                borderColor: colors.hairline,
+              }}>
+              <LandingPage
+                template={template}
+                businessType={bizType}
+                name={name}
+                business={business}
+                profileUri={profileUri}
+                logoUri={logoUri}
+              />
+            </View>
+            <Text style={[styles.modalHint, { color: colors.muted }]}>
+              This is exactly what your customers see when they scan or tap your Smart Card.
+            </Text>
+          </ScrollView>
+        </View>
+      </View>
+    </Modal>
+    </>
   );
 }
 
@@ -470,6 +538,39 @@ function useStyles(colors: Palette) {
       borderWidth: 1,
     },
     doneIcon: { width: 88, height: 88, borderRadius: 44, alignItems: 'center', justifyContent: 'center', alignSelf: 'center' },
+    modalBackdrop: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 18 },
+    modalSheet: {
+      width: '100%',
+      maxWidth: 480,
+      maxHeight: '94%',
+      borderRadius: 24,
+      borderWidth: StyleSheet.hairlineWidth,
+      overflow: 'hidden',
+    },
+    modalHead: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: sp.x2_,
+      paddingHorizontal: 20,
+      paddingVertical: 16,
+    },
+    modalTitle: { fontFamily: fonts.semi, fontSize: 18, letterSpacing: -0.3 },
+    modalUrl: { fontFamily: fonts.medium, fontSize: 12.5, marginTop: 2 },
+    modalClose: {
+      width: 38,
+      height: 38,
+      borderRadius: 12,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    modalHint: {
+      fontFamily: fonts.regular,
+      fontSize: 13,
+      textAlign: 'center',
+      marginTop: 14,
+      maxWidth: 380,
+      alignSelf: 'center',
+    },
     doneTitle: { fontFamily: fonts.semi, fontSize: 32, letterSpacing: -0.8, textAlign: 'center', marginTop: sp.x4 },
     doneOrder: { fontFamily: fonts.bold, fontSize: 18, letterSpacing: 2, textAlign: 'center', marginTop: sp.x1 },
     doneText: { fontFamily: fonts.regular, fontSize: 15.5, lineHeight: 23, textAlign: 'center', marginTop: sp.x2_, maxWidth: 420 },

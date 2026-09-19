@@ -53,6 +53,10 @@ export default function SmartCard({ config }: { config: CardConfig }) {
 
   const swayY = sway.interpolate({ inputRange: [-1, 1], outputRange: ['4deg', '-4deg'] });
   const flipY = flip.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '180deg'] });
+  // Deterministic face swap at the 90° midpoint — works even where
+  // backfaceVisibility is unreliable (web).
+  const frontOpacity = flip.interpolate({ inputRange: [0, 0.49, 0.5, 1], outputRange: [1, 1, 0, 0] });
+  const backOpacity = flip.interpolate({ inputRange: [0, 0.49, 0.5, 1], outputRange: [0, 0, 1, 1] });
 
   const isPaper = config.material === 'paper';
   const cardBg = isPaper ? '#F2F0EA' : '#0E0E11';
@@ -141,19 +145,20 @@ export default function SmartCard({ config }: { config: CardConfig }) {
         <Animated.View style={{ transform: [{ rotateY: swayY }] }}>
           {/* Flip layer */}
           <Animated.View style={{ transform: [{ perspective: 1200 }, { rotateY: flipY }] }}>
-            <View style={{ backfaceVisibility: 'hidden' }}>{front}</View>
-            <View
+            <Animated.View style={{ opacity: frontOpacity, backfaceVisibility: 'hidden' }}>{front}</Animated.View>
+            <Animated.View
               style={{
                 position: 'absolute',
                 top: 0,
                 left: 0,
                 right: 0,
                 bottom: 0,
+                opacity: backOpacity,
                 transform: [{ rotateY: '180deg' }],
                 backfaceVisibility: 'hidden',
               }}>
               {back}
-            </View>
+            </Animated.View>
           </Animated.View>
         </Animated.View>
       </Pressable>
