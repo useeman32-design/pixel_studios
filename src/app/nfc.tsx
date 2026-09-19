@@ -3,6 +3,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import {
+  Image,
   Linking,
   Pressable,
   ScrollView,
@@ -51,6 +52,7 @@ export default function NFCScreen() {
   const [material, setMaterial] = useState<Material>('plastic');
   const [designMode, setDesignMode] = useState<DesignMode>('pixel');
   const [logoUri, setLogoUri] = useState<string | null>(null);
+  const [profileUri, setProfileUri] = useState<string | null>(null);
   const [name, setName] = useState('');
   const [business, setBusiness] = useState('');
   const [orderId, setOrderId] = useState<string | null>(null);
@@ -75,20 +77,28 @@ export default function NFCScreen() {
     [tier, directTarget, material, designMode, logoUri, name, business, username, bizType.accent, colors],
   );
 
-  const pickLogo = async () => {
+  const pickImage = async (setter: (uri: string) => void) => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ['images'],
         quality: 0.8,
       });
       if (!result.canceled && result.assets?.[0]?.uri) {
-        setLogoUri(result.assets[0].uri);
-        setDesignMode('logo');
+        setter(result.assets[0].uri);
       }
     } catch {
-      // picker unavailable — stay on generated design
+      // picker unavailable — ignore
     }
   };
+
+  const pickLogo = async () => {
+    await pickImage((uri) => {
+      setLogoUri(uri);
+      setDesignMode('logo');
+    });
+  };
+
+  const pickProfile = () => pickImage(setProfileUri);
 
   const waMessage = `Hello Pixel Studios! I'd like to order a *${tier === 'premium' ? 'Premium Portfolio Card' : 'Direct Smart Card'}*.
 
@@ -96,7 +106,7 @@ Tier: ${tier === 'premium' ? 'Premium (portfolio landing page)' : 'Direct (singl
 ${tier === 'premium' ? `Business type: ${bizType.label}\nTemplate: ${template.name}\nPage: pixelstudios.com/card/${username}` : `Opens: ${directTargets.find((t) => t.id === directTarget)?.label}`}
 Material: ${material === 'paper' ? 'Paper / cardstock' : 'Plastic (PVC)'}
 Design: ${designMode === 'logo' ? 'My own logo (attached in chat)' : designMode === 'custom' ? 'Request custom design' : 'Pixel Studios generated design'}
-Name: ${name || '-'}
+${tier === 'premium' ? `My photo: ${profileUri ? 'attached in chat' : 'not added yet'}\nMy logo: ${logoUri ? 'attached in chat' : 'not added yet'}\n` : ''}Name: ${name || '-'}
 Business: ${business || '-'}
 
 Total: ₦${price.toLocaleString('en-NG')}. Please share payment details!`;
@@ -222,9 +232,16 @@ Total: ₦${price.toLocaleString('en-NG')}. Please share payment details!`;
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: sp.x3 }} style={{ marginHorizontal: -24 }} >
               <View style={{ flexDirection: 'row', gap: sp.x3, paddingHorizontal: 24 }}>
                 {cardTemplates.map((t) => (
-                  <Pressable key={t.id} onPress={() => setTemplateId(t.id)} style={{ width: 250 }}>
+                  <Pressable key={t.id} onPress={() => setTemplateId(t.id)} style={{ width: 264 }}>
                     <View style={[styles.templateWrap, templateId === t.id && { borderColor: colors.lime }]}>
-                      <LandingPreview template={t} businessType={bizType} name={name} business={business} />
+                      <LandingPreview
+                        template={t}
+                        businessType={bizType}
+                        name={name}
+                        business={business}
+                        profileUri={profileUri}
+                        logoUri={logoUri}
+                      />
                     </View>
                     <Text style={[styles.templateName, templateId === t.id && { color: colors.isDark ? colors.lime : '#5E8A0D' }]}>
                       {t.name} {templateId === t.id ? '✓' : ''}
@@ -236,8 +253,40 @@ Total: ₦${price.toLocaleString('en-NG')}. Please share payment details!`;
           </>
         )}
 
+        {/* Photos for the portfolio page */}
+        {tier === 'premium' && (
+          <>
+            <Text style={styles.stepLabel}>04 · Add your photos</Text>
+            <Text style={styles.hint}>Shown on your portfolio page — your photo introduces you, your logo builds trust.</Text>
+            <View style={{ flexDirection: 'row', gap: sp.x2_ }}>
+              <Pressable
+                onPress={pickProfile}
+                style={[styles.photoTile, profileUri && { borderColor: colors.lime }]}>
+                {profileUri ? (
+                  <Image source={{ uri: profileUri }} style={styles.photoThumb} />
+                ) : (
+                  <Ionicons name="person-circle-outline" size={26} color={colors.subtext} />
+                )}
+                <Text style={styles.photoTitle}>{profileUri ? 'Photo added ✓' : 'Add your photo'}</Text>
+                <Text style={styles.photoDesc}>Profile picture on your page</Text>
+              </Pressable>
+              <Pressable
+                onPress={() => pickImage((uri) => { setLogoUri(uri); setDesignMode('logo'); })}
+                style={[styles.photoTile, logoUri && { borderColor: colors.lime }]}>
+                {logoUri ? (
+                  <Image source={{ uri: logoUri }} style={styles.photoThumb} />
+                ) : (
+                  <Ionicons name="diamond-outline" size={26} color={colors.subtext} />
+                )}
+                <Text style={styles.photoTitle}>{logoUri ? 'Logo added ✓' : 'Add your logo'}</Text>
+                <Text style={styles.photoDesc}>On your page and your card</Text>
+              </Pressable>
+            </View>
+          </>
+        )}
+
         {/* Material */}
-        <Text style={styles.stepLabel}>{tier === 'premium' ? '04' : '03'} · Card material</Text>
+        <Text style={styles.stepLabel}>{tier === 'premium' ? '05' : '03'} · Card material</Text>
         <View style={styles.chipRow}>
           <OptChip
             label={`Paper / cardstock — ₦${prices[tier].paper.toLocaleString('en-NG')}`}
@@ -252,7 +301,7 @@ Total: ₦${price.toLocaleString('en-NG')}. Please share payment details!`;
         </View>
 
         {/* Design */}
-        <Text style={styles.stepLabel}>{tier === 'premium' ? '05' : '04'} · Card design</Text>
+        <Text style={styles.stepLabel}>{tier === 'premium' ? '06' : '04'} · Card design</Text>
         <View style={{ gap: sp.x2_ }}>
           <Pressable onPress={pickLogo} style={[styles.designRow, designMode === 'logo' && { borderColor: colors.lime, backgroundColor: colors.limeDim }]}>
             <Ionicons name="image-outline" size={19} color={colors.text} />
@@ -278,7 +327,7 @@ Total: ₦${price.toLocaleString('en-NG')}. Please share payment details!`;
         </View>
 
         {/* Details */}
-        <Text style={styles.stepLabel}>{tier === 'premium' ? '06' : '05'} · Your details</Text>
+        <Text style={styles.stepLabel}>{tier === 'premium' ? '07' : '05'} · Your details</Text>
         <Text style={styles.hint}>The card above updates live as you type.</Text>
         <TextInput value={name} onChangeText={setName} placeholder="Your name" placeholderTextColor={colors.muted} style={styles.input} />
         <TextInput value={business} onChangeText={setBusiness} placeholder="Business name" placeholderTextColor={colors.muted} style={[styles.input, { marginTop: sp.x2_ }]} />
@@ -363,6 +412,20 @@ function useStyles(colors: Palette) {
     bizChipText: { fontFamily: fonts.medium, fontSize: 14, color: colors.subtext },
     templateWrap: { borderRadius: 20, borderWidth: 2, borderColor: 'transparent', overflow: 'hidden' },
     templateName: { fontFamily: fonts.semi, fontSize: 13.5, color: colors.subtext, marginTop: sp.x1, textAlign: 'center' },
+    photoTile: {
+      flex: 1,
+      alignItems: 'center',
+      gap: 4,
+      paddingVertical: sp.x3,
+      paddingHorizontal: 10,
+      borderRadius: radius.md,
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.hairline,
+    },
+    photoThumb: { width: 44, height: 44, borderRadius: 22, backgroundColor: colors.surface2 },
+    photoTitle: { fontFamily: fonts.semi, fontSize: 13.5, color: colors.text, marginTop: 4, textAlign: 'center' },
+    photoDesc: { fontFamily: fonts.regular, fontSize: 11.5, color: colors.muted, textAlign: 'center' },
     designRow: {
       flexDirection: 'row',
       alignItems: 'center',

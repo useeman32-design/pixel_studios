@@ -17,7 +17,9 @@ export type CardConfig = {
 };
 
 /**
- * Interactive 3D smart card with front/back flip.
+ * Interactive 3D smart card.
+ * Tap to flip front/back — the flip and the idle sway run on separate nested
+ * animated layers so the transforms never collide.
  */
 export default function SmartCard({ config }: { config: CardConfig }) {
   const flip = useRef(new Animated.Value(0)).current; // 0 = front, 1 = back
@@ -28,9 +30,9 @@ export default function SmartCard({ config }: { config: CardConfig }) {
   useEffect(() => {
     const loop = Animated.loop(
       Animated.sequence([
-        Animated.timing(sway, { toValue: 1, duration: 2600, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
-        Animated.timing(sway, { toValue: -1, duration: 5200, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
-        Animated.timing(sway, { toValue: 0, duration: 2600, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+        Animated.timing(sway, { toValue: 1, duration: 2800, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+        Animated.timing(sway, { toValue: -1, duration: 5600, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+        Animated.timing(sway, { toValue: 0, duration: 2800, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
       ]),
     );
     loop.start();
@@ -40,25 +42,28 @@ export default function SmartCard({ config }: { config: CardConfig }) {
   const flipCard = () => {
     const to = showingBack ? 0 : 1;
     setShowingBack(!showingBack);
-    Animated.spring(flip, { toValue: to, useNativeDriver: true, damping: 20, stiffness: 160 }).start();
+    Animated.spring(flip, {
+      toValue: to,
+      useNativeDriver: true,
+      damping: 19,
+      stiffness: 150,
+      mass: 0.9,
+    }).start();
   };
 
-  const rotateY = Animated.add(
-    flip.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '180deg'] }),
-    sway.interpolate({ inputRange: [-1, 1], outputRange: ['5deg', '-5deg'] }),
-  );
+  const swayY = sway.interpolate({ inputRange: [-1, 1], outputRange: ['4deg', '-4deg'] });
+  const flipY = flip.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '180deg'] });
 
   const isPaper = config.material === 'paper';
   const cardBg = isPaper ? '#F2F0EA' : '#0E0E11';
   const textMain = isPaper ? '#141416' : '#F4F4F2';
   const textSub = isPaper ? 'rgba(20,20,22,0.55)' : 'rgba(244,244,242,0.55)';
 
+  const faceBase: any = [styles.face, { backgroundColor: cardBg, borderColor: isPaper ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.12)' }];
+
   const front = (
-    <View style={[styles.face, { backgroundColor: cardBg, borderColor: isPaper ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.12)' }]}>
-      {/* texture hint for plastic */}
-      {!isPaper && (
-        <View style={styles.plasticSheen} />
-      )}
+    <View style={faceBase}>
+      {!isPaper && <View style={styles.plasticSheen} />}
       <View style={styles.topRow}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
           {config.designMode === 'logo' && config.logoUri ? (
@@ -106,7 +111,7 @@ export default function SmartCard({ config }: { config: CardConfig }) {
   );
 
   const back = (
-    <View style={[styles.face, { backgroundColor: cardBg, borderColor: isPaper ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.12)' }]}>
+    <View style={faceBase}>
       {!isPaper && <View style={styles.plasticSheen} />}
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 10 }}>
         <View style={[styles.qrBlock, { borderColor: textSub }]}>
@@ -131,9 +136,11 @@ export default function SmartCard({ config }: { config: CardConfig }) {
 
   return (
     <View>
-      <Pressable onPress={flipCard}>
-        <View style={{ transform: [{ perspective: 1200 }] }}>
-          <Animated.View style={{ transform: [{ rotateY }] }}>
+      <Pressable onPress={flipCard} hitSlop={8}>
+        {/* Sway layer */}
+        <Animated.View style={{ transform: [{ rotateY: swayY }] }}>
+          {/* Flip layer */}
+          <Animated.View style={{ transform: [{ perspective: 1200 }, { rotateY: flipY }] }}>
             <View style={{ backfaceVisibility: 'hidden' }}>{front}</View>
             <View
               style={{
@@ -148,10 +155,10 @@ export default function SmartCard({ config }: { config: CardConfig }) {
               {back}
             </View>
           </Animated.View>
-        </View>
+        </Animated.View>
       </Pressable>
       <View style={styles.flipHintRow}>
-        <Ionicons name="sync-outline" size={13} color={textSub} />
+        <Ionicons name="sync-outline" size={13} color="#9B9BA1" />
         <Text style={[styles.flipHint, { color: '#9B9BA1' }]}>
           Tap the card to flip {showingBack ? 'to front' : 'to back'}
         </Text>
