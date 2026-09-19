@@ -19,6 +19,20 @@ done
 cp "+not-found.html" 404.html
 touch .nojekyll
 
+# Relocate the JS bundle to a root-level path.
+# GitHub Pages occasionally delays serving freshly-built files under /_expo/,
+# while root-level files propagate reliably within seconds.
+for f in _expo/static/js/web/entry-*.js; do
+  [ -e "$f" ] || continue
+  base=$(basename "$f")
+  newname="app-${base#entry-}"
+  cp "$f" "$newname"
+  grep -rl "_expo/static/js/web/$base" --include="*.html" . | while read -r h; do
+    sed -i "s|_expo/static/js/web/$base|$newname|g" "$h"
+  done
+  echo "▸ Bundle relocated to /$newname"
+done
+
 TMP=$(mktemp -d)
 git -C "$TMP" init -q
 git -C "$TMP" checkout -q -b gh-pages
