@@ -4,8 +4,9 @@ import { StyleSheet, View } from 'react-native';
 import { BusinessType, CardTemplate } from '../data/cardTemplates';
 import LandingPage from './LandingPage';
 
-/** Rendered width of the full-size landing page before scaling. */
-const PAGE_W = 680;
+/** Rendered width of the full-size landing page before scaling — matches
+ *  the phone-width preview modal so thumbnails look exactly like the preview. */
+const PAGE_W = 420;
 /** Thumbnail width in the template picker. */
 export const PREVIEW_W = 264;
 export const PREVIEW_H = 430;

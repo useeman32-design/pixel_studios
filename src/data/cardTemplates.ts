@@ -1,3 +1,5 @@
+export type TeamMember = { name: string; rank: string };
+
 export type BusinessType = {
   id: string;
   label: string;
@@ -10,27 +12,36 @@ export type BusinessType = {
   rating: string;
   reviews: string;
   badge: string;
+  /** Default rank options for the owner of this business type. */
+  rankOptions: string[];
+  /** Institutional types get team rows with ranks in their templates. */
+  institutional?: boolean;
+  team?: TeamMember[];
 };
+
+const OWNER_RANKS = ['Owner', 'Founder', 'CEO', 'Manager', 'Director'];
+const INSTITUTION_RANKS = ['Proprietor', 'Director', 'Administrator', 'Coordinator'];
 
 /* Nigerian SME categories — researched for the Gusau / national market. */
 export const businessTypes: BusinessType[] = [
-  { id: 'catering', label: 'Catering & Cakes', icon: 'cafe-outline', sample: "Sandra's Cakes", tagline: 'Custom cakes & catering for every occasion', accent: '#F9A8D4', hours: 'Mon – Sat · 8am – 8pm', hero: require('../../assets/images/biz/catering.jpg'), rating: '4.9', reviews: '180+ happy clients', badge: 'TOP RATED' },
-  { id: 'restaurant', label: 'Restaurant & Buka', icon: 'fast-food-outline', sample: 'Mama Put Kitchen', tagline: 'Fresh. Local. Delicious.', accent: '#FCD34D', hours: 'Every day · 10am – 10pm', hero: require('../../assets/images/biz/restaurant.jpg'), rating: '4.8', reviews: '900+ orders', badge: 'HOT & FRESH' },
-  { id: 'tailor', label: 'Tailoring & Fashion', icon: 'shirt-outline', sample: 'Fine Fit Tailors', tagline: 'Bespoke tailoring, perfect fit every time', accent: '#93C5FD', hours: 'Mon – Sat · 9am – 7pm', hero: require('../../assets/images/biz/tailor.jpg'), rating: '4.8', reviews: '300+ fittings', badge: 'MASTER FIT' },
-  { id: 'boutique', label: 'Boutique & Fashion Store', icon: 'pricetag-outline', sample: 'Velvet Rose', tagline: 'Curated fashion for the modern you', accent: '#FDA4AF', hours: 'Mon – Sat · 9am – 8pm', hero: require('../../assets/images/biz/boutique.jpg'), rating: '4.7', reviews: '600+ shoppers', badge: 'NEW DROPS' },
-  { id: 'salon', label: 'Hair Salon & Beauty', icon: 'flower-outline', sample: 'Glow Hair Studio', tagline: 'Hair artistry that turns heads', accent: '#C4B5FD', hours: 'Tue – Sun · 9am – 7pm', hero: require('../../assets/images/biz/salon.jpg'), rating: '5.0', reviews: '450+ clients', badge: 'BOOKED SOLID' },
-  { id: 'barbing', label: 'Barbing', icon: 'cut-outline', sample: 'Sharp Edge Barbers', tagline: 'Clean cuts, sharp looks — every time', accent: '#A5B4FC', hours: 'Every day · 8am – 9pm', hero: require('../../assets/images/biz/barbing.jpg'), rating: '4.9', reviews: '700+ haircuts', badge: 'SHARP LOOKS' },
-  { id: 'plumber', label: 'Plumbing & Repairs', icon: 'water-outline', sample: 'SwiftFix Plumbing', tagline: 'Fast, reliable plumbing — day or night', accent: '#5EEAD4', hours: '24/7 emergency service', hero: require('../../assets/images/biz/plumber.jpg'), rating: '4.9', reviews: '500+ jobs done', badge: '24/7 SERVICE' },
-  { id: 'mechanic', label: 'Auto Mechanic', icon: 'build-outline', sample: 'PowerHouse Auto', tagline: 'Diagnostics, repairs & maintenance done right', accent: '#FCA5A5', hours: 'Mon – Sat · 8am – 6pm', hero: require('../../assets/images/biz/mechanic.jpg'), rating: '4.8', reviews: '350+ cars fixed', badge: 'TRUSTED HANDS' },
-  { id: 'electronics', label: 'Phones & Electronics', icon: 'phone-portrait-outline', sample: 'GadgetHub NG', tagline: 'Original gadgets, honest prices, instant repairs', accent: '#93C5FD', hours: 'Mon – Sat · 9am – 8pm', hero: require('../../assets/images/biz/electronics.jpg'), rating: '4.7', reviews: '800+ sales', badge: 'ORIGINAL ONLY' },
-  { id: 'supermarket', label: 'Supermarket & Provisions', icon: 'cart-outline', sample: 'Daily Fresh Mart', tagline: 'Everything your home needs, in one place', accent: '#86EFAC', hours: 'Every day · 7am – 9pm', hero: require('../../assets/images/biz/supermarket.jpg'), rating: '4.8', reviews: '1,000+ shoppers', badge: 'DAILY FRESH' },
-  { id: 'realestate', label: 'Real Estate', icon: 'home-outline', sample: 'Solid Rock Realty', tagline: 'Verified properties — rent, buy or sell with confidence', accent: '#FDBA74', hours: 'Mon – Sat · 9am – 6pm', hero: require('../../assets/images/biz/realestate.jpg'), rating: '4.9', reviews: '120+ properties', badge: 'VERIFIED LISTINGS' },
-  { id: 'logistics', label: 'Logistics & Delivery', icon: 'rocket-outline', sample: 'SwiftMove NG', tagline: 'Same-day dispatch, nationwide delivery', accent: '#67E8F9', hours: 'Every day · 7am – 10pm', hero: require('../../assets/images/biz/logistics.jpg'), rating: '4.8', reviews: '2,000+ deliveries', badge: 'SAME-DAY' },
-  { id: 'photography', label: 'Photography Studio', icon: 'camera-outline', sample: 'GoldenLens Studio', tagline: 'Moments captured beautifully, forever', accent: '#D8B4FE', hours: 'By appointment', hero: require('../../assets/images/biz/photography.jpg'), rating: '5.0', reviews: '200+ shoots', badge: 'AWARD WINNER' },
-  { id: 'events', label: 'Event Planning & Decor', icon: 'ribbon-outline', sample: 'Sparkle Events', tagline: 'Weddings, birthdays & corporate events done beautifully', accent: '#F9A8D4', hours: 'Mon – Sun · 9am – 8pm', hero: require('../../assets/images/biz/events.jpg'), rating: '4.9', reviews: '150+ events', badge: 'FULL SERVICE' },
-  { id: 'school', label: 'School & Tutoring', icon: 'school-outline', sample: 'Brightpath Academy', tagline: 'Building confident learners, one class at a time', accent: '#FDE68A', hours: 'Mon – Fri · 8am – 4pm', hero: require('../../assets/images/biz/school.jpg'), rating: '4.9', reviews: '250+ students', badge: 'ACCREDITED' },
-  { id: 'medical', label: 'Medical & Pharmacy', icon: 'medkit-outline', sample: 'CarePoint Clinic', tagline: 'Quality care, close to home', accent: '#86EFAC', hours: 'Every day · 8am – 10pm', hero: require('../../assets/images/biz/doctor.jpg'), rating: '4.9', reviews: '1,200+ patients', badge: 'TRUSTED CARE' },
-  { id: 'general', label: 'Other Business', icon: 'briefcase-outline', sample: 'Your Business', tagline: 'Your business, one beautiful page', accent: '#BFF549', hours: 'Mon – Sat · 9am – 6pm', hero: require('../../assets/images/biz/general.jpg'), rating: '5.0', reviews: 'Verified business', badge: 'VERIFIED' },
+  { id: 'catering', label: 'Catering & Cakes', icon: 'cafe-outline', sample: "Sandra's Cakes", tagline: 'Custom cakes & catering for every occasion', accent: '#F9A8D4', hours: 'Mon – Sat · 8am – 8pm', hero: require('../../assets/images/biz/catering.jpg'), rating: '4.9', reviews: '180+ happy clients', badge: 'TOP RATED', rankOptions: [...OWNER_RANKS, 'Head Chef'] },
+  { id: 'restaurant', label: 'Restaurant & Buka', icon: 'fast-food-outline', sample: 'Mama Put Kitchen', tagline: 'Fresh. Local. Delicious.', accent: '#FCD34D', hours: 'Every day · 10am – 10pm', hero: require('../../assets/images/biz/restaurant.jpg'), rating: '4.8', reviews: '900+ orders', badge: 'HOT & FRESH', rankOptions: [...OWNER_RANKS, 'Head Chef'] },
+  { id: 'tailor', label: 'Tailoring & Fashion', icon: 'shirt-outline', sample: 'Fine Fit Tailors', tagline: 'Bespoke tailoring, perfect fit every time', accent: '#93C5FD', hours: 'Mon – Sat · 9am – 7pm', hero: require('../../assets/images/biz/tailor.jpg'), rating: '4.8', reviews: '300+ fittings', badge: 'MASTER FIT', rankOptions: [...OWNER_RANKS, 'Master Tailor'] },
+  { id: 'boutique', label: 'Boutique & Fashion Store', icon: 'pricetag-outline', sample: 'Velvet Rose', tagline: 'Curated fashion for the modern you', accent: '#FDA4AF', hours: 'Mon – Sat · 9am – 8pm', hero: require('../../assets/images/biz/boutique.jpg'), rating: '4.7', reviews: '600+ shoppers', badge: 'NEW DROPS', rankOptions: OWNER_RANKS },
+  { id: 'salon', label: 'Hair Salon & Beauty', icon: 'flower-outline', sample: 'Glow Hair Studio', tagline: 'Hair artistry that turns heads', accent: '#C4B5FD', hours: 'Tue – Sun · 9am – 7pm', hero: require('../../assets/images/biz/salon.jpg'), rating: '5.0', reviews: '450+ clients', badge: 'BOOKED SOLID', rankOptions: [...OWNER_RANKS, 'Head Stylist'] },
+  { id: 'barbing', label: 'Barbing', icon: 'cut-outline', sample: 'Sharp Edge Barbers', tagline: 'Clean cuts, sharp looks — every time', accent: '#A5B4FC', hours: 'Every day · 8am – 9pm', hero: require('../../assets/images/biz/barbing.jpg'), rating: '4.9', reviews: '700+ haircuts', badge: 'SHARP LOOKS', rankOptions: [...OWNER_RANKS, 'Head Barber'] },
+  { id: 'plumber', label: 'Plumbing & Repairs', icon: 'water-outline', sample: 'SwiftFix Plumbing', tagline: 'Fast, reliable plumbing — day or night', accent: '#5EEAD4', hours: '24/7 emergency service', hero: require('../../assets/images/biz/plumber.jpg'), rating: '4.9', reviews: '500+ jobs done', badge: '24/7 SERVICE', rankOptions: OWNER_RANKS },
+  { id: 'mechanic', label: 'Auto Mechanic', icon: 'build-outline', sample: 'PowerHouse Auto', tagline: 'Diagnostics, repairs & maintenance done right', accent: '#FCA5A5', hours: 'Mon – Sat · 8am – 6pm', hero: require('../../assets/images/biz/mechanic.jpg'), rating: '4.8', reviews: '350+ cars fixed', badge: 'TRUSTED HANDS', rankOptions: [...OWNER_RANKS, 'Chief Mechanic'] },
+  { id: 'electronics', label: 'Phones & Electronics', icon: 'phone-portrait-outline', sample: 'GadgetHub NG', tagline: 'Original gadgets, honest prices, instant repairs', accent: '#93C5FD', hours: 'Mon – Sat · 9am – 8pm', hero: require('../../assets/images/biz/electronics.jpg'), rating: '4.7', reviews: '800+ sales', badge: 'ORIGINAL ONLY', rankOptions: OWNER_RANKS },
+  { id: 'supermarket', label: 'Supermarket & Provisions', icon: 'cart-outline', sample: 'Daily Fresh Mart', tagline: 'Everything your home needs, in one place', accent: '#86EFAC', hours: 'Every day · 7am – 9pm', hero: require('../../assets/images/biz/supermarket.jpg'), rating: '4.8', reviews: '1,000+ shoppers', badge: 'DAILY FRESH', rankOptions: OWNER_RANKS },
+  { id: 'realestate', label: 'Real Estate', icon: 'home-outline', sample: 'Solid Rock Realty', tagline: 'Verified properties — rent, buy or sell with confidence', accent: '#FDBA74', hours: 'Mon – Sat · 9am – 6pm', hero: require('../../assets/images/biz/realestate.jpg'), rating: '4.9', reviews: '120+ properties', badge: 'VERIFIED LISTINGS', rankOptions: [...OWNER_RANKS, 'Lead Agent'] },
+  { id: 'logistics', label: 'Logistics & Delivery', icon: 'rocket-outline', sample: 'SwiftMove NG', tagline: 'Same-day dispatch, nationwide delivery', accent: '#67E8F9', hours: 'Every day · 7am – 10pm', hero: require('../../assets/images/biz/logistics.jpg'), rating: '4.8', reviews: '2,000+ deliveries', badge: 'SAME-DAY', rankOptions: OWNER_RANKS },
+  { id: 'photography', label: 'Photography Studio', icon: 'camera-outline', sample: 'GoldenLens Studio', tagline: 'Moments captured beautifully, forever', accent: '#D8B4FE', hours: 'By appointment', hero: require('../../assets/images/biz/photography.jpg'), rating: '5.0', reviews: '200+ shoots', badge: 'AWARD WINNER', rankOptions: [...OWNER_RANKS, 'Lead Photographer'] },
+  { id: 'events', label: 'Event Planning & Decor', icon: 'ribbon-outline', sample: 'Sparkle Events', tagline: 'Weddings, birthdays & corporate events done beautifully', accent: '#F9A8D4', hours: 'Mon – Sun · 9am – 8pm', hero: require('../../assets/images/biz/events.jpg'), rating: '4.9', reviews: '150+ events', badge: 'FULL SERVICE', rankOptions: [...OWNER_RANKS, 'Lead Planner'] },
+  { id: 'medical', label: 'Medical & Pharmacy', icon: 'medkit-outline', sample: 'CarePoint Clinic', tagline: 'Quality care, close to home', accent: '#86EFAC', hours: 'Every day · 8am – 10pm', hero: require('../../assets/images/biz/doctor.jpg'), rating: '4.9', reviews: '1,200+ patients', badge: 'TRUSTED CARE', rankOptions: [...OWNER_RANKS, 'Chief Doctor', 'Head Pharmacist'] },
+  { id: 'school', label: 'School & Academy', icon: 'school-outline', sample: 'Brightpath Academy', tagline: 'Building confident learners, one class at a time', accent: '#FDE68A', hours: 'Mon – Fri · 8am – 4pm', hero: require('../../assets/images/biz/school.jpg'), rating: '4.9', reviews: '250+ students', badge: 'ACCREDITED', rankOptions: INSTITUTION_RANKS, institutional: true, team: [{ name: 'Mrs. Amina Bello', rank: 'Proprietor' }, { name: 'Mr. John Yakubu', rank: 'Principal' }, { name: 'Office of Admissions', rank: 'Administration' }] },
+  { id: 'organization', label: 'Organization / NGO', icon: 'earth-outline', sample: 'Hope Bridge Foundation', tagline: 'Serving our community with purpose', accent: '#93C5FD', hours: 'Mon – Fri · 9am – 5pm', hero: require('../../assets/images/biz/general.jpg'), rating: '4.9', reviews: 'Verified organization', badge: 'REGISTERED', rankOptions: INSTITUTION_RANKS, institutional: true, team: [{ name: 'Alhaji Sani Usman', rank: 'Executive Director' }, { name: 'Ms. Fatima Adamu', rank: 'Programs Manager' }, { name: 'Front Desk', rank: 'Administration' }] },
+  { id: 'general', label: 'Other Business', icon: 'briefcase-outline', sample: 'Your Business', tagline: 'Your business, one beautiful page', accent: '#BFF549', hours: 'Mon – Sat · 9am – 6pm', hero: require('../../assets/images/biz/general.jpg'), rating: '5.0', reviews: 'Verified business', badge: 'VERIFIED', rankOptions: OWNER_RANKS },
 ];
 
 export type CardTemplate = {
@@ -51,6 +62,10 @@ export const cardTemplates: CardTemplate[] = [
   { id: 'luxe', name: 'Elegant Luxe', bg: '#100D09', surface: '#1B1610', text: '#F3EADA', subtext: '#A79B85', accent: '#E6C079' },
   { id: 'trust', name: 'Trust Pro', bg: '#F4F7FB', surface: '#FFFFFF', text: '#0F1B2D', subtext: '#5A6B84', accent: '#1D6FE0' },
   { id: 'pop', name: 'Fresh Pop', bg: '#FFF8EF', surface: '#FFFFFF', text: '#2A1E14', subtext: '#8A7360', accent: '#FF7A45' },
+  /* Institutional designs — for schools, academies & organizations. */
+  { id: 'campus', name: 'Campus Crest', bg: '#0E1B2C', surface: '#16263C', text: '#EAF1FA', subtext: '#8FA5BF', accent: '#E9C46A' },
+  { id: 'corporate', name: 'Corporate Suite', bg: '#FFFFFF', surface: '#F2F5F9', text: '#101B2B', subtext: '#5E6E85', accent: '#1D6FE0' },
+  { id: 'community', name: 'Community Warm', bg: '#F1F7F0', surface: '#FFFFFF', text: '#1C2B1A', subtext: '#66795F', accent: '#3E9B4F' },
 ];
 
 export function getBusinessType(id: string): BusinessType {
@@ -78,15 +93,16 @@ export type CardDesign = {
   text: string;
   sub: string;
   accent: string;
-  deco: 'pixels' | 'band' | 'corner' | 'frame' | 'dots';
+  deco: 'halo' | 'line' | 'corner' | 'frame' | 'dots';
 };
 
+/** Light, airy card faces — soft tints and gentle details, never heavy solids. */
 export const cardDesigns: CardDesign[] = [
-  { id: 'classic', name: 'Studio Classic', desc: 'Charcoal with lime pixel accents', bg: '#0E0E11', text: '#F4F4F2', sub: 'rgba(244,244,242,0.55)', accent: '#BFF549', deco: 'pixels' },
-  { id: 'statement', name: 'Lime Statement', desc: 'A bold lime edge that pops', bg: '#10130A', text: '#F4F7EC', sub: 'rgba(240,247,230,0.5)', accent: '#BFF549', deco: 'band' },
-  { id: 'royal', name: 'Royal Navy', desc: 'Deep navy with sky-blue detail', bg: '#0B1424', text: '#ECF3FF', sub: 'rgba(220,235,255,0.5)', accent: '#82B4FF', deco: 'corner' },
-  { id: 'gold', name: 'Gold Luxe', desc: 'Black & gold for premium brands', bg: '#161009', text: '#F6EEDF', sub: 'rgba(240,228,205,0.5)', accent: '#E6C079', deco: 'frame' },
-  { id: 'ivory', name: 'Fresh Ivory', desc: 'Light, airy and modern', bg: '#F4F2EC', text: '#141416', sub: 'rgba(20,20,22,0.55)', accent: '#0F766E', deco: 'dots' },
+  { id: 'cloud', name: 'Cloud White', desc: 'Pure white with fine graphite lines', bg: '#FCFCFA', text: '#17181A', sub: 'rgba(23,24,26,0.52)', accent: '#8A94A3', deco: 'line' },
+  { id: 'ivory', name: 'Ivory Mist', desc: 'Soft ivory with a whisper of terracotta', bg: '#F7F3EC', text: '#221E18', sub: 'rgba(34,30,24,0.52)', accent: '#D98E73', deco: 'halo' },
+  { id: 'sky', name: 'Sky Soft', desc: 'Airy pale blue, calm and trusted', bg: '#F1F6FB', text: '#16253C', sub: 'rgba(22,37,60,0.5)', accent: '#6FA8DC', deco: 'halo' },
+  { id: 'blush', name: 'Blush Petal', desc: 'Gentle rose for beauty & fashion', bg: '#FBF3F4', text: '#332024', sub: 'rgba(51,32,36,0.5)', accent: '#E39AA7', deco: 'dots' },
+  { id: 'sage', name: 'Sage Garden', desc: 'Fresh sage with a natural feel', bg: '#F3F6F0', text: '#1E2B1C', sub: 'rgba(30,43,28,0.5)', accent: '#86B284', deco: 'frame' },
 ];
 
 export function getCardDesign(id: string): CardDesign {
@@ -229,6 +245,13 @@ export const landingConfigs: Record<string, LandingConfig> = {
       { label: 'Primary School', price: 'From ₦45k/term' },
       { label: 'After-school Tutors', price: '₦15k/month' },
     ],
+  },
+  organization: {
+    headline: 'Serving our community with purpose',
+    cta: 'Get In Touch',
+    ctaIcon: 'logo-whatsapp',
+    layout: 'gallery',
+    items: [{ label: 'Our Programs' }, { label: 'Impact' }, { label: 'Volunteer' }],
   },
   medical: {
     headline: 'Quality care, close to home',

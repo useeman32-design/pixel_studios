@@ -156,17 +156,18 @@ export const offers: Offer[] = [
   {
     id: 'menu-design',
     categoryId: 'creative',
-    name: 'Menu Design',
-    blurb: 'Printed and digital menus for restaurants and cafés.',
+    name: 'Digital Menu',
+    blurb: 'A scannable, always-up-to-date menu page for your restaurant or café.',
     image: require('../../assets/images/menu.jpg'),
-    priceFrom: 18000,
+    priceFrom: 25000,
+    link: '/menu-studio',
     designs: [
-      { name: 'Classic', colors: ['#78350F', '#FCD34D'] },
-      { name: 'Modern', colors: ['#18181B', '#A1A1AA'] },
-      { name: 'Café', colors: ['#92400E', '#FDE68A'] },
-      { name: 'Fine Dining', colors: ['#0B0B0E', '#BFF549'] },
+      { name: 'Classic Chalk', colors: ['#14161A', '#E8E4DA'] },
+      { name: 'Café Light', colors: ['#8C5A3C', '#F3E5D6'] },
+      { name: 'Fine Dining', colors: ['#0D0B08', '#D9B36C'] },
+      { name: 'Printed Menu', colors: ['#78350F', '#FCD34D'] },
     ],
-    types: ['Printed menu', 'NFC digital menu', 'QR menu', 'Chalkboard style'],
+    types: ['QR table cards', 'Smart menu card', 'Menu page', 'Chalkboard style'],
   },
 
   /* -------------------------------- SMART -------------------------------- */

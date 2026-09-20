@@ -10,12 +10,14 @@ import { generateQR } from '../lib/qr';
 export type CardConfig = {
   tier: 'direct' | 'premium';
   directTarget: string;
+  directValue?: string;
   material: 'paper' | 'plastic';
   designMode: 'studio' | 'custom';
   cardDesign: CardDesign;
   logoUri?: string | null;
   name: string;
   business: string;
+  rank?: string;
   username: string;
   phone?: string;
   address?: string;
@@ -50,60 +52,42 @@ function RealQR({ payload, size = 62 }: { payload: string; size?: number }) {
 
 /* ------------------------------ Design decors ------------------------------ */
 
+/** Soft, subtle decorations for light card faces. */
 function Deco({ deco, accent }: { deco: CardDesign['deco']; accent: string }) {
-  if (deco === 'pixels') {
-    const rows = [
-      [1, 0, 1, 1, 0],
-      [0, 1, 0, 1, 1],
-      [1, 1, 0, 0, 1],
-    ];
-    return (
-      <View style={{ position: 'absolute', right: 20, top: 54, gap: 2.5 }}>
-        {rows.map((row, r) => (
-          <View key={r} style={{ flexDirection: 'row', gap: 2.5 }}>
-            {row.map((v, c) => (
-              <View
-                key={c}
-                style={{
-                  width: 4.5,
-                  height: 4.5,
-                  borderRadius: 1,
-                  backgroundColor: v ? accent : 'transparent',
-                  opacity: v ? ((c + r) % 3 === 0 ? 0.45 : 1) : 0,
-                }}
-              />
-            ))}
-          </View>
-        ))}
-      </View>
-    );
-  }
-  if (deco === 'band') {
+  if (deco === 'halo') {
     return (
       <>
-        <View style={{ position: 'absolute', top: 26, right: -34, width: 120, height: 14, backgroundColor: accent, opacity: 0.9, transform: [{ rotate: '-32deg' }] }} />
-        <View style={{ position: 'absolute', top: 46, right: -34, width: 120, height: 5, backgroundColor: accent, opacity: 0.35, transform: [{ rotate: '-32deg' }] }} />
+        <View style={{ position: 'absolute', top: -54, right: -46, width: 170, height: 170, borderRadius: 85, backgroundColor: accent, opacity: 0.13 }} />
+        <View style={{ position: 'absolute', bottom: -64, left: -50, width: 150, height: 150, borderRadius: 75, backgroundColor: accent, opacity: 0.09 }} />
+      </>
+    );
+  }
+  if (deco === 'line') {
+    return (
+      <>
+        <View style={{ position: 'absolute', top: 52, left: 22, width: 44, height: 3, borderRadius: 2, backgroundColor: accent, opacity: 0.85 }} />
+        <View style={{ position: 'absolute', bottom: 46, right: 22, width: 24, height: 3, borderRadius: 2, backgroundColor: accent, opacity: 0.4 }} />
       </>
     );
   }
   if (deco === 'corner') {
     return (
       <>
-        <View style={{ position: 'absolute', top: 46, left: 14, width: 26, height: 26, borderLeftWidth: 2, borderTopWidth: 2, borderColor: accent }} />
-        <View style={{ position: 'absolute', bottom: 40, right: 14, width: 26, height: 26, borderRightWidth: 2, borderBottomWidth: 2, borderColor: accent }} />
+        <View style={{ position: 'absolute', top: 44, left: 16, width: 30, height: 30, borderLeftWidth: 1.5, borderTopWidth: 1.5, borderColor: accent, opacity: 0.75 }} />
+        <View style={{ position: 'absolute', bottom: 40, right: 16, width: 30, height: 30, borderRightWidth: 1.5, borderBottomWidth: 1.5, borderColor: accent, opacity: 0.75 }} />
       </>
     );
   }
   if (deco === 'frame') {
     return (
-      <View style={{ position: 'absolute', top: 9, left: 9, right: 9, bottom: 9, borderWidth: 1, borderColor: accent + '55', borderRadius: 14 }} />
+      <View style={{ position: 'absolute', top: 9, left: 9, right: 9, bottom: 9, borderWidth: 1, borderColor: accent + '4D', borderRadius: 14 }} />
     );
   }
   // dots
   return (
-    <View style={{ position: 'absolute', right: 20, top: 58, flexDirection: 'row', gap: 3.5 }}>
-      {[1, 0.7, 0.45, 0.7, 1].map((op, i) => (
-        <View key={i} style={{ width: 5, height: 5, borderRadius: 2.5, backgroundColor: accent, opacity: op }} />
+    <View style={{ position: 'absolute', right: 20, top: 56, flexDirection: 'row', gap: 4 }}>
+      {[1, 0.65, 0.4, 0.65, 1].map((op, i) => (
+        <View key={i} style={{ width: 4.5, height: 4.5, borderRadius: 2.25, backgroundColor: accent, opacity: op }} />
       ))}
     </View>
   );
@@ -156,18 +140,30 @@ export default function SmartCard({ config }: { config: CardConfig }) {
   const ownerName = config.name || 'Your Name';
   const initial = businessName.trim().charAt(0).toUpperCase() || 'B';
 
-  const qrPayload =
-    config.tier === 'premium'
-      ? `https://pixelstudios.com/card/${config.username}`
-      : config.directTarget === 'whatsapp'
-        ? `https://wa.me/${CONTACT.whatsappNumber}`
-        : config.directTarget === 'phone'
-          ? `tel:${config.phone || CONTACT.phoneRaw}`
-          : config.directTarget === 'instagram'
-            ? 'https://instagram.com'
-            : config.directTarget === 'website'
-              ? `https://pixelstudios.com/card/${config.username}`
-              : `mailto:hello@example.com`;
+  const qrPayload = useMemo(() => {
+    if (config.tier === 'premium') return `https://pixelstudios.com/card/${config.username}`;
+    const v = (config.directValue || '').trim();
+    const isUrl = /^https?:\/\//i.test(v);
+    switch (config.directTarget) {
+      case 'whatsapp': {
+        if (isUrl) return v;
+        const digits = v.replace(/\D/g, '');
+        return `https://wa.me/${digits || CONTACT.whatsappNumber}`;
+      }
+      case 'instagram':
+        return isUrl ? v : `https://instagram.com/${v.replace(/^@/, '') || 'pixelstudios.ng'}`;
+      case 'x':
+        return isUrl ? v : `https://x.com/${v.replace(/^@/, '') || ''}`;
+      case 'linkedin':
+        return isUrl ? v : `https://linkedin.com/in/${v}`;
+      case 'facebook':
+        return isUrl ? v : `https://facebook.com/${v}`;
+      case 'email':
+        return v ? `mailto:${v}` : `https://pixelstudios.com/card/${config.username}`;
+      default:
+        return v ? (isUrl ? v : `https://${v}`) : `https://pixelstudios.com/card/${config.username}`;
+    }
+  }, [config.tier, config.directTarget, config.directValue, config.username]);
 
   /* -------------------------------- FRONT -------------------------------- */
   const front = (
@@ -192,11 +188,16 @@ export default function SmartCard({ config }: { config: CardConfig }) {
         <Ionicons name={config.tier === 'direct' ? 'qr-code-outline' : 'wifi-outline'} size={15} color={d.accent} />
       </View>
 
-      {/* Owner — bold */}
+      {/* Owner — bold, with rank */}
       <View style={{ flex: 1, justifyContent: 'flex-end' }}>
         <Text style={[styles.name, { color: d.text }]} numberOfLines={1}>
           {ownerName}
         </Text>
+        {(config.rank || '').trim().length > 0 && (
+          <Text style={[styles.rankText, { color: d.accent }]} numberOfLines={1}>
+            {(config.rank || '').toUpperCase()}
+          </Text>
+        )}
         <View style={styles.bottomRow}>
           {/* Studio credit — bottom */}
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
@@ -320,6 +321,7 @@ const styles = StyleSheet.create({
   },
   bizBrand: { fontFamily: fonts.bold, fontSize: 12, letterSpacing: 1.4, textTransform: 'uppercase' },
   name: { fontFamily: fonts.bold, fontSize: 23, letterSpacing: -0.4 },
+  rankText: { fontFamily: fonts.bold, fontSize: 8.5, letterSpacing: 2, marginTop: 3 },
   bottomRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',

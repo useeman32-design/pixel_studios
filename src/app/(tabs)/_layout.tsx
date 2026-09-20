@@ -117,24 +117,49 @@ function GlassBar({ index, onNavigate }: { index: number; onNavigate: (name: str
 }
 
 /* ------------------------------ Ask AI button ------------------------------ */
-/** A quiet, professional floating shortcut to Pixel AI. */
+/**
+ * Floating Ask AI shortcut on the right. Every few seconds it gently expands
+ * to reveal the "Ask AI" label, then quietly hides it again.
+ */
 function AskAiButton({ onPress }: { onPress: () => void }) {
   const { colors, isDark } = useTheme();
+  const expand = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.delay(2400),
+        Animated.timing(expand, { toValue: 1, duration: 650, useNativeDriver: false }),
+        Animated.delay(2600),
+        Animated.timing(expand, { toValue: 0, duration: 650, useNativeDriver: false }),
+      ]),
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [expand]);
+
+  const width = expand.interpolate({ inputRange: [0, 1], outputRange: [52, 132] });
+  const labelOpacity = expand.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0, 1] });
 
   return (
-    <Pressable
-      onPress={onPress}
-      style={({ pressed }) => [
-        styles.askAi,
-        {
-          backgroundColor: isDark ? 'rgba(20,20,22,0.78)' : 'rgba(255,255,255,0.88)',
-          borderColor: isDark ? 'rgba(255,255,255,0.14)' : 'rgba(12,12,14,0.12)',
-          opacity: pressed ? 0.85 : 1,
-        },
-      ]}>
-      <Ionicons name="sparkles" size={19} color={colors.lime} />
-      <Text style={[styles.askAiText, { color: colors.text }]}>Ask AI</Text>
-    </Pressable>
+    <Animated.View style={{ width, height: 52, borderRadius: 26 }}>
+      <Pressable
+        onPress={onPress}
+        style={({ pressed }) => [
+          StyleSheet.absoluteFill,
+          styles.askAi,
+          {
+            backgroundColor: isDark ? 'rgba(20,20,22,0.78)' : 'rgba(255,255,255,0.88)',
+            borderColor: isDark ? 'rgba(255,255,255,0.14)' : 'rgba(12,12,14,0.12)',
+            opacity: pressed ? 0.85 : 1,
+          },
+        ]}>
+        <Ionicons name="sparkles" size={19} color={colors.lime} />
+        <Animated.Text style={[styles.askAiText, { color: colors.text, opacity: labelOpacity }]} numberOfLines={1}>
+          Ask AI
+        </Animated.Text>
+      </Pressable>
+    </Animated.View>
   );
 }
 
@@ -142,17 +167,17 @@ const styles = StyleSheet.create({
   askAi: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: 8,
-    height: 48,
-    borderRadius: 24,
-    paddingHorizontal: 18,
+    borderRadius: 26,
     borderWidth: StyleSheet.hairlineWidth,
+    overflow: 'hidden',
     ...Platform.select({
       ios: { shadowColor: '#000', shadowOpacity: 0.35, shadowRadius: 12, shadowOffset: { width: 0, height: 5 } },
       android: { elevation: 6 },
     }),
   },
-  askAiText: { fontFamily: fonts.semi, fontSize: 14.5 },
+  askAiText: { fontFamily: fonts.semi, fontSize: 14.5, width: 58, textAlign: 'left' },
 });
 
 /* ---------------------------------- Layout --------------------------------- */

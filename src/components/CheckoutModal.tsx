@@ -2,13 +2,10 @@ import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
+import SelectSheet from './SelectSheet';
 import { Button } from './ui';
 import { fonts, radius, sp, useTheme } from '../constants/theme';
-
-const states = [
-  'Zamfara', 'Kano', 'Kaduna', 'Katsina', 'Sokoto', 'Kebbi', 'Niger', 'FCT Abuja',
-  'Lagos', 'Oyo', 'Ogun', 'Rivers', 'Jigawa', 'Borno', 'Plateau', 'Bauchi', 'Gombe',
-];
+import { NIGERIA_LGAS, NIGERIA_STATES } from '../data/nigeria';
 
 /**
  * In-app checkout: delivery details (fullname, phone, address, state, LGA)
@@ -32,8 +29,10 @@ export default function CheckoutModal({
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
-  const [state_, setState] = useState('Zamfara');
+  const [state_, setState] = useState('');
   const [lga, setLga] = useState('');
+  const [stateSheet, setStateSheet] = useState(false);
+  const [lgaSheet, setLgaSheet] = useState(false);
 
   const valid =
     fullName.trim().length > 1 &&
@@ -84,19 +83,22 @@ export default function CheckoutModal({
             {method === 'delivery' && (
               <>
                 <TextInput value={address} onChangeText={setAddress} placeholder="Delivery address" placeholderTextColor={colors.muted} style={[styles.input, { backgroundColor: colors.surface, borderColor: colors.hairline, color: colors.text }]} />
-                <View style={{ flexDirection: 'row', gap: sp.x2_ }}>
-                  <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flex: 1 }} contentContainerStyle={{ gap: 8 }}>
-                    {states.map((s) => (
-                      <Pressable
-                        key={s}
-                        onPress={() => setState(s)}
-                        style={[styles.stateChip, { backgroundColor: colors.surface, borderColor: state_ === s ? colors.lime : colors.hairline }]}>
-                        <Text style={[styles.stateChipText, { color: state_ === s ? (colors.isDark ? colors.lime : '#5E8A0D') : colors.subtext }]}>{s}</Text>
-                      </Pressable>
-                    ))}
-                  </ScrollView>
-                </View>
-                <TextInput value={lga} onChangeText={setLga} placeholder="Local Government Area (LGA)" placeholderTextColor={colors.muted} style={[styles.input, { backgroundColor: colors.surface, borderColor: colors.hairline, color: colors.text }]} />
+                <Pressable
+                  onPress={() => setStateSheet(true)}
+                  style={[styles.input, styles.selectRow, { backgroundColor: colors.surface, borderColor: colors.hairline }]}>
+                  <Text style={{ fontFamily: fonts.regular, fontSize: 16, color: state_ ? colors.text : colors.muted }}>
+                    {state_ || 'Select state'}
+                  </Text>
+                  <Ionicons name="chevron-down" size={16} color={colors.muted} />
+                </Pressable>
+                <Pressable
+                  onPress={() => state_ && setLgaSheet(true)}
+                  style={[styles.input, styles.selectRow, { backgroundColor: colors.surface, borderColor: colors.hairline, opacity: state_ ? 1 : 0.5 }]}>
+                  <Text style={{ fontFamily: fonts.regular, fontSize: 16, color: lga ? colors.text : colors.muted }}>
+                    {lga || 'Select Local Government (LGA)'}
+                  </Text>
+                  <Ionicons name="chevron-down" size={16} color={colors.muted} />
+                </Pressable>
               </>
             )}
 
@@ -127,6 +129,26 @@ export default function CheckoutModal({
           </ScrollView>
         </View>
       </View>
+
+      <SelectSheet
+        visible={stateSheet}
+        title="Select state"
+        options={NIGERIA_STATES}
+        value={state_}
+        onSelect={(s) => {
+          setState(s);
+          setLga('');
+        }}
+        onClose={() => setStateSheet(false)}
+      />
+      <SelectSheet
+        visible={lgaSheet}
+        title={`LGAs in ${state_}`}
+        options={NIGERIA_LGAS[state_] ?? []}
+        value={lga}
+        onSelect={setLga}
+        onClose={() => setLgaSheet(false)}
+      />
     </Modal>
   );
 }
@@ -165,13 +187,11 @@ const styles = StyleSheet.create({
     fontFamily: fonts.regular,
     fontSize: 16,
   },
-  stateChip: {
-    paddingHorizontal: 14,
-    paddingVertical: 9,
-    borderRadius: 999,
-    borderWidth: 1,
+  selectRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
-  stateChipText: { fontFamily: fonts.medium, fontSize: 13 },
   pickupNote: {
     flexDirection: 'row',
     alignItems: 'center',

@@ -12,6 +12,7 @@ export type LandingData = {
   businessType: BusinessType;
   name: string;
   business: string;
+  rank?: string;
   profileUri?: string | null;
   logoUri?: string | null;
   phone?: string;
@@ -65,15 +66,20 @@ function OwnerBlock({
     </View>
   );
 
+  const rank = (d.rank || 'Owner').trim();
+
   if (center) {
     return (
       <View style={{ alignItems: 'center', marginTop: 18 }}>
         {avatar}
         <Text style={{ fontFamily: fonts.extrabold, fontSize: 22, letterSpacing: -0.6, color: text, marginTop: 10 }}>
-          {d.name || 'Owner'}
+          {d.name || displayName}
+        </Text>
+        <Text style={{ fontFamily: fonts.bold, fontSize: 10.5, letterSpacing: 2, color: accent, marginTop: 4 }}>
+          {rank.toUpperCase()}
         </Text>
         <Text style={{ fontFamily: fonts.medium, fontSize: 12.5, color: sub, marginTop: 2 }}>
-          Owner · {displayName}
+          {displayName}
         </Text>
       </View>
     );
@@ -84,10 +90,13 @@ function OwnerBlock({
       {avatar}
       <View style={{ flex: 1 }}>
         <Text style={{ fontFamily: fonts.extrabold, fontSize: 19, letterSpacing: -0.4, color: text }} numberOfLines={1}>
-          {d.name || 'Owner'}
+          {d.name || displayName}
+        </Text>
+        <Text style={{ fontFamily: fonts.bold, fontSize: 10, letterSpacing: 1.6, color: accent, marginTop: 2 }}>
+          {rank.toUpperCase()}
         </Text>
         <Text style={{ fontFamily: fonts.medium, fontSize: 12, color: sub, marginTop: 2 }}>
-          Owner · {d.businessType.label}
+          {d.businessType.label}
         </Text>
       </View>
       <View style={chipRow(accent + '1F')}>
@@ -201,11 +210,11 @@ function ContactRows({ d, text, sub }: { d: LandingData; text: string; sub: stri
   );
 }
 
-function Footer({ d, sub }: { d: LandingData; sub: string }) {
-  const user = slugify(d.name || d.business || d.businessType.sample);
+function Footer({ d, sub, text }: { d: LandingData; sub: string; text?: string }) {
+  const displayName = d.business || d.businessType.sample;
   return (
     <View style={{ alignItems: 'center', marginTop: 22, gap: 4 }}>
-      <Text style={{ fontFamily: fonts.medium, fontSize: 11.5, color: sub }}>pixelstudios.com/card/{user}</Text>
+      <Text style={{ fontFamily: fonts.bold, fontSize: 12, letterSpacing: 1.2, color: text ?? sub }}>{displayName.toUpperCase()}</Text>
       <Text style={{ fontFamily: fonts.bold, fontSize: 8, letterSpacing: 2.2, color: sub }}>POWERED BY ▚ PIXEL STUDIOS</Text>
     </View>
   );
@@ -485,10 +494,10 @@ function ElegantLuxe({ d }: { d: LandingData }) {
           {cfg.headline}
         </Text>
 
-        {/* Arch portrait */}
-        <View style={{ marginTop: 22, width: 190, ...shadow(0.6, 24, 14) }}>
-          <View style={{ borderRadius: 95, overflow: 'hidden', borderWidth: 1.5, borderColor: gold + '88' }}>
-            <Image source={d.businessType.hero} style={{ width: 190, height: 240 }} contentFit="cover" />
+        {/* Arch portrait — tall so the full image stays visible */}
+        <View style={{ marginTop: 22, alignSelf: 'stretch', marginHorizontal: 8, ...shadow(0.6, 24, 14) }}>
+          <View style={{ borderTopLeftRadius: 130, borderTopRightRadius: 130, borderBottomLeftRadius: 18, borderBottomRightRadius: 18, overflow: 'hidden', borderWidth: 1.5, borderColor: gold + '88' }}>
+            <Image source={d.businessType.hero} style={{ width: '100%', height: 300 }} contentFit="cover" />
           </View>
         </View>
 
@@ -695,6 +704,256 @@ function FreshPop({ d }: { d: LandingData }) {
   );
 }
 
+/* ===========================================================================
+ * Institutional helpers — team rows with ranks (schools & organizations).
+ * ========================================================================= */
+function TeamSection({ d, text, sub, accent, surface }: { d: LandingData; text: string; sub: string; accent: string; surface: string }) {
+  const team = d.businessType.team ?? [];
+  if (team.length === 0) return null;
+  return (
+    <View style={{ alignSelf: 'stretch', marginTop: 20 }}>
+      <Text style={{ fontFamily: fonts.bold, fontSize: 12, letterSpacing: 2, color: sub, marginBottom: 10 }}>
+        {d.businessType.institutional ? 'OUR LEADERSHIP' : 'OUR TEAM'}
+      </Text>
+      <View style={{ borderRadius: 16, backgroundColor: surface, borderWidth: StyleSheet.hairlineWidth, borderColor: accent + '33', overflow: 'hidden' }}>
+        {team.map((m, i) => {
+          const initial = m.name.replace(/^(Mrs?\.|Ms\.|Alhaji)\s+/i, '').charAt(0).toUpperCase();
+          return (
+            <View
+              key={m.name}
+              style={[
+                { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 14, paddingVertical: 12 },
+                i > 0 && { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: accent + '22' },
+              ]}>
+              <View style={{ width: 38, height: 38, borderRadius: 19, backgroundColor: accent + '22', alignItems: 'center', justifyContent: 'center' }}>
+                <Text style={{ fontFamily: fonts.bold, fontSize: 14, color: accent }}>{initial}</Text>
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontFamily: fonts.bold, fontSize: 13.5, color: text }}>{m.name}</Text>
+                <Text style={{ fontFamily: fonts.bold, fontSize: 9, letterSpacing: 1.6, color: accent, marginTop: 2 }}>
+                  {m.rank.toUpperCase()}
+                </Text>
+              </View>
+              <Ionicons name="chatbubble-outline" size={14} color={sub} />
+            </View>
+          );
+        })}
+      </View>
+    </View>
+  );
+}
+
+/* ===========================================================================
+ * 7 · CAMPUS CREST — for schools & academies: crest header, motto, noticeboard.
+ * ========================================================================= */
+function CampusCrest({ d }: { d: LandingData }) {
+  const cfg = landingConfigs[d.businessType.id] ?? landingConfigs.general;
+  const displayName = d.business || d.businessType.sample;
+  const gold = '#E9C46A';
+
+  return (
+    <View style={{ backgroundColor: '#0E1B2C', paddingBottom: 26 }}>
+      <LinearGradient colors={['rgba(233,196,106,0.12)', 'transparent']} style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 180 }} />
+      <View style={{ paddingHorizontal: 22, paddingTop: 22 }}>
+        {/* Crest header */}
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+          {d.logoUri ? (
+            <Image source={{ uri: d.logoUri }} style={{ width: 52, height: 52, borderRadius: 26, borderWidth: 2, borderColor: gold }} />
+          ) : (
+            <View style={{ width: 52, height: 52, borderRadius: 26, borderWidth: 2, borderColor: gold, backgroundColor: '#16263C', alignItems: 'center', justifyContent: 'center' }}>
+              <Ionicons name="school" size={22} color={gold} />
+            </View>
+          )}
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontFamily: fonts.extrabold, fontSize: 19, letterSpacing: -0.3, color: '#EAF1FA' }} numberOfLines={1}>{displayName}</Text>
+            <Text style={{ fontFamily: fonts.bold, fontSize: 8.5, letterSpacing: 2.2, color: gold, marginTop: 3 }}>
+              KNOWLEDGE · DISCIPLINE · SERVICE
+            </Text>
+          </View>
+          <View style={chipRow('rgba(233,196,106,0.14)')}>
+            <Ionicons name="ribbon-outline" size={12} color={gold} />
+            <Text style={{ fontFamily: fonts.semi, fontSize: 10, color: gold }}>{d.businessType.badge}</Text>
+          </View>
+        </View>
+
+        <Text style={{ fontFamily: fonts.extrabold, fontSize: 25, lineHeight: 30, letterSpacing: -0.8, color: '#EAF1FA', marginTop: 18 }}>
+          {cfg.headline}
+        </Text>
+        <Text style={{ fontFamily: fonts.regular, fontSize: 13, color: '#8FA5BF', marginTop: 6 }}>{d.businessType.tagline}</Text>
+
+        <View style={{ marginTop: 16, borderRadius: 16, overflow: 'hidden', ...shadow(0.5, 20, 12) }}>
+          <Image source={d.businessType.hero} style={{ width: '100%', height: 170 }} contentFit="cover" />
+        </View>
+
+        <OwnerBlock d={d} text="#EAF1FA" sub="#8FA5BF" accent={gold} />
+        <TeamSection d={d} text="#EAF1FA" sub="#8FA5BF" accent={gold} surface="#16263C" />
+
+        {/* Noticeboard */}
+        <View style={{ marginTop: 16, borderRadius: 14, backgroundColor: '#16263C', borderWidth: StyleSheet.hairlineWidth, borderColor: 'rgba(233,196,106,0.25)', padding: 14 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+            <Ionicons name="megaphone-outline" size={13} color={gold} />
+            <Text style={{ fontFamily: fonts.bold, fontSize: 11, letterSpacing: 1.6, color: gold }}>NOTICEBOARD</Text>
+          </View>
+          {cfg.items.map((it) => (
+            <View key={it.label} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 6 }}>
+              <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: gold, marginRight: 10 }} />
+              <Text style={{ flex: 1, fontFamily: fonts.medium, fontSize: 12.5, color: '#EAF1FA' }}>{it.label}</Text>
+              {it.price ? <Text style={{ fontFamily: fonts.semi, fontSize: 11.5, color: gold }}>{it.price}</Text> : null}
+            </View>
+          ))}
+        </View>
+
+        <StatsHours d={d} text="#EAF1FA" sub="#8FA5BF" accent={gold} />
+        {d.description ? (
+          <Text style={{ fontFamily: fonts.regular, fontSize: 12.5, lineHeight: 18, color: '#8FA5BF', marginTop: 16 }}>{d.description}</Text>
+        ) : null}
+        <ContactRows d={d} text="#EAF1FA" sub="#8FA5BF" />
+
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 18, borderRadius: 12, backgroundColor: gold, paddingVertical: 14 }}>
+          <Ionicons name={cfg.ctaIcon as any} size={16} color="#0E1B2C" />
+          <Text style={{ fontFamily: fonts.bold, fontSize: 14.5, color: '#0E1B2C' }}>{cfg.cta}</Text>
+        </View>
+        <Footer d={d} sub="#5D7290" text="#EAF1FA" />
+      </View>
+    </View>
+  );
+}
+
+/* ===========================================================================
+ * 8 · CORPORATE SUITE — for organizations: clean white, org chart, brief.
+ * ========================================================================= */
+function CorporateSuite({ d }: { d: LandingData }) {
+  const cfg = landingConfigs[d.businessType.id] ?? landingConfigs.general;
+  const displayName = d.business || d.businessType.sample;
+  const blue = '#1D6FE0';
+
+  return (
+    <View style={{ backgroundColor: '#FFFFFF', paddingBottom: 26 }}>
+      <View style={{ height: 5, backgroundColor: blue }} />
+      <View style={{ paddingHorizontal: 22, paddingTop: 18 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+          {d.logoUri ? (
+            <Image source={{ uri: d.logoUri }} style={{ width: 46, height: 46, borderRadius: 12 }} />
+          ) : (
+            <View style={{ width: 46, height: 46, borderRadius: 12, backgroundColor: '#F2F5F9', borderWidth: 1, borderColor: '#E1E8F2', alignItems: 'center', justifyContent: 'center' }}>
+              <Ionicons name={d.businessType.icon as any} size={20} color={blue} />
+            </View>
+          )}
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontFamily: fonts.extrabold, fontSize: 18, letterSpacing: -0.3, color: '#101B2B' }} numberOfLines={1}>{displayName}</Text>
+            <Text style={{ fontFamily: fonts.medium, fontSize: 11.5, color: '#5E6E85' }}>{d.businessType.label}</Text>
+          </View>
+          <View style={chipRow('#EAF2FD')}>
+            <Ionicons name="shield-checkmark-outline" size={12} color={blue} />
+            <Text style={{ fontFamily: fonts.semi, fontSize: 10, color: blue }}>Registered</Text>
+          </View>
+        </View>
+
+        <Text style={{ fontFamily: fonts.extrabold, fontSize: 25, lineHeight: 30, letterSpacing: -0.8, color: '#101B2B', marginTop: 18 }}>
+          {cfg.headline}
+        </Text>
+        <Text style={{ fontFamily: fonts.regular, fontSize: 13, lineHeight: 19, color: '#5E6E85', marginTop: 6 }}>
+          {d.description || d.businessType.tagline}
+        </Text>
+
+        <View style={{ flexDirection: 'row', gap: 10, marginTop: 16 }}>
+          {[
+            { v: d.businessType.rating, l: 'Rating' },
+            { v: d.businessType.reviews, l: 'Track record' },
+            { v: '2019', l: 'Established' },
+          ].map((s) => (
+            <View key={s.l} style={{ flex: 1, borderRadius: 12, backgroundColor: '#F2F5F9', paddingVertical: 12, alignItems: 'center' }}>
+              <Text style={{ fontFamily: fonts.extrabold, fontSize: 14, color: '#101B2B' }}>{s.v}</Text>
+              <Text style={{ fontFamily: fonts.medium, fontSize: 9.5, color: '#5E6E85', marginTop: 2 }}>{s.l}</Text>
+            </View>
+          ))}
+        </View>
+
+        <OwnerBlock d={d} text="#101B2B" sub="#5E6E85" accent={blue} />
+        <TeamSection d={d} text="#101B2B" sub="#5E6E85" accent={blue} surface="#F7F9FC" />
+
+        {/* Focus areas */}
+        <View style={{ marginTop: 16 }}>
+          <Text style={{ fontFamily: fonts.bold, fontSize: 12, letterSpacing: 2, color: '#5E6E85', marginBottom: 8 }}>WHAT WE DO</Text>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+            {cfg.items.map((it) => (
+              <View key={it.label} style={{ borderRadius: 10, backgroundColor: '#EAF2FD', paddingHorizontal: 13, paddingVertical: 9 }}>
+                <Text style={{ fontFamily: fonts.semi, fontSize: 12, color: '#1D6FE0' }}>{it.label}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+
+        <ContactRows d={d} text="#101B2B" sub="#5E6E85" />
+
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 18, borderRadius: 10, backgroundColor: blue, paddingVertical: 14 }}>
+          <Ionicons name={cfg.ctaIcon as any} size={16} color="#FFFFFF" />
+          <Text style={{ fontFamily: fonts.bold, fontSize: 14.5, color: '#FFFFFF' }}>{cfg.cta}</Text>
+        </View>
+        <Footer d={d} sub="#9DAEC6" text="#101B2B" />
+      </View>
+    </View>
+  );
+}
+
+/* ===========================================================================
+ * 9 · COMMUNITY WARM — for NGOs & community orgs: warm green, mission first.
+ * ========================================================================= */
+function CommunityWarm({ d }: { d: LandingData }) {
+  const cfg = landingConfigs[d.businessType.id] ?? landingConfigs.general;
+  const displayName = d.business || d.businessType.sample;
+  const green = '#3E9B4F';
+
+  return (
+    <View style={{ backgroundColor: '#F1F7F0', paddingBottom: 26 }}>
+      <View style={{ paddingHorizontal: 22, paddingTop: 20 }}>
+        <View style={chipRow('#DFF0E2')}>
+          <Ionicons name="heart" size={11} color={green} />
+          <Text style={{ fontFamily: fonts.bold, fontSize: 10, color: green, letterSpacing: 1 }}>COMMUNITY FIRST</Text>
+        </View>
+
+        <Text style={{ fontFamily: fonts.extrabold, fontSize: 27, lineHeight: 31, letterSpacing: -0.9, color: '#1C2B1A', marginTop: 14 }}>
+          {displayName}
+        </Text>
+        <Text style={{ fontFamily: fonts.regular, fontSize: 14, lineHeight: 20, color: '#66795F', marginTop: 6 }}>
+          {cfg.headline}. {d.businessType.tagline}.
+        </Text>
+
+        <View style={{ marginTop: 16, borderRadius: 20, overflow: 'hidden', ...shadow(0.3, 16, 9) }}>
+          <Image source={d.businessType.hero} style={{ width: '100%', height: 165 }} contentFit="cover" />
+        </View>
+
+        <OwnerBlock d={d} text="#1C2B1A" sub="#66795F" accent={green} />
+        <TeamSection d={d} text="#1C2B1A" sub="#66795F" accent={green} surface="#FFFFFF" />
+
+        {/* Programs */}
+        <View style={{ marginTop: 16, gap: 8 }}>
+          {cfg.items.map((it, i) => (
+            <View key={it.label} style={{ flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#FFFFFF', borderRadius: 14, padding: 13, ...shadow(0.12, 8, 4) }}>
+              <View style={{ width: 34, height: 34, borderRadius: 10, backgroundColor: green + (i === 1 ? '33' : '1F'), alignItems: 'center', justifyContent: 'center' }}>
+                <Ionicons name={d.businessType.icon as any} size={15} color={green} />
+              </View>
+              <Text style={{ flex: 1, fontFamily: fonts.semi, fontSize: 13.5, color: '#1C2B1A' }}>{it.label}</Text>
+              <Ionicons name="arrow-forward" size={13} color="#66795F" />
+            </View>
+          ))}
+        </View>
+
+        {d.description ? (
+          <Text style={{ fontFamily: fonts.regular, fontSize: 12.5, lineHeight: 18, color: '#66795F', marginTop: 16 }}>{d.description}</Text>
+        ) : null}
+        <ContactRows d={d} text="#1C2B1A" sub="#66795F" />
+
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 18, borderRadius: 999, backgroundColor: green, paddingVertical: 14 }}>
+          <Ionicons name={cfg.ctaIcon as any} size={16} color="#FFFFFF" />
+          <Text style={{ fontFamily: fonts.bold, fontSize: 14.5, color: '#FFFFFF' }}>{cfg.cta}</Text>
+        </View>
+        <Footer d={d} sub="#9DB49A" text="#1C2B1A" />
+      </View>
+    </View>
+  );
+}
+
 /* ================================ dispatch ================================= */
 
 export default function LandingPage(props: LandingData) {
@@ -709,6 +968,12 @@ export default function LandingPage(props: LandingData) {
       return <TrustPro d={props} />;
     case 'pop':
       return <FreshPop d={props} />;
+    case 'campus':
+      return <CampusCrest d={props} />;
+    case 'corporate':
+      return <CorporateSuite d={props} />;
+    case 'community':
+      return <CommunityWarm d={props} />;
     default:
       return <SignatureDark d={props} />;
   }

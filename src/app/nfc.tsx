@@ -18,6 +18,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CheckoutModal from '../components/CheckoutModal';
 import LandingPage from '../components/LandingPage';
 import LandingPreview from '../components/LandingPreview';
+import SelectSheet from '../components/SelectSheet';
 import SmartCard from '../components/SmartCard';
 import { BackBar, Button, Container, Eyebrow, FadeIn, OptChip } from '../components/ui';
 import { CONTACT, waLink } from '../constants/contact';
@@ -34,11 +35,12 @@ const prices: Record<Tier, Record<Material, number>> = {
 };
 
 const directTargets = [
-  { id: 'whatsapp', label: 'WhatsApp', icon: 'logo-whatsapp' },
-  { id: 'instagram', label: 'Instagram', icon: 'logo-instagram' },
-  { id: 'phone', label: 'Phone call', icon: 'call-outline' },
-  { id: 'website', label: 'Website', icon: 'globe-outline' },
-  { id: 'email', label: 'Email', icon: 'mail-outline' },
+  { id: 'whatsapp', label: 'WhatsApp', icon: 'logo-whatsapp', placeholder: 'Phone number or wa.me link', hint: 'e.g. 09031528732 or wa.me/2349031528732' },
+  { id: 'instagram', label: 'Instagram', icon: 'logo-instagram', placeholder: '@username or profile link', hint: 'e.g. @yourbrand or instagram.com/yourbrand' },
+  { id: 'x', label: 'X (Twitter)', icon: 'logo-twitter', placeholder: '@handle or profile link', hint: 'e.g. @yourbrand or x.com/yourbrand' },
+  { id: 'linkedin', label: 'LinkedIn', icon: 'logo-linkedin', placeholder: 'Profile link or username', hint: 'e.g. linkedin.com/in/yourname' },
+  { id: 'facebook', label: 'Facebook', icon: 'logo-facebook', placeholder: 'Page link or username', hint: 'e.g. facebook.com/yourpage' },
+  { id: 'website', label: 'Website', icon: 'globe-outline', placeholder: 'Website URL', hint: 'e.g. yourbusiness.com' },
 ];
 
 const DESIGN_W = 168;
@@ -52,6 +54,9 @@ export default function NFCScreen() {
 
   const [tier, setTier] = useState<Tier>(params.tier === 'direct' ? 'direct' : 'premium');
   const [directTarget, setDirectTarget] = useState('whatsapp');
+  const [directValue, setDirectValue] = useState('');
+  const [rank, setRank] = useState('Owner');
+  const [rankSheetVisible, setRankSheetVisible] = useState(false);
   const [bizTypeId, setBizTypeId] = useState('catering');
   const [templateId, setTemplateId] = useState('signature');
   const [material, setMaterial] = useState<Material>('plastic');
@@ -80,18 +85,20 @@ export default function NFCScreen() {
     () => ({
       tier,
       directTarget,
+      directValue,
       material,
       designMode,
       cardDesign,
       logoUri,
       name,
       business,
+      rank,
       username,
       phone,
       address,
       description,
     }),
-    [tier, directTarget, material, designMode, cardDesign, logoUri, name, business, username, phone, address, description],
+    [tier, directTarget, directValue, material, designMode, cardDesign, logoUri, name, business, rank, username, phone, address, description],
   );
 
   const pickImage = async (setter: (uri: string) => void) => {
@@ -106,7 +113,8 @@ export default function NFCScreen() {
   const waMessage = `Hello Pixel Studios! I'd like to order a *${tier === 'premium' ? 'Premium Portfolio Card' : 'Direct Smart Card'}*.
 
 Tier: ${tier === 'premium' ? 'Premium (portfolio landing page)' : 'Direct (single link)'}
-${tier === 'premium' ? `Business type: ${bizType.label}\nTemplate: ${template.name}\nPage: pixelstudios.com/card/${username}` : `Opens: ${directTargets.find((t) => t.id === directTarget)?.label}`}
+${tier === 'premium' ? `Business type: ${bizType.label}\nTemplate: ${template.name}\nPage: pixelstudios.com/card/${username}` : `Opens: ${directTargets.find((t) => t.id === directTarget)?.label} (${directValue || 'to confirm'})`}
+Rank: ${rank}
 Material: ${material === 'paper' ? 'Paper / cardstock' : 'Plastic (PVC)'}
 Card design: ${designMode === 'studio' ? cardDesign.name : `Custom${sampleNote ? ` — "${sampleNote}"` : ''}`}
 My photo: ${profileUri ? 'attached in chat' : 'not added'}
@@ -213,6 +221,22 @@ Total: ₦${price.toLocaleString('en-NG')}. Please share payment details!`;
                   </Pressable>
                 ))}
               </View>
+              {(() => {
+                const t = directTargets.find((x) => x.id === directTarget);
+                return (
+                  <View style={{ marginTop: sp.x2_ }}>
+                    <TextInput
+                      value={directValue}
+                      onChangeText={setDirectValue}
+                      placeholder={t?.placeholder ?? 'Link or username'}
+                      placeholderTextColor={colors.muted}
+                      autoCapitalize="none"
+                      style={styles.input}
+                    />
+                    <Text style={styles.hintSmall}>{t?.hint}</Text>
+                  </View>
+                );
+              })()}
             </>
           ) : (
             <>
@@ -410,7 +434,17 @@ Total: ₦${price.toLocaleString('en-NG')}. Please share payment details!`;
           <View style={{ marginBottom: sp.x3 }}>
             <SmartCard config={cardConfig} />
           </View>
-          <TextInput value={name} onChangeText={setName} placeholder="Your name" placeholderTextColor={colors.muted} style={styles.input} />
+          <Pressable
+            onPress={() => setRankSheetVisible(true)}
+            style={[styles.rankRow, { backgroundColor: colors.surface, borderColor: colors.hairline }]}>
+            <Ionicons name="ribbon-outline" size={18} color={colors.text} />
+            <View style={{ flex: 1 }}>
+              <Text style={styles.rankLabel}>Your rank / title</Text>
+              <Text style={[styles.rankValue, { color: colors.isDark ? colors.lime : '#5E8A0D' }]}>{rank}</Text>
+            </View>
+            <Ionicons name="chevron-down" size={16} color={colors.muted} />
+          </Pressable>
+          <TextInput value={name} onChangeText={setName} placeholder="Your name" placeholderTextColor={colors.muted} style={[styles.input, { marginTop: sp.x2_ }]} />
           <TextInput value={business} onChangeText={setBusiness} placeholder="Business name" placeholderTextColor={colors.muted} style={[styles.input, { marginTop: sp.x2_ }]} />
           <TextInput value={phone} onChangeText={setPhone} placeholder="Phone number (e.g. 0903 152 8732)" placeholderTextColor={colors.muted} keyboardType="phone-pad" style={[styles.input, { marginTop: sp.x2_ }]} />
           <TextInput value={address} onChangeText={setAddress} placeholder="Business address" placeholderTextColor={colors.muted} style={[styles.input, { marginTop: sp.x2_ }]} />
@@ -497,6 +531,7 @@ Total: ₦${price.toLocaleString('en-NG')}. Please share payment details!`;
                   businessType={bizType}
                   name={name}
                   business={business}
+                  rank={rank}
                   profileUri={profileUri}
                   logoUri={logoUri}
                   phone={phone}
@@ -511,6 +546,16 @@ Total: ₦${price.toLocaleString('en-NG')}. Please share payment details!`;
           </View>
         </View>
       </Modal>
+
+      {/* Rank picker */}
+      <SelectSheet
+        visible={rankSheetVisible}
+        title="Select your rank"
+        options={bizType.rankOptions}
+        value={rank}
+        onSelect={setRank}
+        onClose={() => setRankSheetVisible(false)}
+      />
     </>
   );
 }
@@ -528,6 +573,18 @@ function useStyles(colors: Palette) {
       marginBottom: sp.x2_,
     },
     hint: { fontFamily: fonts.regular, fontSize: 13.5, color: colors.muted, marginBottom: sp.x2_ },
+    hintSmall: { fontFamily: fonts.regular, fontSize: 12, color: colors.muted, marginTop: 6 },
+    rankRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 12,
+      borderWidth: 1,
+      borderRadius: radius.md,
+      paddingHorizontal: 18,
+      paddingVertical: 14,
+    },
+    rankLabel: { fontFamily: fonts.medium, fontSize: 12.5, color: colors.muted },
+    rankValue: { fontFamily: fonts.semi, fontSize: 15.5, marginTop: 1 },
     tierCard: {
       flexDirection: 'row',
       alignItems: 'center',
