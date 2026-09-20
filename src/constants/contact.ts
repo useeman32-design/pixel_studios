@@ -1,12 +1,11 @@
 /**
  * Pixel Studios contact details.
- * TODO: replace the placeholder values below with the real business contacts.
  */
 export const CONTACT = {
-  phone: '+234 803 000 0000',
-  phoneRaw: '+2348030000000',
+  phone: '+234 903 152 8732',
+  phoneRaw: '+2349031528732',
   /** WhatsApp number in international format, digits only (no +). */
-  whatsappNumber: '2348030000000',
+  whatsappNumber: '2349031528732',
   email: 'hello@pixelstudios.ng',
   instagram: 'pixelstudios.ng',
   instagramUrl: 'https://instagram.com/pixelstudios.ng',

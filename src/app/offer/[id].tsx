@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Linking, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import CheckoutModal from '../../components/CheckoutModal';
 import { BackBar, Button, Container, Eyebrow, FadeIn, Stepper } from '../../components/ui';
 import { CONTACT, waLink } from '../../constants/contact';
 import { fonts, Palette, radius, sp, useTheme } from '../../constants/theme';
@@ -26,7 +27,8 @@ export default function OfferScreen() {
   const [qty, setQty] = useState(1);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
-  const [orderId, setOrderId] = useState<string | null>(null);
+  const [order, setOrder] = useState<{ id: string; method: 'delivery' | 'pickup' } | null>(null);
+  const [checkoutVisible, setCheckoutVisible] = useState(false);
 
   const activeDesign = offer.designs.find((d) => d.name === design);
   const base = offer.priceFrom ?? 0;
@@ -43,7 +45,7 @@ Name: ${name || '-'}
 Phone: ${phone || '-'}`;
 
   /* ------------------------------ SUCCESS ------------------------------ */
-  if (orderId) {
+  if (order) {
     return (
       <View style={[{ flex: 1, backgroundColor: colors.bg, justifyContent: 'center' }, { paddingHorizontal: 24, paddingTop: insets.top }]}>
         <Container style={{ alignItems: 'center' }}>
@@ -54,14 +56,16 @@ Phone: ${phone || '-'}`;
           </FadeIn>
           <FadeIn delay={100}>
             <Text style={[styles.doneTitle, { color: colors.text }]}>Order received 🎉</Text>
-            <Text style={[styles.doneOrder, { color: colors.isDark ? colors.lime : '#5E8A0D' }]}>#{orderId}</Text>
+            <Text style={[styles.doneOrder, { color: colors.isDark ? colors.lime : '#5E8A0D' }]}>#{order.id}</Text>
             <Text style={[styles.doneText, { color: colors.subtext }]}>
-              {qty} × {offer.name} · {design}. Our team will call you within 2 hours to confirm
-              your design files, artwork and delivery details.
+              {qty} × {offer.name} · {design}.{' '}
+              {order.method === 'delivery'
+                ? "You'll be notified as soon as your order is ready for delivery."
+                : "You'll be notified as soon as your order is ready for pickup at our studio."}
             </Text>
           </FadeIn>
           <FadeIn delay={200} style={{ gap: sp.x2_, alignSelf: 'stretch', marginTop: sp.x5 }}>
-            <Button title="Confirm on WhatsApp" icon="logo-whatsapp" href={waLink(`Hello! I just placed order #${orderId} — ${qty} × ${offer.name} (${design}).`)} />
+            <Button title="Confirm on WhatsApp" icon="logo-whatsapp" href={waLink(`Hello! I just placed order #${order.id} — ${qty} × ${offer.name} (${design}).`)} />
             <Button title="Back to services" variant="secondary" onPress={() => router.back()} />
           </FadeIn>
         </Container>
@@ -70,6 +74,7 @@ Phone: ${phone || '-'}`;
   }
 
   return (
+    <>
     <ScrollView style={{ flex: 1, backgroundColor: colors.bg }} contentContainerStyle={{ paddingBottom: sp.x8 + 40 }}>
       <Container style={{ marginTop: insets.top + sp.x3 }}>
         <BackBar onBack={() => router.back()} />
@@ -154,7 +159,7 @@ Phone: ${phone || '-'}`;
 
         {/* ORDER ACTIONS */}
         <View style={styles.orderCard}>
-          <Button title="Order in App" icon="checkmark" onPress={() => setOrderId(`PS-${Math.floor(2900 + Math.random() * 600)}`)} />
+          <Button title="Order in App" icon="checkmark" onPress={() => setCheckoutVisible(true)} />
           <Button title="Order on WhatsApp" variant="secondary" icon="logo-whatsapp" href={waLink(waMessage)} />
           <Pressable onPress={() => Linking.openURL(`tel:${CONTACT.phoneRaw}`)} style={[styles.callRow, { borderColor: colors.hairline }]}>
             <Ionicons name="call-outline" size={18} color={colors.text} />
@@ -163,6 +168,18 @@ Phone: ${phone || '-'}`;
         </View>
       </Container>
     </ScrollView>
+
+    <CheckoutModal
+      visible={checkoutVisible}
+      summary={`${qty} × ${offer.name} · ${design}${offer.types.length > 1 ? ` · ${type}` : ''}`}
+      priceLabel={offer.quoteOnly ? undefined : `₦${estimated.toLocaleString('en-NG')}`}
+      onClose={() => setCheckoutVisible(false)}
+      onPlaced={(id, method) => {
+        setCheckoutVisible(false);
+        setOrder({ id, method });
+      }}
+    />
+    </>
   );
 }
 
