@@ -5,17 +5,21 @@ export type BusinessType = {
   sample: string;
   tagline: string;
   accent: string;
+  hero: any;
+  rating: string;
+  reviews: string;
+  badge: string;
 };
 
 export const businessTypes: BusinessType[] = [
-  { id: 'catering', label: 'Catering & Cakes', emoji: '🎂', sample: "Sandra's Cakes", tagline: 'Custom cakes & catering for every occasion', accent: '#F9A8D4' },
-  { id: 'tailor', label: 'Tailoring', emoji: '✂️', sample: 'Fine Fit Tailors', tagline: 'Bespoke tailoring, perfect fit every time', accent: '#93C5FD' },
-  { id: 'salon', label: 'Hair Salon', emoji: '💇‍♀️', sample: 'Glow Hair Studio', tagline: 'Hair artistry that turns heads', accent: '#C4B5FD' },
-  { id: 'plumber', label: 'Plumbing', emoji: '🔧', sample: 'SwiftFix Plumbing', tagline: 'Fast, reliable plumbing — day or night', accent: '#5EEAD4' },
-  { id: 'doctor', label: 'Medical', emoji: '🩺', sample: 'CarePoint Clinic', tagline: 'Quality care, close to home', accent: '#86EFAC' },
-  { id: 'restaurant', label: 'Restaurant', emoji: '🍽️', sample: 'Mama Put Kitchen', tagline: 'Fresh. Local. Delicious.', accent: '#FCD34D' },
-  { id: 'boutique', label: 'Boutique', emoji: '👗', sample: 'Velvet Rose', tagline: 'Curated fashion for the modern you', accent: '#FDA4AF' },
-  { id: 'general', label: 'Other', emoji: '💼', sample: 'Your Business', tagline: 'Your business, one beautiful page', accent: '#BFF549' },
+  { id: 'catering', label: 'Catering & Cakes', emoji: '🎂', sample: "Sandra's Cakes", tagline: 'Custom cakes & catering for every occasion', accent: '#F9A8D4', hero: require('../../assets/images/biz/catering.jpg'), rating: '4.9', reviews: '180+ happy clients', badge: 'TOP RATED' },
+  { id: 'tailor', label: 'Tailoring', emoji: '✂️', sample: 'Fine Fit Tailors', tagline: 'Bespoke tailoring, perfect fit every time', accent: '#93C5FD', hero: require('../../assets/images/biz/tailor.jpg'), rating: '4.8', reviews: '300+ fittings', badge: 'MASTER FIT' },
+  { id: 'salon', label: 'Hair Salon', emoji: '💇‍♀️', sample: 'Glow Hair Studio', tagline: 'Hair artistry that turns heads', accent: '#C4B5FD', hero: require('../../assets/images/biz/salon.jpg'), rating: '5.0', reviews: '450+ clients', badge: 'BOOKED SOLID' },
+  { id: 'plumber', label: 'Plumbing', emoji: '🔧', sample: 'SwiftFix Plumbing', tagline: 'Fast, reliable plumbing — day or night', accent: '#5EEAD4', hero: require('../../assets/images/biz/plumber.jpg'), rating: '4.9', reviews: '500+ jobs done', badge: '24/7 SERVICE' },
+  { id: 'doctor', label: 'Medical', emoji: '🩺', sample: 'CarePoint Clinic', tagline: 'Quality care, close to home', accent: '#86EFAC', hero: require('../../assets/images/biz/doctor.jpg'), rating: '4.9', reviews: '1,200+ patients', badge: 'TRUSTED CARE' },
+  { id: 'restaurant', label: 'Restaurant', emoji: '🍽️', sample: 'Mama Put Kitchen', tagline: 'Fresh. Local. Delicious.', accent: '#FCD34D', hero: require('../../assets/images/biz/restaurant.jpg'), rating: '4.8', reviews: '900+ orders', badge: 'HOT & FRESH' },
+  { id: 'boutique', label: 'Boutique', emoji: '👗', sample: 'Velvet Rose', tagline: 'Curated fashion for the modern you', accent: '#FDA4AF', hero: require('../../assets/images/biz/boutique.jpg'), rating: '4.7', reviews: '600+ shoppers', badge: 'NEW DROPS' },
+  { id: 'general', label: 'Other', emoji: '💼', sample: 'Your Business', tagline: 'Your business, one beautiful page', accent: '#BFF549', hero: require('../../assets/images/biz/general.jpg'), rating: '5.0', reviews: 'Verified business', badge: 'VERIFIED' },
 ];
 
 export type CardTemplate = {

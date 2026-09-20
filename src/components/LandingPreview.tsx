@@ -1,13 +1,15 @@
 import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
+import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { fonts } from '../constants/theme';
 import { BusinessType, CardTemplate, landingConfigs, slugify } from '../data/cardTemplates';
 
 /**
- * Miniature preview of the portfolio landing page a Premium card opens
- * (pixelstudios.com/card/username) — designed for the customer's profession.
+ * Miniature preview of each template style for the picker carousel —
+ * each thumbnail mirrors the structure of its full-size design.
  */
 export default function LandingPreview({
   template,
@@ -24,126 +26,134 @@ export default function LandingPreview({
   profileUri?: string | null;
   logoUri?: string | null;
 }) {
-  const config = landingConfigs[businessType.id] ?? landingConfigs.general;
+  const cfg = landingConfigs[businessType.id] ?? landingConfigs.general;
   const displayName = business || businessType.sample;
   const user = slugify(name || displayName);
+  const accent = businessType.accent;
 
-  return (
-    <View style={[styles.frame, { backgroundColor: template.bg, borderColor: 'rgba(128,128,128,0.25)' }]}>
-      {/* Browser chrome hint */}
-      <View style={styles.chrome}>
-        <View style={{ flexDirection: 'row', gap: 4 }}>
-          <View style={[styles.chromeDot, { backgroundColor: '#FF5F57' }]} />
-          <View style={[styles.chromeDot, { backgroundColor: '#FEBC2E' }]} />
-          <View style={[styles.chromeDot, { backgroundColor: '#28C840' }]} />
-        </View>
-        <View style={[styles.urlBar, { backgroundColor: template.surface }]}>
-          <Text style={[styles.urlText, { color: template.subtext }]} numberOfLines={1}>
-            pixelstudios.com/card/{user}
+  const chrome = (
+    <View style={styles.chrome}>
+      <View style={{ flexDirection: 'row', gap: 4 }}>
+        <View style={[styles.chromeDot, { backgroundColor: '#FF5F57' }]} />
+        <View style={[styles.chromeDot, { backgroundColor: '#FEBC2E' }]} />
+        <View style={[styles.chromeDot, { backgroundColor: '#28C840' }]} />
+      </View>
+      <View style={[styles.urlBar, { backgroundColor: template.id === 'clean' ? '#FFFFFF' : template.surface }]}>
+        <Text style={[styles.urlText, { color: template.subtext }]} numberOfLines={1}>
+          pixelstudios.com/card/{user}
+        </Text>
+      </View>
+    </View>
+  );
+
+  /* ---- Signature Dark mini ---- */
+  if (template.id === 'signature') {
+    return (
+      <View style={[styles.frame, { backgroundColor: '#0C0C0F', borderColor: 'rgba(128,128,128,0.25)' }]}>
+        {chrome}
+        <View style={{ padding: 12 }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <View style={miniChip('rgba(191,245,73,0.12)')}>
+              <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: '#BFF549' }} />
+              <Text style={{ fontFamily: fonts.semi, fontSize: 7, color: '#BFF549' }}>Open now</Text>
+            </View>
+            <View style={miniChip('rgba(255,255,255,0.08)')}>
+              <Ionicons name="star" size={7} color="#FBBF24" />
+              <Text style={{ fontFamily: fonts.semi, fontSize: 7, color: '#F4F4F2' }}>{businessType.rating}</Text>
+            </View>
+          </View>
+          <Text style={{ fontFamily: fonts.extrabold, fontSize: 13, lineHeight: 15, letterSpacing: -0.4, color: '#F4F4F2', marginTop: 8 }} numberOfLines={2}>
+            {cfg.headline}
           </Text>
+          <View style={{ marginTop: 8, borderRadius: 9, overflow: 'hidden', transform: [{ rotateY: '-4deg' }] }}>
+            <Image source={businessType.hero} style={{ width: '100%', height: 78 }} contentFit="cover" />
+          </View>
+          <View style={[styles.miniCta, { backgroundColor: accent }]}>
+            <Text style={{ fontFamily: fonts.bold, fontSize: 8, color: '#0C0C0F' }}>{cfg.cta}</Text>
+          </View>
         </View>
       </View>
+    );
+  }
 
-      {/* Page */}
-      <View style={styles.page}>
-        {/* Hero band */}
-        <View style={[styles.heroBand, { backgroundColor: businessType.accent + '2E' }]}>
-          <Text style={styles.heroEmoji}>{businessType.emoji}</Text>
-          <View style={{ flex: 1 }}>
-            <Text style={[styles.headline, { color: template.text }]} numberOfLines={2}>
-              {config.headline}
+  /* ---- Clean Light mini ---- */
+  if (template.id === 'clean') {
+    return (
+      <View style={[styles.frame, { backgroundColor: '#F5F4F0', borderColor: 'rgba(128,128,128,0.25)' }]}>
+        {chrome}
+        <View style={{ padding: 12 }}>
+          <View style={{ borderBottomWidth: 1, borderBottomColor: '#141416', paddingBottom: 5, flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text style={{ fontFamily: fonts.bold, fontSize: 6.5, letterSpacing: 1.6, color: '#141416' }}>PORTFOLIO — {displayName.toUpperCase()}</Text>
+            <Text style={{ fontFamily: fonts.medium, fontSize: 6.5, color: '#6B6C72' }}>GUSAU</Text>
+          </View>
+          <Text style={{ fontFamily: fonts.extrabold, fontSize: 15, letterSpacing: -0.6, color: '#141416', marginTop: 7 }} numberOfLines={1}>
+            {displayName}
+          </Text>
+          <View style={{ backgroundColor: '#FFFFFF', padding: 4, borderRadius: 3, marginTop: 7, transform: [{ rotateY: '2deg' }] }}>
+            <Image source={businessType.hero} style={{ width: '100%', height: 72, borderRadius: 2 }} contentFit="cover" />
+            <Text style={{ fontFamily: fonts.regular, fontSize: 6.5, fontStyle: 'italic', color: '#6B6C72', marginTop: 3 }}>
+              Fig. 01 — Signature work
             </Text>
           </View>
+          <View style={[styles.miniCta, { backgroundColor: '#141416', marginTop: 8 }]}>
+            <Text style={{ fontFamily: fonts.bold, fontSize: 8, color: '#F5F4F0' }}>{cfg.cta}</Text>
+          </View>
         </View>
+      </View>
+    );
+  }
 
-        {/* Identity */}
-        <View style={styles.identity}>
-          {profileUri ? (
-            <Image source={{ uri: profileUri }} style={styles.profileImg} />
-          ) : (
-            <View style={[styles.avatar, { backgroundColor: businessType.accent + '33' }]}>
-              <Text style={{ fontSize: 24 }}>{businessType.emoji}</Text>
-            </View>
-          )}
-          <View style={{ flex: 1 }}>
-            <Text style={[styles.bizName, { color: template.text }]} numberOfLines={1}>
-              {displayName}
-            </Text>
-            <Text style={[styles.tagline, { color: template.subtext }]} numberOfLines={1}>
-              {businessType.tagline}
-            </Text>
+  /* ---- Bold Brand mini ---- */
+  return (
+    <View style={[styles.frame, { borderColor: 'rgba(128,128,128,0.25)' }]}>
+      <LinearGradient colors={['#16102E', '#2A1650']} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
+      <LinearGradient colors={[accent + '55', 'transparent']} style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 70 }} />
+      {chrome}
+      <View style={{ padding: 12 }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+          <View style={{ backgroundColor: '#FFFFFF', borderRadius: 5, paddingHorizontal: 7, paddingVertical: 3.5, transform: [{ rotate: '-4deg' }] }}>
+            <Text style={{ fontFamily: fonts.extrabold, fontSize: 7, color: '#141416', letterSpacing: 0.6 }}>★ {businessType.badge}</Text>
           </View>
           {logoUri ? (
-            <Image source={{ uri: logoUri }} style={styles.logoImg} />
+            <Image source={{ uri: logoUri }} style={{ width: 18, height: 18, borderRadius: 5 }} />
           ) : (
-            <View style={[styles.logoBadge, { backgroundColor: businessType.accent + '22' }]}>
-              <Text style={{ fontSize: 10, color: businessType.accent }}>▚</Text>
+            <View style={{ width: 18, height: 18, borderRadius: 5, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center' }}>
+              <Text style={{ fontSize: 8, color: '#2A1650' }}>▚</Text>
             </View>
           )}
         </View>
-
-        {/* Urgent strip for emergency services */}
-        {config.urgentNote && (
-          <View style={styles.urgentStrip}>
-            <Ionicons name="flash" size={11} color="#FFFFFF" />
-            <Text style={styles.urgentText}>{config.urgentNote}</Text>
+        <Text style={{ fontFamily: fonts.extrabold, fontSize: 16, letterSpacing: -0.6, color: '#FFFFFF', marginTop: 8 }} numberOfLines={1}>
+          {displayName}
+        </Text>
+        <View style={{ flexDirection: 'row', marginTop: 7 }}>
+          <View style={{ flex: 1.3, backgroundColor: '#FFFFFF', padding: 3, borderRadius: 3, transform: [{ rotate: '-4deg' }] }}>
+            <Image source={businessType.hero} style={{ width: '100%', height: 58, borderRadius: 2 }} contentFit="cover" />
           </View>
-        )}
-
-        {/* Sections per layout */}
-        {(config.layout === 'gallery' || config.layout === 'urgent') && (
-          <View style={styles.gallery}>
-            {config.items.slice(0, 3).map((it, i) => (
-              <View key={it.label} style={{ flex: 1, gap: 4 }}>
-                <View
-                  style={[styles.galleryTile, { backgroundColor: businessType.accent + (i === 1 ? '59' : '2E') }]}
-                />
-                <Text style={[styles.itemLabel, { color: template.subtext }]} numberOfLines={1}>
-                  {it.label}
-                </Text>
-              </View>
-            ))}
+          <View style={{ flex: 1, marginLeft: -6, marginTop: 14 }}>
+            <View style={{ backgroundColor: accent, borderRadius: 4, padding: 6, transform: [{ rotate: '5deg' }], marginLeft: 10 }}>
+              <Text style={{ fontFamily: fonts.extrabold, fontSize: 8, color: '#141416' }}>{businessType.rating} ★</Text>
+              <Text style={{ fontFamily: fonts.semi, fontSize: 6, color: 'rgba(20,20,22,0.7)' }}>{businessType.reviews}</Text>
+            </View>
           </View>
-        )}
-
-        {config.layout === 'shop' && (
-          <View style={styles.shopGrid}>
-            {config.items.map((it, i) => (
-              <View key={it.label} style={{ gap: 4 }}>
-                <View style={[styles.shopTile, { backgroundColor: businessType.accent + (i % 2 === 0 ? '40' : '26') }]} />
-                <Text style={[styles.itemLabel, { color: template.subtext }]} numberOfLines={1}>
-                  {it.label}
-                </Text>
-              </View>
-            ))}
-          </View>
-        )}
-
-        {(config.layout === 'menu' || config.layout === 'services') && (
-          <View style={[styles.listWrap, { backgroundColor: template.surface }]}>
-            {config.items.map((it, i) => (
-              <View
-                key={it.label}
-                style={[
-                  styles.listRow,
-                  i > 0 && { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: 'rgba(128,128,128,0.25)' },
-                ]}>
-                <View style={[styles.listDot, { backgroundColor: businessType.accent }]} />
-                <Text style={[styles.listLabel, { color: template.text }]}>{it.label}</Text>
-                {it.price && <Text style={[styles.listPrice, { color: businessType.accent }]}>{it.price}</Text>}
-              </View>
-            ))}
-          </View>
-        )}
-
-        {/* CTA */}
-        <View style={[styles.cta, { backgroundColor: businessType.accent }]}>
-          <Ionicons name={config.ctaIcon as any} size={13} color="#0C0C0F" />
-          <Text style={styles.ctaText}>{config.cta}</Text>
+        </View>
+        <View style={[styles.miniCta, { backgroundColor: accent, borderWidth: 1.5, borderColor: '#141416', marginTop: 8 }]}>
+          <Text style={{ fontFamily: fonts.extrabold, fontSize: 8, color: '#141416' }}>{cfg.cta}</Text>
         </View>
       </View>
     </View>
   );
+}
+
+function miniChip(bg: string) {
+  return {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    gap: 3,
+    backgroundColor: bg,
+    borderRadius: 999,
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+  };
 }
 
 const styles = StyleSheet.create({
@@ -151,88 +161,24 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1,
     overflow: 'hidden',
+    aspectRatio: 0.82,
   },
   chrome: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
     paddingHorizontal: 12,
-    paddingVertical: 9,
+    paddingVertical: 8,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: 'rgba(128,128,128,0.25)',
   },
-  chromeDot: { width: 7, height: 7, borderRadius: 4 },
-  urlBar: { flex: 1, borderRadius: 7, paddingHorizontal: 10, paddingVertical: 4 },
-  urlText: { fontFamily: fonts.medium, fontSize: 9.5 },
-  page: { padding: 14 },
-  heroBand: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-  },
-  heroEmoji: { fontSize: 26 },
-  headline: { fontFamily: fonts.semi, fontSize: 13, lineHeight: 16, letterSpacing: -0.2 },
-  identity: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    marginTop: 12,
-  },
-  avatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  profileImg: { width: 44, height: 44, borderRadius: 22, backgroundColor: 'rgba(128,128,128,0.2)' },
-  logoImg: { width: 28, height: 28, borderRadius: 8, backgroundColor: 'rgba(128,128,128,0.2)' },
-  logoBadge: {
-    width: 28,
-    height: 28,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  bizName: { fontFamily: fonts.semi, fontSize: 15.5, letterSpacing: -0.3 },
-  tagline: { fontFamily: fonts.regular, fontSize: 10.5, marginTop: 1 },
-  urgentStrip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 5,
-    backgroundColor: '#DC2626',
-    borderRadius: 8,
+  chromeDot: { width: 6, height: 6, borderRadius: 3 },
+  urlBar: { flex: 1, borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3 },
+  urlText: { fontFamily: fonts.medium, fontSize: 8 },
+  miniCta: {
+    borderRadius: 7,
     paddingVertical: 6,
-    marginTop: 10,
-  },
-  urgentText: { fontFamily: fonts.semi, fontSize: 10, color: '#FFFFFF', letterSpacing: 0.6 },
-  gallery: { flexDirection: 'row', gap: 8, marginTop: 12 },
-  galleryTile: { height: 52, borderRadius: 9 },
-  itemLabel: { fontFamily: fonts.medium, fontSize: 8.5, textAlign: 'center' },
-  shopGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-    marginTop: 12,
-  },
-  shopTile: { width: 100, height: 44, borderRadius: 9 },
-  listWrap: { borderRadius: 12, marginTop: 12, paddingHorizontal: 12, paddingVertical: 2 },
-  listRow: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 7 },
-  listDot: { width: 6, height: 6, borderRadius: 3 },
-  listLabel: { flex: 1, fontFamily: fonts.medium, fontSize: 10.5 },
-  listPrice: { fontFamily: fonts.semi, fontSize: 10 },
-  cta: {
-    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    marginTop: 14,
-    borderRadius: 10,
-    paddingVertical: 9,
+    marginTop: 8,
   },
-  ctaText: { fontFamily: fonts.semi, fontSize: 11.5, color: '#0C0C0F' },
 });

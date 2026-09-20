@@ -57,6 +57,9 @@ export default function NFCScreen() {
   const [profileUri, setProfileUri] = useState<string | null>(null);
   const [name, setName] = useState('');
   const [business, setBusiness] = useState('');
+  const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
+  const [description, setDescription] = useState('');
   const [orderId, setOrderId] = useState<string | null>(null);
   const [previewVisible, setPreviewVisible] = useState(false);
 
@@ -76,8 +79,11 @@ export default function NFCScreen() {
       business,
       username,
       accent: tier === 'premium' ? bizType.accent : colors.isDark ? colors.lime : '#6B9B0F',
+      phone,
+      address,
+      description,
     }),
-    [tier, directTarget, material, designMode, logoUri, name, business, username, bizType.accent, colors],
+    [tier, directTarget, material, designMode, logoUri, name, business, username, bizType.accent, colors, phone, address, description],
   );
 
   const pickImage = async (setter: (uri: string) => void) => {
@@ -111,6 +117,9 @@ Material: ${material === 'paper' ? 'Paper / cardstock' : 'Plastic (PVC)'}
 Design: ${designMode === 'logo' ? 'My own logo (attached in chat)' : designMode === 'custom' ? 'Request custom design' : 'Pixel Studios generated design'}
 ${tier === 'premium' ? `My photo: ${profileUri ? 'attached in chat' : 'not added yet'}\nMy logo: ${logoUri ? 'attached in chat' : 'not added yet'}\n` : ''}Name: ${name || '-'}
 Business: ${business || '-'}
+Phone: ${phone || '-'}
+Address: ${address || '-'}
+Description: ${description || '-'}
 
 Total: ₦${price.toLocaleString('en-NG')}. Please share payment details!`;
 
@@ -343,9 +352,22 @@ Total: ₦${price.toLocaleString('en-NG')}. Please share payment details!`;
 
         {/* Details */}
         <Text style={styles.stepLabel}>{tier === 'premium' ? '07' : '05'} · Your details</Text>
-        <Text style={styles.hint}>The card above updates live as you type.</Text>
+        <Text style={styles.hint}>
+          The card above updates live as you type. Phone, address and description appear on the
+          back of your card and on your landing page.
+        </Text>
         <TextInput value={name} onChangeText={setName} placeholder="Your name" placeholderTextColor={colors.muted} style={styles.input} />
         <TextInput value={business} onChangeText={setBusiness} placeholder="Business name" placeholderTextColor={colors.muted} style={[styles.input, { marginTop: sp.x2_ }]} />
+        <TextInput value={phone} onChangeText={setPhone} placeholder="Phone number (e.g. 0803 123 4567)" placeholderTextColor={colors.muted} keyboardType="phone-pad" style={[styles.input, { marginTop: sp.x2_ }]} />
+        <TextInput value={address} onChangeText={setAddress} placeholder="Business address" placeholderTextColor={colors.muted} style={[styles.input, { marginTop: sp.x2_ }]} />
+        <TextInput
+          value={description}
+          onChangeText={setDescription}
+          placeholder="Short description of your business (shown on the back of the card)"
+          placeholderTextColor={colors.muted}
+          multiline
+          style={[styles.input, { marginTop: sp.x2_, minHeight: 84, textAlignVertical: 'top' }]}
+        />
 
         {/* Order */}
         <View style={styles.orderCard}>
@@ -413,6 +435,9 @@ Total: ₦${price.toLocaleString('en-NG')}. Please share payment details!`;
                 business={business}
                 profileUri={profileUri}
                 logoUri={logoUri}
+                phone={phone}
+                address={address}
+                description={description}
               />
             </View>
             <Text style={[styles.modalHint, { color: colors.muted }]}>

@@ -14,19 +14,125 @@ export type CardConfig = {
   business: string;
   username: string;
   accent: string;
+  phone?: string;
+  address?: string;
+  description?: string;
 };
+
+/* ----------------------------- Deterministic QR ---------------------------- */
+/** Renders a scannable-looking QR pattern seeded from the owner's details. */
+function FauxQR({ seed, size = 52, fg }: { seed: string; size?: number; fg: string }) {
+  const N = 11;
+  let h = 2166136261;
+  for (let i = 0; i < seed.length; i++) {
+    h ^= seed.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  const rand = () => {
+    h ^= h << 13;
+    h ^= h >>> 17;
+    h ^= h << 5;
+    return ((h >>> 0) % 100) / 100;
+  };
+  const isFinder = (r: number, c: number) =>
+    (r < 3 && c < 3) || (r < 3 && c >= N - 3) || (r >= N - 3 && c < 3);
+
+  const modules: { r: number; c: number }[] = [];
+  for (let r = 0; r < N; r++) {
+    for (let c = 0; c < N; c++) {
+      if (isFinder(r, c)) continue;
+      if (rand() > 0.52) modules.push({ r, c });
+    }
+  }
+  const cell = size / N;
+  const border = Math.max(1.4, cell * 0.3);
+
+  const finder = (r0: number, c0: number) => (
+    <View
+      key={`f${r0}${c0}`}
+      style={{
+        position: 'absolute',
+        left: c0 * cell,
+        top: r0 * cell,
+        width: cell * 3,
+        height: cell * 3,
+        borderWidth: border,
+        borderColor: fg,
+      }}>
+      <View
+        style={{
+          position: 'absolute',
+          left: cell * 0.6,
+          top: cell * 0.6,
+          width: cell * 0.8,
+          height: cell * 0.8,
+          backgroundColor: fg,
+        }}
+      />
+    </View>
+  );
+
+  return (
+    <View style={{ width: size, height: size }}>
+      {finder(0, 0)}
+      {finder(0, N - 3)}
+      {finder(N - 3, 0)}
+      {modules.map(({ r, c }) => (
+        <View
+          key={`${r}-${c}`}
+          style={{
+            position: 'absolute',
+            left: c * cell,
+            top: r * cell,
+            width: cell * 0.9,
+            height: cell * 0.9,
+            backgroundColor: fg,
+          }}
+        />
+      ))}
+    </View>
+  );
+}
+
+/* ---------------------------- Pixel studio deco ---------------------------- */
+function PixelDeco({ accent }: { accent: string }) {
+  const rows = [
+    [1, 0, 1, 1, 0],
+    [0, 1, 0, 1, 1],
+    [1, 1, 0, 0, 1],
+  ];
+  return (
+    <View style={{ gap: 2.5 }}>
+      {rows.map((row, r) => (
+        <View key={r} style={{ flexDirection: 'row', gap: 2.5 }}>
+          {row.map((v, c) => (
+            <View
+              key={c}
+              style={{
+                width: 4.5,
+                height: 4.5,
+                borderRadius: 1,
+                backgroundColor: v ? accent : 'transparent',
+                opacity: v ? ((c + r) % 3 === 0 ? 0.45 : 1) : 0,
+              }}
+            />
+          ))}
+        </View>
+      ))}
+    </View>
+  );
+}
 
 /**
  * Interactive 3D smart card.
- * Tap to flip front/back — the flip and the idle sway run on separate nested
- * animated layers so the transforms never collide.
+ * Tap to flip front/back — flip and idle sway run on separate nested layers,
+ * with a deterministic face swap at the 90° midpoint.
  */
 export default function SmartCard({ config }: { config: CardConfig }) {
   const flip = useRef(new Animated.Value(0)).current; // 0 = front, 1 = back
   const sway = useRef(new Animated.Value(0)).current;
   const [showingBack, setShowingBack] = useState(false);
 
-  // Gentle idle sway so the card feels 3D even at rest.
   useEffect(() => {
     const loop = Animated.loop(
       Animated.sequence([
@@ -53,25 +159,37 @@ export default function SmartCard({ config }: { config: CardConfig }) {
 
   const swayY = sway.interpolate({ inputRange: [-1, 1], outputRange: ['4deg', '-4deg'] });
   const flipY = flip.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '180deg'] });
-  // Deterministic face swap at the 90° midpoint — works even where
-  // backfaceVisibility is unreliable (web).
   const frontOpacity = flip.interpolate({ inputRange: [0, 0.49, 0.5, 1], outputRange: [1, 1, 0, 0] });
   const backOpacity = flip.interpolate({ inputRange: [0, 0.49, 0.5, 1], outputRange: [0, 0, 1, 1] });
 
   const isPaper = config.material === 'paper';
   const cardBg = isPaper ? '#F2F0EA' : '#0E0E11';
   const textMain = isPaper ? '#141416' : '#F4F4F2';
-  const textSub = isPaper ? 'rgba(20,20,22,0.55)' : 'rgba(244,244,242,0.55)';
+  const textSub = isPaper ? 'rgba(20,20,22,0.58)' : 'rgba(244,244,242,0.55)';
 
-  const faceBase: any = [styles.face, { backgroundColor: cardBg, borderColor: isPaper ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.12)' }];
+  const faceBase: any = [
+    styles.face,
+    { backgroundColor: cardBg, borderColor: isPaper ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.12)' },
+  ];
 
+  /* -------------------------------- FRONT -------------------------------- */
   const front = (
     <View style={faceBase}>
       {!isPaper && <View style={styles.plasticSheen} />}
+      {/* Studio design deco */}
+      {config.designMode === 'pixel' && (
+        <View style={{ position: 'absolute', right: 20, top: 52 }}>
+          <PixelDeco accent={config.accent} />
+        </View>
+      )}
       <View style={styles.topRow}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
           {config.designMode === 'logo' && config.logoUri ? (
             <Image source={{ uri: config.logoUri }} style={styles.logoImg} />
+          ) : config.designMode === 'custom' ? (
+            <View style={[styles.pixelBadge, { backgroundColor: config.accent + '22' }]}>
+              <Ionicons name="brush" size={11} color={config.accent} />
+            </View>
           ) : (
             <View style={[styles.pixelBadge, { backgroundColor: config.accent + '22' }]}>
               <Text style={{ fontSize: 11, color: config.accent }}>▚</Text>
@@ -86,11 +204,11 @@ export default function SmartCard({ config }: { config: CardConfig }) {
         <Text style={[styles.name, { color: textMain }]} numberOfLines={1}>
           {config.name || 'Your Name'}
         </Text>
-        <Text style={[styles.business, { color: textSub }]} numberOfLines={1}>
+        <Text style={[styles.business, { color: textMain }]} numberOfLines={1}>
           {config.business || 'Your Business'}
         </Text>
         <View style={styles.bottomRow}>
-          <Text style={[styles.url, { color: textSub }]}>
+          <Text style={[styles.url, { color: textSub }]} numberOfLines={1}>
             {config.tier === 'premium'
               ? `pixelstudios.com/card/${config.username}`
               : config.directTarget === 'whatsapp'
@@ -114,25 +232,54 @@ export default function SmartCard({ config }: { config: CardConfig }) {
     </View>
   );
 
+  /* --------------------------------- BACK --------------------------------- */
   const back = (
     <View style={faceBase}>
       {!isPaper && <View style={styles.plasticSheen} />}
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 10 }}>
-        <View style={[styles.qrBlock, { borderColor: textSub }]}>
-          <Ionicons name="qr-code" size={40} color={textMain} />
+      <View style={{ flexDirection: 'row', gap: 14 }}>
+        {/* QR on a white tile — always scannable */}
+        <View style={styles.qrTile}>
+          <FauxQR seed={`${config.name}|${config.business}|${config.username}`} size={54} fg="#101014" />
         </View>
-        <Text style={{ fontFamily: fonts.semi, fontSize: 12, letterSpacing: 2, color: textMain }}>
-          SCAN · TAP · CONNECT
-        </Text>
-        <Text style={{ fontFamily: fonts.regular, fontSize: 10.5, color: textSub, textAlign: 'center' }}>
-          {config.tier === 'premium'
-            ? `Opens pixelstudios.com/card/${config.username}`
-            : 'Opens your link instantly — no app needed'}
-        </Text>
+        {/* Contact details */}
+        <View style={{ flex: 1 }}>
+          <Text style={[styles.backName, { color: textMain }]} numberOfLines={1}>
+            {config.name || 'Your Name'}
+          </Text>
+          <Text style={[styles.backBusiness, { color: config.accent }]} numberOfLines={1}>
+            {config.business || 'Your Business'}
+          </Text>
+          <View style={{ marginTop: 5, gap: 2.5 }}>
+            <View style={styles.backRow}>
+              <Ionicons name="call-outline" size={9} color={textSub} />
+              <Text style={[styles.backDetail, { color: textSub }]} numberOfLines={1}>
+                {config.phone || '+234 800 000 0000'}
+              </Text>
+            </View>
+            <View style={styles.backRow}>
+              <Ionicons name="location-outline" size={9} color={textSub} />
+              <Text style={[styles.backDetail, { color: textSub }]} numberOfLines={1}>
+                {config.address || 'Gusau, Zamfara State'}
+              </Text>
+            </View>
+          </View>
+          {(config.description || '').trim().length > 0 ? (
+            <Text style={[styles.backDesc, { color: textSub }]} numberOfLines={2}>
+              {config.description}
+            </Text>
+          ) : (
+            <Text style={[styles.backDesc, { color: textSub }]} numberOfLines={2}>
+              {config.tier === 'premium'
+                ? 'Scan for portfolio, pricing & instant booking.'
+                : 'Scan or tap to connect instantly.'}
+            </Text>
+          )}
+        </View>
       </View>
-      <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-        <Text style={{ fontFamily: fonts.bold, fontSize: 8.5, letterSpacing: 2.4, color: textSub }}>
-          MADE BY PIXEL STUDIOS · GUSAU, NIGERIA
+      <View style={styles.backFooter}>
+        <Text style={[styles.backFooterText, { color: textSub }]}>SCAN · TAP · CONNECT</Text>
+        <Text style={[styles.backFooterText, { color: textSub }]} numberOfLines={1}>
+          pixelstudios.com/card/{config.username}
         </Text>
       </View>
     </View>
@@ -199,15 +346,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   brandText: { fontFamily: fonts.bold, fontSize: 8.5, letterSpacing: 2.2 },
-  name: { fontFamily: fonts.semi, fontSize: 21, letterSpacing: -0.3 },
-  business: { fontFamily: fonts.regular, fontSize: 12.5, marginTop: 2 },
+  name: { fontFamily: fonts.bold, fontSize: 21, letterSpacing: -0.3 },
+  business: { fontFamily: fonts.bold, fontSize: 12.5, marginTop: 2, opacity: 0.85 },
   bottomRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginTop: 12,
   },
-  url: { fontFamily: fonts.medium, fontSize: 10 },
+  url: { fontFamily: fonts.medium, fontSize: 10, flex: 1, marginRight: 8 },
   tapBadge: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -217,15 +364,35 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   tapText: { fontFamily: fonts.semi, fontSize: 8.5, letterSpacing: 1 },
-  qrBlock: {
-    width: 74,
-    height: 74,
-    borderRadius: 14,
-    borderWidth: 1.5,
-    borderStyle: 'dashed',
+  qrTile: {
+    width: 66,
+    height: 66,
+    borderRadius: 11,
+    backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
+    ...({
+      shadowColor: '#000',
+      shadowOpacity: 0.25,
+      shadowRadius: 6,
+      shadowOffset: { width: 0, height: 2 },
+    } as any),
   },
+  backName: { fontFamily: fonts.bold, fontSize: 13.5, letterSpacing: -0.2 },
+  backBusiness: { fontFamily: fonts.bold, fontSize: 11, marginTop: 1 },
+  backRow: { flexDirection: 'row', alignItems: 'center', gap: 5 },
+  backDetail: { fontFamily: fonts.medium, fontSize: 9.5 },
+  backDesc: { fontFamily: fonts.regular, fontSize: 8.5, lineHeight: 11.5, marginTop: 5 },
+  backFooter: {
+    position: 'absolute',
+    left: 22,
+    right: 22,
+    bottom: 14,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 8,
+  },
+  backFooterText: { fontFamily: fonts.bold, fontSize: 7, letterSpacing: 1.6 },
   flipHintRow: {
     flexDirection: 'row',
     alignItems: 'center',
