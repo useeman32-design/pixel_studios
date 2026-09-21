@@ -22,6 +22,10 @@ for f in *"[id]".html */*"[id]".html; do
   dir="$(dirname "$f")"
   case "$dir" in
     brief) ids="logo brand-identity websites mobile-apps social-media flyer-design business-cards flyers stickers invitations apparel packaging ecommerce business-systems exercise-books memo-pads key-holders cloth-labels face-caps badges political-posters banners" ;;
+    product) ids="nfc-business-card premium-business-card branded-tshirt custom-mug premium-stickers invitation-cards product-packaging" ;;
+    order) ids="PS-2847 PS-2863 PS-2791" ;;
+    offer) ids="business-cards flyers stickers invitations apparel packaging logo brand-identity social-media flyer-design menu-design direct-card premium-card digital-profile websites ecommerce mobile-apps business-systems exercise-books memo-pads key-holders cloth-labels face-caps badges political-posters banners" ;;
+    service) ids="print creative smart digital" ;;
     *) ids="" ;;
   esac
   for id in $ids; do

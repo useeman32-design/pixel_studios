@@ -69,13 +69,43 @@ const COLOR_COMBOS: { name: string; colors: string[] }[] = [
   { name: 'Terracotta & Ivory', colors: ['#B4552D', '#FAF3E7'] },
 ];
 
-/** Custom color builder palette. */
-const PALETTE = [
-  '#0C0C0F', '#141416', '#3B3B40', '#8A8A90', '#F5F5F1', '#FFFFFF',
-  '#BFF549', '#5E8A0D', '#1E3B2C', '#2DD4BF', '#155E75', '#1E3A8A',
-  '#5B21B6', '#7C3AED', '#EC4899', '#5C1F2E', '#EF4444', '#B4552D',
-  '#F59E0B', '#E8C36A', '#F3EBDD', '#8C5A3C', '#1E3A5F', '#0EA5E9',
-];
+/* --------------------------- custom color wheel --------------------------- */
+
+const WHEEL_SIZE = 240;
+const HUES = 16;
+
+function hslToHex(h: number, s: number, l: number): string {
+  const a = s * Math.min(l, 1 - l);
+  const f = (n: number) => {
+    const k = (n + h / 30) % 12;
+    const c = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+    return Math.round(255 * c).toString(16).padStart(2, '0');
+  };
+  return `#${f(0)}${f(8)}${f(4)}`.toUpperCase();
+}
+
+function isLightHex(hex: string): boolean {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return 0.299 * r + 0.587 * g + 0.114 * b > 165;
+}
+
+/** Outer ring: saturated hues. Inner ring: soft pastels. Center: neutrals. */
+const WHEEL_OUTER = Array.from({ length: HUES }, (_, i) => hslToHex(i * (360 / HUES), 0.85, 0.52));
+const WHEEL_INNER = Array.from({ length: HUES }, (_, i) => hslToHex(i * (360 / HUES), 0.5, 0.8));
+const WHEEL_NEUTRALS = ['#FFFFFF', '#C9CBD1', '#8A8A90', '#3B3B40', '#0C0C0F'];
+
+function wheelPos(angle: number, r: number, size: number) {
+  return {
+    position: 'absolute' as const,
+    left: WHEEL_SIZE / 2 + r * Math.cos(angle) - size / 2,
+    top: WHEEL_SIZE / 2 + r * Math.sin(angle) - size / 2,
+    width: size,
+    height: size,
+    borderRadius: size / 2,
+  };
+}
 
 const TYPOGRAPHY = [
   'Modern & clean',
@@ -291,7 +321,7 @@ Phone: ${phone || '-'}`;
           })}
         </View>
 
-        {/* Custom color builder */}
+        {/* Custom color builder — wheel */}
         <View style={[styles.customColorCard, { backgroundColor: colors.surface, borderColor: customColors.length >= 2 ? colors.lime : colors.hairline }]}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
             <Ionicons name="color-palette-outline" size={17} color={customColors.length >= 2 ? (colors.isDark ? colors.lime : '#5E8A0D') : colors.muted} />
@@ -299,23 +329,52 @@ Phone: ${phone || '-'}`;
             {customColors.length >= 2 && <Ionicons name="checkmark-circle" size={16} color={colors.isDark ? colors.lime : '#5E8A0D'} />}
           </View>
           <Text style={styles.customColorHint}>
-            Tap 2 to 4 colors{customColors.length > 0 ? ` — ${customColors.length} selected` : ''}
+            Spin through the wheel and tap 2 to 4 colors{customColors.length > 0 ? ` — ${customColors.length} selected` : ''}
           </Text>
-          <View style={styles.paletteGrid}>
-            {PALETTE.map((c) => {
-              const active = customColors.includes(c);
-              return (
-                <Pressable key={c} onPress={() => togglePaletteColor(c)} style={styles.paletteCell}>
-                  <View style={[styles.paletteSwatch, { backgroundColor: c, borderColor: active ? colors.lime : 'rgba(120,120,120,0.3)', borderWidth: active ? 2.5 : StyleSheet.hairlineWidth }]} />
-                  {active && (
-                    <View style={styles.paletteCheck}>
-                      <Ionicons name="checkmark" size={11} color={c === '#FFFFFF' || c === '#F5F5F1' || c === '#F3EBDD' || c === '#BFF549' || c === '#E8C36A' || c === '#F2C9CF' || c === '#EAD9B0' || c === '#FFD8C2' || c === '#FAF3E7' ? '#141416' : '#FFFFFF'} />
-                    </View>
-                  )}
-                </Pressable>
-              );
-            })}
+
+          {/* The wheel */}
+          <View style={{ alignSelf: 'center', marginVertical: sp.x2_ }}>
+            <View style={[styles.wheelBase, { backgroundColor: colors.surface2, borderColor: colors.hairline }]}>
+              {WHEEL_OUTER.map((c, i) => {
+                const active = customColors.includes(c);
+                return (
+                  <Pressable key={`o${c}`} onPress={() => togglePaletteColor(c)} style={[wheelPos((i * 2 * Math.PI) / HUES - Math.PI / 2, 96, 32), { backgroundColor: c, borderWidth: active ? 3 : 1, borderColor: active ? colors.text : 'rgba(120,120,120,0.25)', zIndex: active ? 2 : 1 }]}>
+                    {active && (
+                      <View style={styles.wheelCheck}>
+                        <Ionicons name="checkmark" size={12} color={isLightHex(c) ? '#141416' : '#FFFFFF'} />
+                      </View>
+                    )}
+                  </Pressable>
+                );
+              })}
+              {WHEEL_INNER.map((c, i) => {
+                const active = customColors.includes(c);
+                return (
+                  <Pressable key={`i${c}`} onPress={() => togglePaletteColor(c)} style={[wheelPos((i * 2 * Math.PI) / HUES - Math.PI / 2 + Math.PI / HUES, 58, 24), { backgroundColor: c, borderWidth: active ? 3 : 1, borderColor: active ? colors.text : 'rgba(120,120,120,0.25)', zIndex: active ? 2 : 1 }]}>
+                    {active && (
+                      <View style={styles.wheelCheck}>
+                        <Ionicons name="checkmark" size={10} color={isLightHex(c) ? '#141416' : '#FFFFFF'} />
+                      </View>
+                    )}
+                  </Pressable>
+                );
+              })}
+              {WHEEL_NEUTRALS.map((c, i) => {
+                const active = customColors.includes(c);
+                const angle = (i * 2 * Math.PI) / WHEEL_NEUTRALS.length - Math.PI / 2;
+                return (
+                  <Pressable key={`n${c}`} onPress={() => togglePaletteColor(c)} style={[wheelPos(angle, 20, 17), { backgroundColor: c, borderWidth: active ? 2.5 : 1, borderColor: active ? colors.text : 'rgba(120,120,120,0.3)', zIndex: active ? 2 : 1 }]}>
+                    {active && (
+                      <View style={styles.wheelCheck}>
+                        <Ionicons name="checkmark" size={9} color={isLightHex(c) ? '#141416' : '#FFFFFF'} />
+                      </View>
+                    )}
+                  </Pressable>
+                );
+              })}
+            </View>
           </View>
+
           {customColors.length > 0 && (
             <View style={styles.customPreviewRow}>
               {customColors.map((c) => (
@@ -325,6 +384,11 @@ Phone: ${phone || '-'}`;
                 <Text style={{ fontFamily: fonts.medium, fontSize: 12.5, color: colors.muted, textDecorationLine: 'underline' }}>Clear</Text>
               </Pressable>
             </View>
+          )}
+          {customColors.length === 1 && (
+            <Text style={{ fontFamily: fonts.regular, fontSize: 12, color: colors.muted, marginTop: sp.x1 }}>
+              Pick at least one more color to complete your combination.
+            </Text>
           )}
         </View>
 
@@ -440,22 +504,25 @@ function useStyles(colors: Palette) {
     comboName: { fontFamily: fonts.medium, fontSize: 12, lineHeight: 15 },
     customColorCard: { marginTop: sp.x3, borderWidth: 1, borderRadius: radius.lg, padding: sp.x3 },
     customColorTitle: { fontFamily: fonts.semi, fontSize: 14.5, flex: 1 },
-    customColorHint: { fontFamily: fonts.regular, fontSize: 12.5, color: colors.muted, marginTop: 2, marginBottom: sp.x2_ },
-    paletteGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 9 },
-    paletteCell: { width: 38, height: 38 },
-    paletteSwatch: { width: 38, height: 38, borderRadius: 12 },
-    paletteCheck: {
+    customColorHint: { fontFamily: fonts.regular, fontSize: 12.5, color: colors.muted, marginTop: 2 },
+    wheelBase: {
+      width: WHEEL_SIZE,
+      height: WHEEL_SIZE,
+      borderRadius: WHEEL_SIZE / 2,
+      borderWidth: 1,
+    },
+    wheelCheck: {
       position: 'absolute',
-      bottom: -3,
-      right: -3,
-      width: 16,
-      height: 16,
+      bottom: -2,
+      right: -2,
+      width: 15,
+      height: 15,
       borderRadius: 8,
-      backgroundColor: colors.lime,
+      backgroundColor: '#BFF549',
       alignItems: 'center',
       justifyContent: 'center',
     },
-    customPreviewRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: sp.x3 },
+    customPreviewRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: sp.x2_ },
     customPreviewSwatch: { width: 26, height: 26, borderRadius: 8, borderWidth: StyleSheet.hairlineWidth, borderColor: 'rgba(120,120,120,0.25)' },
     chip: { paddingHorizontal: 15, paddingVertical: 10, borderRadius: 999, borderWidth: 1 },
     chipText: { fontFamily: fonts.semi, fontSize: 13.5 },

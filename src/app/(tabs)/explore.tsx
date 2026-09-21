@@ -1,8 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import React, { useMemo, useRef, useState } from 'react';
-import { Dimensions, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Animated, Modal, PanResponder, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Container, FadeIn } from '../../components/ui';
@@ -10,6 +10,90 @@ import { fonts, Palette, radius, sp, useTheme } from '../../constants/theme';
 import { ExplorePost, explorePosts } from '../../data/explore';
 
 const filters = ['All', 'Print', 'Design', 'Smart Cards', 'Digital Menu', 'Packaging', 'Mobile & Web'];
+
+/* -------------------------- Swipeable media carousel ------------------------ */
+/**
+ * A self-contained carousel that measures its own width, so it slides
+ * reliably on web and native alike (no paging ScrollView quirks).
+ */
+function MediaCarousel({
+  media,
+  isVideo,
+  page,
+  onPage,
+  styles,
+  playBadge,
+}: {
+  media: any[];
+  isVideo: boolean;
+  page: number;
+  onPage: (i: number) => void;
+  styles: any;
+  playBadge: any;
+}) {
+  const [width, setWidth] = useState(0);
+  const tx = useRef(new Animated.Value(0)).current;
+  const startIndex = useRef(page);
+
+  useEffect(() => {
+    startIndex.current = page;
+    if (width > 0) {
+      Animated.spring(tx, { toValue: -page * width, useNativeDriver: true, damping: 24, stiffness: 220, mass: 0.9 }).start();
+    }
+  }, [page, width, tx]);
+
+  const clamp = (i: number) => Math.max(0, Math.min(media.length - 1, i));
+
+  const pan = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => false,
+      onMoveShouldSetPanResponder: (_, g) => Math.abs(g.dx) > 12 && Math.abs(g.dx) > Math.abs(g.dy) * 1.4,
+      onPanResponderMove: (_, g) => {
+        if (width > 0) tx.setValue(-startIndex.current * width + g.dx);
+      },
+      onPanResponderRelease: (_, g) => {
+        if (width > 0) {
+          const moved = Math.round(-g.dx / width);
+          onPage(clamp(startIndex.current + moved));
+        }
+      },
+    }),
+  ).current;
+
+  return (
+    <View
+      onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
+      style={{ borderRadius: 18, overflow: 'hidden' }}
+      {...pan.panHandlers}>
+      {width > 0 && (
+        <Animated.View style={{ flexDirection: 'row', width: width * media.length, transform: [{ translateX: tx }] }}>
+          {media.map((m, i) => (
+            <View key={i} style={{ width, height: 270, borderRadius: 18, overflow: 'hidden', position: 'relative' }}>
+              <Image source={m} style={{ width, height: 270 }} contentFit="cover" />
+              {isVideo && (
+                <View style={playBadge}>
+                  <Ionicons name="play" size={26} color="#0C0C0F" />
+                </View>
+              )}
+            </View>
+          ))}
+        </Animated.View>
+      )}
+
+      {/* Prev / next arrows */}
+      {page > 0 && (
+        <Pressable onPress={() => onPage(clamp(page - 1))} style={[styles.carouselArrow, { left: 8 }, { backgroundColor: 'rgba(10,10,12,0.55)' }]}>
+          <Ionicons name="chevron-back" size={20} color="#FFFFFF" />
+        </Pressable>
+      )}
+      {page < media.length - 1 && (
+        <Pressable onPress={() => onPage(clamp(page + 1))} style={[styles.carouselArrow, { right: 8 }, { backgroundColor: 'rgba(10,10,12,0.55)' }]}>
+          <Ionicons name="chevron-forward" size={20} color="#FFFFFF" />
+        </Pressable>
+      )}
+    </View>
+  );
+}
 
 export default function ExploreScreen() {
   const router = useRouter();
@@ -19,7 +103,6 @@ export default function ExploreScreen() {
   const [filter, setFilter] = useState('All');
   const [openPost, setOpenPost] = useState<ExplorePost | null>(null);
   const [page, setPage] = useState(0);
-  const pager = useRef<ScrollView>(null);
 
   const posts = useMemo(
     () => (filter === 'All' ? explorePosts : explorePosts.filter((p) => p.category === filter)),
@@ -136,45 +219,34 @@ export default function ExploreScreen() {
                       </View>
                     ))
                   ) : (
-                    /* More than two items or a video — swipe through them. */
+                    /* More than two items or a video — slide through them. */
                     <View>
-                      <ScrollView
-                        ref={pager}
-                        horizontal
-                        pagingEnabled
-                        showsHorizontalScrollIndicator={false}
-                        onMomentumScrollEnd={(e) =>
-                          setPage(Math.round(e.nativeEvent.contentOffset.x / Math.max(Dimensions.get('window').width - 64, 1)))
-                        }
-                        style={{ borderRadius: 18, overflow: 'hidden' }}>
-                        {openPost.media.map((m, i) => (
-                          <View key={i} style={{ width: Math.min(Dimensions.get('window').width - 64, 448), height: 270, borderRadius: 18, overflow: 'hidden' }}>
-                            <Image source={m} style={{ width: '100%', height: '100%' }} contentFit="cover" />
-                            {openPost.type === 'video' && (
-                              <View style={styles.playBadge}>
-                                <Ionicons name="play" size={26} color="#0C0C0F" />
-                              </View>
-                            )}
-                          </View>
-                        ))}
-                      </ScrollView>
+                      <MediaCarousel
+                        media={openPost.media}
+                        isVideo={openPost.type === 'video'}
+                        page={page}
+                        onPage={setPage}
+                        styles={styles}
+                        playBadge={styles.playBadge}
+                      />
                       {/* dot indicator */}
                       <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 6, marginTop: 10 }}>
                         {openPost.media.map((_, i) => (
-                          <View
-                            key={i}
-                            style={{
-                              width: page === i ? 18 : 7,
-                              height: 7,
-                              borderRadius: 4,
-                              backgroundColor: page === i ? colors.lime : colors.hairlineStrong,
-                            }}
-                          />
+                          <Pressable key={i} onPress={() => setPage(i)} hitSlop={4}>
+                            <View
+                              style={{
+                                width: page === i ? 18 : 7,
+                                height: 7,
+                                borderRadius: 4,
+                                backgroundColor: page === i ? colors.lime : colors.hairlineStrong,
+                              }}
+                            />
+                          </Pressable>
                         ))}
                       </View>
                       {openPost.media.length > 1 && (
                         <Text style={[styles.swipeHint, { color: colors.muted }]}>
-                          {openPost.type === 'video' ? 'Video frames — swipe through · playback arrives with the studio backend' : 'Swipe to view more'}
+                          {openPost.type === 'video' ? 'Video frames — swipe or use the arrows · playback arrives with the studio backend' : 'Swipe or use the arrows to view more'}
                         </Text>
                       )}
                     </View>
@@ -256,6 +328,17 @@ function useStyles(colors: Palette) {
         viewerClose: { width: 38, height: 38, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
         viewerCaption: { fontFamily: fonts.regular, fontSize: 14, lineHeight: 21 },
         swipeHint: { fontFamily: fonts.regular, fontSize: 11.5, textAlign: 'center', marginTop: 6 },
+        carouselArrow: {
+          position: 'absolute',
+          top: '50%',
+          marginTop: -19,
+          width: 38,
+          height: 38,
+          borderRadius: 19,
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 5,
+        },
         viewerFoot: {
           flexDirection: 'row',
           alignItems: 'center',
