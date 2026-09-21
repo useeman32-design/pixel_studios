@@ -41,16 +41,22 @@ export default function MenuStudioScreen() {
 
   const [name, setName] = useState('');
   const [tagline, setTagline] = useState('');
+  const [phone, setPhone] = useState('');
+  const [whatsapp, setWhatsapp] = useState('');
+  const [address, setAddress] = useState('');
   const [items, setItems] = useState<MenuItem[]>(sampleItems);
   const [newItem, setNewItem] = useState({ name: '', price: '', category: 'Mains' });
-  const [templateId, setTemplateId] = useState('chalk');
+  const [templateId, setTemplateId] = useState('slate');
   const [packId, setPackId] = useState('page');
+  const [material, setMaterial] = useState<'paper' | 'plastic'>('paper');
   const [order, setOrder] = useState<{ id: string; method: 'delivery' | 'pickup' } | null>(null);
   const [checkoutVisible, setCheckoutVisible] = useState(false);
   const [previewVisible, setPreviewVisible] = useState(false);
 
   const pack = packages.find((p) => p.id === packId)!;
+  const hasPhysical = packId !== 'page';
   const slug = (name || 'your-restaurant').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'your-restaurant';
+  const menuContact = { phone: phone.trim(), whatsapp: whatsapp.trim(), address: address.trim() };
 
   const addItem = () => {
     if (!newItem.name.trim() || !newItem.price.trim()) return;
@@ -66,7 +72,8 @@ Package: ${pack.name} — ₦${pack.price.toLocaleString('en-NG')}
 Template: ${menuTemplates.find((t) => t.id === templateId)?.name}
 Restaurant: ${name || '-'}
 Menu page: pixelstudios.com/menu/${slug}
-Items: ${items.length} menu items (I'll send the full list)
+Items: ${items.length} menu items (I'll send the full list)${hasPhysical ? `\nCard material: ${material === 'plastic' ? 'Plastic (PVC)' : 'Card stock paper'}` : ''}
+Contact on menu: ${phone || '-'} / WA: ${whatsapp || '-'}
 
 Please share payment details!`;
 
@@ -85,7 +92,9 @@ Please share payment details!`;
             <Text style={[styles.doneOrder, { color: colors.isDark ? colors.lime : '#5E8A0D' }]}>#{order.id}</Text>
             <Text style={[styles.doneText, { color: colors.subtext }]}>
               {order.method === 'delivery'
-                ? "We'll build your digital menu and notify you when it's live and your QR cards are ready for delivery."
+                ? hasPhysical
+                  ? "We'll build your digital menu and notify you when it's live and your cards are ready for delivery."
+                  : "We'll build your digital menu and notify you the moment it goes live."
                 : "We'll build your digital menu and notify you when everything is ready for pickup."}
             </Text>
           </FadeIn>
@@ -118,10 +127,14 @@ Please share payment details!`;
             </Text>
           </FadeIn>
 
-          {/* STEP 1 — restaurant */}
+          {/* STEP 1 — restaurant + contact */}
           <Text style={styles.stepLabel}>01 · Your restaurant</Text>
           <TextInput value={name} onChangeText={setName} placeholder="Restaurant name" placeholderTextColor={colors.muted} style={styles.input} />
           <TextInput value={tagline} onChangeText={setTagline} placeholder="Tagline (e.g. Fresh. Local. Delicious.)" placeholderTextColor={colors.muted} style={[styles.input, { marginTop: sp.x2_ }]} />
+          <Text style={styles.hint}>These details are printed on your menu so customers can reach you.</Text>
+          <TextInput value={phone} onChangeText={setPhone} placeholder="Phone number (shown on menu)" placeholderTextColor={colors.muted} keyboardType="phone-pad" style={[styles.input, { marginTop: sp.x2_ }]} />
+          <TextInput value={whatsapp} onChangeText={setWhatsapp} placeholder="WhatsApp number (optional)" placeholderTextColor={colors.muted} keyboardType="phone-pad" style={[styles.input, { marginTop: sp.x2_ }]} />
+          <TextInput value={address} onChangeText={setAddress} placeholder="Address (optional)" placeholderTextColor={colors.muted} style={[styles.input, { marginTop: sp.x2_ }]} />
 
           {/* STEP 2 — items */}
           <Text style={styles.stepLabel}>02 · Your menu items</Text>
@@ -170,7 +183,12 @@ Please share payment details!`;
               {menuTemplates.map((t) => (
                 <Pressable key={t.id} onPress={() => setTemplateId(t.id)}>
                   <View style={[styles.templateWrap, templateId === t.id && { borderColor: colors.lime }]}>
-                    <MenuThumb templateId={t.id} name={name} tagline={tagline} items={items} />
+                    <MenuThumb templateId={t.id} name={name} tagline={tagline} items={items} contact={menuContact} />
+                    {t.tag === 'modern' && (
+                      <View style={[styles.modernBadge, { backgroundColor: colors.lime }]}>
+                        <Text style={[styles.modernBadgeText, { color: colors.onLime }]}>NEW</Text>
+                      </View>
+                    )}
                   </View>
                   <Text style={[styles.templateName, templateId === t.id && { color: colors.isDark ? colors.lime : '#5E8A0D' }]}>
                     {t.name} {templateId === t.id ? '✓' : ''}
@@ -199,6 +217,37 @@ Please share payment details!`;
               </Pressable>
             ))}
           </View>
+
+          {/* STEP 5 — material for the physical card, same choice as smart cards */}
+          {hasPhysical && (
+            <>
+              <Text style={styles.stepLabel}>05 · Card material</Text>
+              <Text style={styles.hint}>For your {packId === 'qr' ? 'QR table cards' : 'smart menu card'} — same two finishes as our smart cards.</Text>
+              <View style={{ flexDirection: 'row', gap: sp.x2_ }}>
+                {[
+                  { id: 'paper' as const, name: 'Card Stock', desc: 'Thick matte paper, soft-touch finish', icon: 'albums-outline' },
+                  { id: 'plastic' as const, name: 'Plastic PVC', desc: 'Rigid card, water & spill proof', icon: 'card-outline' },
+                ].map((m) => {
+                  const active = material === m.id;
+                  return (
+                    <Pressable
+                      key={m.id}
+                      onPress={() => setMaterial(m.id)}
+                      style={[styles.materialCard, { backgroundColor: colors.surface, borderColor: active ? colors.lime : colors.hairline }, { flex: 1 }]}>
+                      <Ionicons name={m.icon as any} size={20} color={active ? (colors.isDark ? colors.lime : '#5E8A0D') : colors.muted} />
+                      <Text style={[styles.materialName, { color: colors.text }]}>{m.name}</Text>
+                      <Text style={styles.materialDesc}>{m.desc}</Text>
+                      {active && (
+                        <View style={[styles.materialCheck, { backgroundColor: colors.lime }]}>
+                          <Ionicons name="checkmark" size={12} color={colors.onLime} />
+                        </View>
+                      )}
+                    </Pressable>
+                  );
+                })}
+              </View>
+            </>
+          )}
 
           {/* Order */}
           <View style={styles.orderCard}>
@@ -246,7 +295,7 @@ Please share payment details!`;
             </View>
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 16, paddingBottom: 36 }}>
               <View style={{ maxWidth: 420, width: '100%', alignSelf: 'center', borderRadius: 24, overflow: 'hidden', borderWidth: StyleSheet.hairlineWidth, borderColor: colors.hairline }}>
-                <MenuPage templateId={templateId} name={name} tagline={tagline} items={items} />
+                <MenuPage templateId={templateId} name={name} tagline={tagline} items={items} contact={menuContact} />
               </View>
             </ScrollView>
           </View>
@@ -289,7 +338,27 @@ function useStyles(colors: Palette) {
     catChip: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 999, borderWidth: 1 },
     catChipText: { fontFamily: fonts.medium, fontSize: 13 },
     templateWrap: { borderRadius: 20, borderWidth: 2, borderColor: 'transparent', overflow: 'hidden' },
+    modernBadge: { position: 'absolute', top: 10, right: 10, borderRadius: 999, paddingHorizontal: 8, paddingVertical: 4 },
+    modernBadgeText: { fontFamily: fonts.bold, fontSize: 9, letterSpacing: 1.2 },
     templateName: { fontFamily: fonts.semi, fontSize: 13.5, color: colors.subtext, marginTop: sp.x1, textAlign: 'center' },
+    materialCard: {
+      borderWidth: 1,
+      borderRadius: radius.lg,
+      padding: sp.x3,
+      gap: 7,
+    },
+    materialName: { fontFamily: fonts.semi, fontSize: 15 },
+    materialDesc: { fontFamily: fonts.regular, fontSize: 12.5, color: colors.subtext, lineHeight: 17 },
+    materialCheck: {
+      position: 'absolute',
+      top: 12,
+      right: 12,
+      width: 22,
+      height: 22,
+      borderRadius: 11,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
     packCard: {
       flexDirection: 'row',
       alignItems: 'center',

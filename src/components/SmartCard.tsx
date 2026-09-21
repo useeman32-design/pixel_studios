@@ -83,12 +83,57 @@ function Deco({ deco, accent }: { deco: CardDesign['deco']; accent: string }) {
       <View style={{ position: 'absolute', top: 9, left: 9, right: 9, bottom: 9, borderWidth: 1, borderColor: accent + '4D', borderRadius: 14 }} />
     );
   }
+  if (deco === 'texture') {
+    // Fine woven diagonals — subtle, printed-fabric feel.
+    return (
+      <>
+        {[26, 58, 90, 122, 154, 186].map((left, i) => (
+          <View
+            key={i}
+            style={{
+              position: 'absolute',
+              top: -60,
+              left,
+              width: 1,
+              height: 320,
+              backgroundColor: accent,
+              opacity: i % 2 ? 0.09 : 0.16,
+              transform: [{ rotate: '32deg' }],
+            }}
+          />
+        ))}
+        {[10, 42, 74].map((top, i) => (
+          <View
+            key={`h${i}`}
+            style={{
+              position: 'absolute',
+              top,
+              left: -40,
+              height: 1,
+              width: 420,
+              backgroundColor: accent,
+              opacity: 0.07,
+            }}
+          />
+        ))}
+      </>
+    );
+  }
   // dots
   return (
     <View style={{ position: 'absolute', right: 20, top: 56, flexDirection: 'row', gap: 4 }}>
       {[1, 0.65, 0.4, 0.65, 1].map((op, i) => (
         <View key={i} style={{ width: 4.5, height: 4.5, borderRadius: 2.25, backgroundColor: accent, opacity: op }} />
       ))}
+    </View>
+  );
+}
+
+/** Duo/split face — dark charcoal up top, light paper zone at the bottom. */
+function SplitDeco({ design }: { design: CardDesign }) {
+  return (
+    <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: '44%', backgroundColor: design.splitBg }}>
+      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2.5, backgroundColor: design.accent, opacity: 0.9 }} />
     </View>
   );
 }
@@ -165,11 +210,17 @@ export default function SmartCard({ config }: { config: CardConfig }) {
     }
   }, [config.tier, config.directTarget, config.directValue, config.username]);
 
+  // Duo cards place the name block over the light zone — swap ink colors there.
+  const isSplit = d.deco === 'split';
+  const lowerText = isSplit ? d.splitText ?? d.text : d.text;
+  const lowerSub = isSplit ? d.splitSub ?? d.sub : d.sub;
+
   /* -------------------------------- FRONT -------------------------------- */
   const front = (
     <View style={faceBase}>
       {isPlastic && <View style={styles.plasticSheen} />}
-      {config.designMode === 'studio' && <Deco deco={d.deco} accent={d.accent} />}
+      {config.designMode === 'studio' && d.deco === 'split' && <SplitDeco design={d} />}
+      {config.designMode === 'studio' && d.deco !== 'split' && <Deco deco={d.deco} accent={d.accent} />}
 
       {/* Customer brand — top */}
       <View style={styles.topRow}>
@@ -190,23 +241,31 @@ export default function SmartCard({ config }: { config: CardConfig }) {
 
       {/* Owner — bold, with rank */}
       <View style={{ flex: 1, justifyContent: 'flex-end' }}>
-        <Text style={[styles.name, { color: d.text }]} numberOfLines={1}>
+        <Text style={[styles.name, { color: lowerText }]} numberOfLines={1}>
           {ownerName}
         </Text>
         {(config.rank || '').trim().length > 0 && (
-          <Text style={[styles.rankText, { color: d.accent }]} numberOfLines={1}>
+          <Text
+            style={[styles.rankText, { color: isSplit ? lowerSub : d.accent }]}
+            numberOfLines={1}>
             {(config.rank || '').toUpperCase()}
           </Text>
         )}
         <View style={styles.bottomRow}>
           {/* Studio credit — bottom */}
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-            <Text style={{ fontSize: 10, color: d.accent }}>▚</Text>
-            <Text style={[styles.studioCredit, { color: d.sub }]}>PIXEL STUDIOS</Text>
+            <Text style={{ fontSize: 10, color: isSplit ? lowerText : d.accent }}>▚</Text>
+            <Text style={[styles.studioCredit, { color: lowerSub }]}>PIXEL STUDIOS</Text>
           </View>
-          <View style={[styles.tapBadge, { backgroundColor: d.accent + '26' }]}>
-            <Ionicons name="flash" size={9} color={d.accent} />
-            <Text style={[styles.tapText, { color: d.accent }]}>
+          <View
+            style={[
+              styles.tapBadge,
+              isSplit
+                ? { backgroundColor: d.bg }
+                : { backgroundColor: d.accent + '26' },
+            ]}>
+            <Ionicons name="flash" size={9} color={isSplit ? d.text : d.accent} />
+            <Text style={[styles.tapText, { color: isSplit ? d.text : d.accent }]}>
               {config.tier === 'premium' ? 'PREMIUM' : 'DIRECT'}
             </Text>
           </View>

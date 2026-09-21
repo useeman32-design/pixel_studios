@@ -11,6 +11,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 
 import { fonts, radius, MAX_CONTENT_WIDTH, useTheme } from '../constants/theme';
+import { hapticTap } from '../lib/haptics';
 
 /* ---------------------------------- FadeIn --------------------------------- */
 
@@ -127,6 +128,7 @@ export function Button({
 
   const handle = () => {
     if (disabled) return;
+    hapticTap();
     if (href) {
       Linking.openURL(href);
       return;

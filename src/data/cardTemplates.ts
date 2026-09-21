@@ -93,16 +93,45 @@ export type CardDesign = {
   text: string;
   sub: string;
   accent: string;
-  deco: 'halo' | 'line' | 'corner' | 'frame' | 'dots';
+  deco: 'halo' | 'line' | 'corner' | 'frame' | 'dots' | 'texture' | 'split';
+  /** Dark face — used for contrast logic in pickers. */
+  dark?: boolean;
+  /** Duo/split designs: tone of the light zone + its ink colors. */
+  splitBg?: string;
+  splitText?: string;
+  splitSub?: string;
 };
 
-/** Light, airy card faces — soft tints and gentle details, never heavy solids. */
+/**
+ * Card face library — a deliberate mix: airy lights, deep darks,
+ * textured finishes and a dark+light duo.
+ */
 export const cardDesigns: CardDesign[] = [
+  /* ------------------------------ light faces ------------------------------ */
   { id: 'cloud', name: 'Cloud White', desc: 'Pure white with fine graphite lines', bg: '#FCFCFA', text: '#17181A', sub: 'rgba(23,24,26,0.52)', accent: '#8A94A3', deco: 'line' },
   { id: 'ivory', name: 'Ivory Mist', desc: 'Soft ivory with a whisper of terracotta', bg: '#F7F3EC', text: '#221E18', sub: 'rgba(34,30,24,0.52)', accent: '#D98E73', deco: 'halo' },
   { id: 'sky', name: 'Sky Soft', desc: 'Airy pale blue, calm and trusted', bg: '#F1F6FB', text: '#16253C', sub: 'rgba(22,37,60,0.5)', accent: '#6FA8DC', deco: 'halo' },
   { id: 'blush', name: 'Blush Petal', desc: 'Gentle rose for beauty & fashion', bg: '#FBF3F4', text: '#332024', sub: 'rgba(51,32,36,0.5)', accent: '#E39AA7', deco: 'dots' },
   { id: 'sage', name: 'Sage Garden', desc: 'Fresh sage with a natural feel', bg: '#F3F6F0', text: '#1E2B1C', sub: 'rgba(30,43,28,0.5)', accent: '#86B284', deco: 'frame' },
+  /* ------------------------------- dark faces ------------------------------ */
+  { id: 'midnight', name: 'Midnight Noir', desc: 'Matte black, one electric lime line', bg: '#0E0E11', text: '#F4F4F2', sub: 'rgba(244,244,242,0.55)', accent: '#BFF549', deco: 'line', dark: true },
+  { id: 'graphite', name: 'Graphite Weave', desc: 'Charcoal with a fine woven texture', bg: '#1B1B1F', text: '#EDEDEF', sub: 'rgba(237,237,239,0.5)', accent: '#9BA1AE', deco: 'texture', dark: true },
+  { id: 'ember', name: 'Ember Luxe', desc: 'Dark cocoa brushed with warm gold', bg: '#251B15', text: '#F5EDE6', sub: 'rgba(245,237,230,0.55)', accent: '#D9A45B', deco: 'frame', dark: true },
+  /* ---------------------------- dark + light duo --------------------------- */
+  {
+    id: 'duo',
+    name: 'Duo Split',
+    desc: 'Charcoal top, warm paper below',
+    bg: '#141417',
+    text: '#F4F4F2',
+    sub: 'rgba(244,244,242,0.55)',
+    accent: '#BFF549',
+    deco: 'split',
+    dark: true,
+    splitBg: '#F5F2EA',
+    splitText: '#1A1A1E',
+    splitSub: 'rgba(26,26,30,0.55)',
+  },
 ];
 
 export function getCardDesign(id: string): CardDesign {

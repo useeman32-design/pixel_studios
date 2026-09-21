@@ -115,6 +115,7 @@ export const offers: Offer[] = [
     blurb: 'A distinctive mark built to represent you for years.',
     image: require('../../assets/images/cat-creative.jpg'),
     priceFrom: 25000,
+    link: '/brief/logo',
     designs: [
       { name: 'Wordmark', colors: ['#18181B', '#71717A'] },
       { name: 'Monogram', colors: ['#7C3AED', '#C4B5FD'] },
@@ -130,6 +131,7 @@ export const offers: Offer[] = [
     blurb: 'Colors, typography and visual language that feel like you.',
     image: require('../../assets/images/portfolio/branding.jpg'),
     priceFrom: 60000,
+    link: '/brief/brand-identity',
     designs: [
       { name: 'Signature', colors: ['#111113', '#BFF549'] },
       { name: 'Playful', colors: ['#F59E0B', '#EC4899'] },
@@ -222,6 +224,7 @@ export const offers: Offer[] = [
     blurb: 'Fast, beautiful websites that earn trust.',
     image: require('../../assets/images/portfolio/web.jpg'),
     priceFrom: 150000,
+    link: '/brief/websites',
     designs: [
       { name: 'Minimal', colors: ['#18181B', '#A1A1AA'] },
       { name: 'Editorial', colors: ['#F5F5F4', '#18181B'] },
@@ -252,6 +255,7 @@ export const offers: Offer[] = [
     blurb: 'iOS and Android apps built with modern technology.',
     image: require('../../assets/images/portfolio/app.jpg'),
     priceFrom: 400000,
+    link: '/brief/mobile-apps',
     designs: [
       { name: 'Consumer', colors: ['#EC4899', '#FDA4AF'] },
       { name: 'Business', colors: ['#1E3A8A', '#60A5FA'] },

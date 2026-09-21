@@ -1,4 +1,5 @@
 import { BlurView } from 'expo-blur';
+import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs, useRouter } from 'expo-router';
 import React, { useEffect, useRef } from 'react';
@@ -10,13 +11,17 @@ import { fonts, isWeb, useTheme } from '../../constants/theme';
 const tabs = [
   { name: 'index', label: 'Home', icon: 'home-outline', activeIcon: 'home' },
   { name: 'services', label: 'Services', icon: 'apps-outline', activeIcon: 'apps' },
+  { name: 'explore', label: 'Explore', icon: 'compass-outline', activeIcon: 'compass' },
   { name: 'shop', label: 'Shop', icon: 'bag-outline', activeIcon: 'bag' },
-  { name: 'orders', label: 'Orders', icon: 'receipt-outline', activeIcon: 'receipt' },
   { name: 'profile', label: 'Profile', icon: 'person-outline', activeIcon: 'person' },
 ];
 
 const ITEM_W = 58;
 const BAR_H = 64;
+
+const haptic = () => {
+  if (Platform.OS !== 'web') Haptics.selectionAsync().catch(() => {});
+};
 
 /* -------------------------------- Glass bar -------------------------------- */
 
@@ -25,7 +30,6 @@ function GlassBar({ index, onNavigate }: { index: number; onNavigate: (name: str
   const anim = useRef(new Animated.Value(index)).current;
 
   useEffect(() => {
-    // Gentle, calm slide — no bounce.
     Animated.timing(anim, { toValue: index, duration: 260, useNativeDriver: true }).start();
   }, [index, anim]);
 
@@ -59,7 +63,10 @@ function GlassBar({ index, onNavigate }: { index: number; onNavigate: (name: str
         return (
           <Pressable
             key={tab.name}
-            onPress={() => onNavigate(tab.name)}
+            onPress={() => {
+              haptic();
+              onNavigate(tab.name);
+            }}
             style={{ width: ITEM_W, height: BAR_H, alignItems: 'center', justifyContent: 'center' }}
             accessibilityLabel={tab.label}>
             <Ionicons
@@ -89,15 +96,19 @@ function GlassBar({ index, onNavigate }: { index: number; onNavigate: (name: str
         overflow: 'hidden',
         borderWidth: StyleSheet.hairlineWidth,
         borderColor: colors.hairlineStrong,
+        // Soft lift — the bar floats gently above the ground.
         ...Platform.select({
           ios: {
-            shadowColor: '#000',
-            shadowOpacity: isDark ? 0.5 : 0.15,
-            shadowRadius: 22,
-            shadowOffset: { width: 0, height: 8 },
+            shadowColor: isDark ? '#000000' : '#3A3A33',
+            shadowOpacity: isDark ? 0.6 : 0.28,
+            shadowRadius: 26,
+            shadowOffset: { width: 0, height: 14 },
           },
-          android: { elevation: 10 },
+          android: { elevation: 14 },
         }),
+        ...(isWeb
+          ? ({ boxShadow: isDark ? '0 14px 34px rgba(0,0,0,0.55)' : '0 14px 30px rgba(40,40,34,0.25)' } as any)
+          : {}),
       }}>
       {isWeb ? (
         <View
@@ -118,8 +129,9 @@ function GlassBar({ index, onNavigate }: { index: number; onNavigate: (name: str
 
 /* ------------------------------ Ask AI button ------------------------------ */
 /**
- * Floating Ask AI shortcut on the right. Every few seconds it gently expands
- * to reveal the "Ask AI" label, then quietly hides it again.
+ * Floating Ask AI shortcut on the right. It gently expands to reveal the
+ * label, then hides it again. The sparkle icon stays perfectly centered in
+ * the collapsed state because the label slot itself animates to zero width.
  */
 function AskAiButton({ onPress }: { onPress: () => void }) {
   const { colors, isDark } = useTheme();
@@ -139,12 +151,17 @@ function AskAiButton({ onPress }: { onPress: () => void }) {
   }, [expand]);
 
   const width = expand.interpolate({ inputRange: [0, 1], outputRange: [52, 132] });
+  // Label slot collapses to 0 so the icon stays dead-center when hidden.
+  const labelSlot = expand.interpolate({ inputRange: [0, 1], outputRange: [0, 66] });
   const labelOpacity = expand.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0, 1] });
 
   return (
     <Animated.View style={{ width, height: 52, borderRadius: 26 }}>
       <Pressable
-        onPress={onPress}
+        onPress={() => {
+          haptic();
+          onPress();
+        }}
         style={({ pressed }) => [
           StyleSheet.absoluteFill,
           styles.askAi,
@@ -155,9 +172,11 @@ function AskAiButton({ onPress }: { onPress: () => void }) {
           },
         ]}>
         <Ionicons name="sparkles" size={19} color={colors.lime} />
-        <Animated.Text style={[styles.askAiText, { color: colors.text, opacity: labelOpacity }]} numberOfLines={1}>
-          Ask AI
-        </Animated.Text>
+        <Animated.View style={{ width: labelSlot, overflow: 'hidden', flexDirection: 'row' }}>
+          <Animated.Text style={[styles.askAiText, { color: colors.text, opacity: labelOpacity }]} numberOfLines={1}>
+            Ask AI
+          </Animated.Text>
+        </Animated.View>
       </Pressable>
     </Animated.View>
   );
@@ -168,7 +187,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
     borderRadius: 26,
     borderWidth: StyleSheet.hairlineWidth,
     overflow: 'hidden',
@@ -177,7 +195,7 @@ const styles = StyleSheet.create({
       android: { elevation: 6 },
     }),
   },
-  askAiText: { fontFamily: fonts.semi, fontSize: 14.5, width: 58, textAlign: 'left' },
+  askAiText: { fontFamily: fonts.semi, fontSize: 14.5, marginLeft: 8, width: 58 },
 });
 
 /* ---------------------------------- Layout --------------------------------- */
@@ -191,7 +209,7 @@ export default function TabsLayout() {
       screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: 'transparent' } }}
       tabBar={(props) => {
         const { state, navigation } = props;
-        const bottom = Math.max(insets.bottom, 12) + 10;
+        const bottom = Math.max(insets.bottom, 12) + 12;
         return (
           <View pointerEvents="box-none" style={{ position: 'absolute', left: 0, right: 0, bottom }}>
             {/* Ask AI — floating on the right, above the bar */}
@@ -216,8 +234,8 @@ export default function TabsLayout() {
       }}>
       <Tabs.Screen name="index" />
       <Tabs.Screen name="services" />
+      <Tabs.Screen name="explore" />
       <Tabs.Screen name="shop" />
-      <Tabs.Screen name="orders" />
       <Tabs.Screen name="profile" />
     </Tabs>
   );

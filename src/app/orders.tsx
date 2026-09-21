@@ -4,10 +4,10 @@ import React, { useMemo } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Container, FadeIn } from '../../components/ui';
-import { fonts, Palette, radius, sp, useTheme } from '../../constants/theme';
-import { orders } from '../../data/orders';
-import { formatNaira } from '../../data/products';
+import { Container, FadeIn } from '../components/ui';
+import { fonts, Palette, radius, sp, useTheme } from '../constants/theme';
+import { orders } from '../data/orders';
+import { formatNaira } from '../data/products';
 
 export default function OrdersScreen() {
   const router = useRouter();

@@ -6,6 +6,7 @@ import SelectSheet from './SelectSheet';
 import { Button } from './ui';
 import { fonts, radius, sp, useTheme } from '../constants/theme';
 import { NIGERIA_LGAS, NIGERIA_STATES } from '../data/nigeria';
+import { hapticSuccess } from '../lib/haptics';
 
 /**
  * In-app checkout: delivery details (fullname, phone, address, state, LGA)
@@ -41,6 +42,7 @@ export default function CheckoutModal({
 
   const place = () => {
     if (!valid) return;
+    hapticSuccess();
     onPlaced(`PS-${Math.floor(2900 + Math.random() * 600)}`, method);
   };
 

@@ -367,7 +367,12 @@ Total: ₦${price.toLocaleString('en-NG')}. Please share payment details!`;
                   const active = cardDesignId === cd.id;
                   return (
                     <Pressable key={cd.id} onPress={() => setCardDesignId(cd.id)} style={{ width: DESIGN_W }}>
-                      <View style={[styles.designMini, { backgroundColor: cd.bg, borderColor: active ? colors.lime : colors.hairline, borderWidth: active ? 2 : 1 }]}>
+                      <View style={[styles.designMini, { backgroundColor: cd.bg, borderColor: active ? colors.lime : colors.hairline, borderWidth: active ? 2 : 1, overflow: 'hidden' }]}>
+                        {cd.deco === 'split' && (
+                          <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 34, backgroundColor: cd.splitBg }}>
+                            <View style={{ height: 2, backgroundColor: cd.accent }} />
+                          </View>
+                        )}
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
                           <View style={{ width: 14, height: 14, borderRadius: 4, backgroundColor: cd.accent + '33', alignItems: 'center', justifyContent: 'center' }}>
                             <Text style={{ fontSize: 8, color: cd.accent, fontWeight: '700' }}>{(business || 'B').charAt(0).toUpperCase()}</Text>
@@ -376,9 +381,9 @@ Total: ₦${price.toLocaleString('en-NG')}. Please share payment details!`;
                         </View>
                         <View style={{ height: 8, width: 84, borderRadius: 3, backgroundColor: cd.text, marginTop: 16 }} />
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 12 }}>
-                          <Text style={{ fontSize: 7, color: cd.sub, letterSpacing: 1.4 }}>▚ PIXEL STUDIOS</Text>
-                          <View style={{ backgroundColor: cd.accent + '26', borderRadius: 999, paddingHorizontal: 6, paddingVertical: 2 }}>
-                            <Text style={{ fontSize: 7, color: cd.accent }}>{tier === 'premium' ? 'PREMIUM' : 'DIRECT'}</Text>
+                          <Text style={{ fontSize: 7, color: cd.deco === 'split' ? cd.splitSub : cd.sub, letterSpacing: 1.4 }}>▚ PIXEL STUDIOS</Text>
+                          <View style={{ backgroundColor: cd.deco === 'split' ? cd.bg : cd.accent + '26', borderRadius: 999, paddingHorizontal: 6, paddingVertical: 2 }}>
+                            <Text style={{ fontSize: 7, color: cd.deco === 'split' ? cd.text : cd.accent }}>{tier === 'premium' ? 'PREMIUM' : 'DIRECT'}</Text>
                           </View>
                         </View>
                       </View>

@@ -33,7 +33,27 @@ const quickActions = [
   { label: 'Print', icon: 'print-outline', target: '/service/print' },
   { label: 'Design', icon: 'color-palette-outline', target: '/service/creative' },
   { label: 'Smart Cards', icon: 'wifi-outline', target: '/nfc' },
-  { label: 'Mobile & Web Development', icon: 'code-slash-outline', target: '/service/digital' },
+  { label: 'Digital Menu', icon: 'restaurant-outline', target: '/menu-studio' },
+  { label: 'Mobile & Web', icon: 'code-slash-outline', target: '/service/digital' },
+];
+
+const campaigns = [
+  {
+    id: 'smart',
+    title: 'Smart Card Week',
+    sub: 'Free delivery on Premium Portfolio Cards',
+    tag: 'LIMITED',
+    image: require('../../../assets/images/banner-smart.jpg'),
+    target: '/nfc?tier=premium',
+  },
+  {
+    id: 'print',
+    title: 'Fresh Print Drop',
+    sub: 'Business cards from ₦15,000 — 48hr turnaround',
+    tag: 'NEW',
+    image: require('../../../assets/images/banner-print.jpg'),
+    target: '/service/print',
+  },
 ];
 
 const AnimatedImage = Animated.createAnimatedComponent(Image);
@@ -232,12 +252,6 @@ export default function HomeScreen() {
 
           {/* Hero copy */}
           <View style={styles.heroCopy}>
-            <FadeIn>
-              <View style={styles.locationRow}>
-                <Ionicons name="location" size={11} color={colors.lime} />
-                <Text style={styles.locationText}>Gusau, Zamfara</Text>
-              </View>
-            </FadeIn>
             <FadeIn delay={90}>
               <Text style={styles.heroTitle}>Bring your ideas to life.</Text>
             </FadeIn>
@@ -268,7 +282,7 @@ export default function HomeScreen() {
       {/* =========================== QUICK ACTIONS =========================== */}
       <Container style={{ marginTop: sp.x5 }}>
         <FadeIn delay={80}>
-          <View style={styles.actionsRow}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginHorizontal: -24 }} contentContainerStyle={{ paddingHorizontal: 24, gap: sp.x4, justifyContent: 'flex-start' }}>
             {quickActions.map((a) => (
               <Pressable
                 key={a.label}
@@ -280,8 +294,42 @@ export default function HomeScreen() {
                 <Text style={styles.actionLabel}>{a.label}</Text>
               </Pressable>
             ))}
-          </View>
+          </ScrollView>
         </FadeIn>
+      </Container>
+
+      {/* ========================== CAMPAIGN BANNERS ========================= */}
+      <Container style={{ marginTop: sp.x5 }}>
+        <ScrollView
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          style={{ marginHorizontal: -24 }}
+          contentContainerStyle={{ paddingHorizontal: 24, gap: sp.x3 }}>
+          {campaigns.map((c, i) => (
+            <FadeIn key={c.id} delay={100 + i * 80}>
+              <Pressable onPress={() => router.push(c.target as any)} style={styles.campaign}>
+                <Image source={c.image} style={styles.campaignImage} resizeMode="cover" />
+                <LinearGradient
+                  colors={['rgba(6,6,8,0.85)', 'rgba(6,6,8,0.15)', 'transparent']}
+                  locations={[0, 0.6, 1]}
+                  style={StyleSheet.absoluteFill}
+                />
+                <View style={styles.campaignCopy}>
+                  <View style={styles.campaignTag}>
+                    <Text style={styles.campaignTagText}>{c.tag}</Text>
+                  </View>
+                  <Text style={styles.campaignTitle}>{c.title}</Text>
+                  <Text style={styles.campaignSub}>{c.sub}</Text>
+                  <View style={styles.campaignCta}>
+                    <Text style={styles.campaignCtaText}>Claim offer</Text>
+                    <Ionicons name="arrow-forward" size={15} color={colors.onLime} />
+                  </View>
+                </View>
+              </Pressable>
+            </FadeIn>
+          ))}
+        </ScrollView>
       </Container>
 
       {/* ============================= PIXEL AI ============================== */}
@@ -371,20 +419,6 @@ function useStyles(colors: Palette) {
         },
         headerAvatar: { width: '100%', height: '100%' },
         heroCopy: { flex: 1, justifyContent: 'flex-end', paddingBottom: sp.x6 },
-        locationRow: {
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: 6,
-          alignSelf: 'flex-start',
-          backgroundColor: 'rgba(10,10,12,0.42)',
-          borderWidth: StyleSheet.hairlineWidth,
-          borderColor: 'rgba(255,255,255,0.18)',
-          borderRadius: 999,
-          paddingHorizontal: 12,
-          paddingVertical: 7,
-          marginBottom: sp.x3,
-        },
-        locationText: { fontFamily: fonts.medium, fontSize: 12.5, color: 'rgba(255,255,255,0.85)' },
         heroTitle: {
           fontFamily: fonts.semi,
           fontSize: 46,
@@ -420,8 +454,7 @@ function useStyles(colors: Palette) {
           borderColor: 'rgba(255,255,255,0.22)',
         },
         aiChipText: { fontFamily: fonts.semi, fontSize: 15, color: '#FFFFFF' },
-        actionsRow: { flexDirection: 'row', justifyContent: 'space-between' },
-        actionItem: { alignItems: 'center', gap: sp.x1, flex: 1, maxWidth: 96 },
+        actionItem: { alignItems: 'center', gap: sp.x1, width: 92 },
         actionIcon: {
           width: 62,
           height: 62,
@@ -459,6 +492,36 @@ function useStyles(colors: Palette) {
         },
         aiTitle: { fontFamily: fonts.semi, fontSize: 16.5, color: colors.text },
         aiSub: { fontFamily: fonts.regular, fontSize: 13.5, color: colors.subtext, marginTop: 2 },
+        campaign: {
+          width: 300,
+          height: 168,
+          borderRadius: radius.xl,
+          overflow: 'hidden',
+          backgroundColor: colors.surface,
+        },
+        campaignImage: { width: '100%', height: '100%' },
+        campaignCopy: { position: 'absolute', left: 18, top: 16, bottom: 16, right: 18, justifyContent: 'space-between' },
+        campaignTag: {
+          alignSelf: 'flex-start',
+          backgroundColor: colors.lime,
+          borderRadius: 999,
+          paddingHorizontal: 9,
+          paddingVertical: 4,
+        },
+        campaignTagText: { fontFamily: fonts.bold, fontSize: 9.5, letterSpacing: 1.2, color: colors.onLime },
+        campaignTitle: { fontFamily: fonts.semi, fontSize: 22, letterSpacing: -0.5, color: '#FFFFFF' },
+        campaignSub: { fontFamily: fonts.regular, fontSize: 13, color: 'rgba(255,255,255,0.85)', marginTop: 2 },
+        campaignCta: {
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 6,
+          alignSelf: 'flex-start',
+          backgroundColor: colors.lime,
+          borderRadius: 999,
+          paddingHorizontal: 12,
+          paddingVertical: 8,
+        },
+        campaignCtaText: { fontFamily: fonts.bold, fontSize: 12.5, color: colors.onLime },
         sectionHead: {
           flexDirection: 'row',
           alignItems: 'baseline',

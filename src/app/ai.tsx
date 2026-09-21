@@ -17,6 +17,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BackBar, Container } from '../components/ui';
 import { fonts, Palette, radius, sp, useTheme } from '../constants/theme';
 import { AiChip, aiRespond, greeting } from '../lib/assistant';
+import { askGroq, getGroqKey } from '../lib/ai';
 
 type Msg = {
   id: number;
@@ -37,18 +38,48 @@ export default function AiScreen() {
   ]);
   const [draft, setDraft] = useState('');
   const [typing, setTyping] = useState(false);
+  const [groqEnabled, setGroqEnabled] = useState(false);
   const list = useRef<ScrollView>(null);
 
   useEffect(() => {
     setTimeout(() => list.current?.scrollToEnd({ animated: true }), 60);
   }, [messages, typing]);
 
-  const send = (text: string) => {
+  // Reflect whether Pixel AI is currently wired to Groq.
+  useEffect(() => {
+    let live = true;
+    getGroqKey().then((k) => live && setGroqEnabled(!!k));
+    return () => {
+      live = false;
+    };
+  });
+
+  const send = async (text: string) => {
     const clean = text.trim();
     if (!clean || typing) return;
-    setMessages((prev) => [...prev, { id: nextId++, from: 'user', text: clean }]);
+    const userMsg: Msg = { id: nextId++, from: 'user', text: clean };
+    setMessages((prev) => [...prev, userMsg]);
     setDraft('');
     setTyping(true);
+
+    // Prefer Groq when the owner has connected a key; fall back to the
+    // built-in assistant on any failure so Pixel AI never goes silent.
+    const key = await getGroqKey();
+    if (key) {
+      try {
+        const history = [...messages, userMsg].slice(-12).map((m) => ({
+          role: (m.from === 'user' ? 'user' : 'assistant') as 'user' | 'assistant',
+          content: m.text,
+        }));
+        const replyText = await askGroq(history);
+        setTyping(false);
+        setMessages((prev) => [...prev, { id: nextId++, from: 'ai', text: replyText }]);
+        return;
+      } catch {
+        /* fall through to the local assistant */
+      }
+    }
+
     setTimeout(() => {
       const reply = aiRespond(clean);
       setTyping(false);
@@ -83,12 +114,18 @@ export default function AiScreen() {
               <View style={styles.onlineRow}>
                 <View style={[styles.onlineDot, { backgroundColor: colors.lime }]} />
                 <Text style={{ fontFamily: fonts.regular, fontSize: 12, color: colors.muted }}>
-                  Always here
+                  {groqEnabled ? 'Powered by Groq' : 'Always here'}
                 </Text>
               </View>
             </View>
           </View>
-          <View style={{ width: 40 }} />
+          <Pressable
+            onPress={() => router.push('/ai-settings' as any)}
+            hitSlop={8}
+            style={styles.settingsBtn}
+            accessibilityLabel="AI connection settings">
+            <Ionicons name="settings-outline" size={19} color={colors.text} />
+          </Pressable>
         </View>
       </Container>
 
@@ -206,6 +243,16 @@ function useStyles(colors: Palette) {
     headTitle: { fontFamily: fonts.semi, fontSize: 16 },
     onlineRow: { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 1 },
     onlineDot: { width: 6, height: 6, borderRadius: 3 },
+    settingsBtn: {
+      width: 40,
+      height: 40,
+      borderRadius: radius.sm,
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.hairline,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
     bubble: {
       maxWidth: '85%',
       borderRadius: radius.lg,

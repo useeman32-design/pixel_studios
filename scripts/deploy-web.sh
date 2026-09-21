@@ -16,6 +16,20 @@ for f in *.html; do
     *) name="${f%.html}"; mkdir -p "$name"; cp "$f" "$name/index.html" ;;
   esac
 done
+# Dynamic [id] routes: publish known ids as clean URLs.
+for f in *"[id]".html */*"[id]".html; do
+  [ -e "$f" ] || continue
+  dir="$(dirname "$f")"
+  case "$dir" in
+    brief) ids="logo brand-identity websites mobile-apps" ;;
+    *) ids="" ;;
+  esac
+  for id in $ids; do
+    mkdir -p "$dir/$id"
+    cp "$f" "$dir/$id/index.html"
+  done
+done
+
 cp "+not-found.html" 404.html
 touch .nojekyll
 
