@@ -21,7 +21,7 @@ for f in *"[id]".html */*"[id]".html; do
   [ -e "$f" ] || continue
   dir="$(dirname "$f")"
   case "$dir" in
-    brief) ids="logo brand-identity websites mobile-apps" ;;
+    brief) ids="logo brand-identity websites mobile-apps social-media flyer-design business-cards flyers stickers invitations apparel packaging ecommerce business-systems exercise-books memo-pads key-holders cloth-labels face-caps badges political-posters banners" ;;
     *) ids="" ;;
   esac
   for id in $ids; do

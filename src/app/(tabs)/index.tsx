@@ -54,6 +54,22 @@ const campaigns = [
     image: require('../../../assets/images/banner-print.jpg'),
     target: '/service/print',
   },
+  {
+    id: 'brand',
+    title: 'Brand Refresh Season',
+    sub: 'Logo + identity packages, concepts in 48 hours',
+    tag: 'POPULAR',
+    image: require('../../../assets/images/banner-brand.jpg'),
+    target: '/brief/brand-identity',
+  },
+  {
+    id: 'menu',
+    title: 'Menu of the Future',
+    sub: 'Digital menus your customers scan to order',
+    tag: 'HOT',
+    image: require('../../../assets/images/banner-menu.jpg'),
+    target: '/menu-studio',
+  },
 ];
 
 const AnimatedImage = Animated.createAnimatedComponent(Image);
@@ -239,10 +255,10 @@ export default function HomeScreen() {
             </View>
             <View style={{ flexDirection: 'row', gap: sp.x1 }}>
               <Pressable style={styles.headerIcon} onPress={() => router.push('/ai')}>
-                <Ionicons name="sparkles-outline" size={18} color={colors.text} />
+                <Ionicons name="sparkles-outline" size={18} color="#FFFFFF" />
               </Pressable>
               <Pressable style={styles.headerIcon} onPress={() => router.push('/chat')}>
-                <Ionicons name="chatbubble-outline" size={18} color={colors.text} />
+                <Ionicons name="chatbubble-outline" size={18} color="#FFFFFF" />
               </Pressable>
               <Pressable style={styles.headerIcon} onPress={() => router.push('/profile')}>
                 <Image source={avatarImage} style={styles.headerAvatar} />
@@ -282,19 +298,19 @@ export default function HomeScreen() {
       {/* =========================== QUICK ACTIONS =========================== */}
       <Container style={{ marginTop: sp.x5 }}>
         <FadeIn delay={80}>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginHorizontal: -24 }} contentContainerStyle={{ paddingHorizontal: 24, gap: sp.x4, justifyContent: 'flex-start' }}>
+          <View style={styles.actionsRow}>
             {quickActions.map((a) => (
               <Pressable
                 key={a.label}
                 onPress={() => router.push(a.target as any)}
                 style={styles.actionItem}>
                 <View style={styles.actionIcon}>
-                  <Ionicons name={a.icon as any} size={22} color={colors.text} />
+                  <Ionicons name={a.icon as any} size={21} color={colors.text} />
                 </View>
                 <Text style={styles.actionLabel}>{a.label}</Text>
               </Pressable>
             ))}
-          </ScrollView>
+          </View>
         </FadeIn>
       </Container>
 
@@ -454,10 +470,11 @@ function useStyles(colors: Palette) {
           borderColor: 'rgba(255,255,255,0.22)',
         },
         aiChipText: { fontFamily: fonts.semi, fontSize: 15, color: '#FFFFFF' },
-        actionItem: { alignItems: 'center', gap: sp.x1, width: 92 },
+        actionsRow: { flexDirection: 'row', justifyContent: 'space-between', gap: sp.x2_ },
+        actionItem: { alignItems: 'center', gap: sp.x1, flex: 1 },
         actionIcon: {
-          width: 62,
-          height: 62,
+          width: 56,
+          height: 56,
           borderRadius: radius.lg,
           backgroundColor: colors.surface,
           borderWidth: 1,
@@ -467,8 +484,8 @@ function useStyles(colors: Palette) {
         },
         actionLabel: {
           fontFamily: fonts.medium,
-          fontSize: 12,
-          lineHeight: 15,
+          fontSize: 11,
+          lineHeight: 14,
           color: colors.subtext,
           textAlign: 'center',
         },

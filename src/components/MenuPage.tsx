@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 
 import { fonts } from '../constants/theme';
 
@@ -9,6 +9,8 @@ export type MenuItem = {
   name: string;
   price: string;
   category: string;
+  /** Optional dish photo uploaded by the owner (local URI). */
+  image?: string | null;
 };
 
 export type MenuContact = {
@@ -43,7 +45,40 @@ function groupItems(items: MenuItem[]): { category: string; rows: MenuItem[] }[]
     .filter((g) => g.rows.length > 0);
 }
 
-/* --------------------------- shared menu chrome --------------------------- */
+/* ------------------------------ motion & chrome ---------------------------- */
+
+/** Gentle staggered rise used across templates — menus feel alive, not static. */
+function Rise({ delay, children }: { delay: number; children: React.ReactNode }) {
+  const anim = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.timing(anim, { toValue: 1, duration: 520, delay, useNativeDriver: true }).start();
+  }, [anim, delay]);
+  return (
+    <Animated.View
+      style={{
+        opacity: anim,
+        transform: [{ translateY: anim.interpolate({ inputRange: [0, 1], outputRange: [10, 0] }) }],
+      }}>
+      {children}
+    </Animated.View>
+  );
+}
+
+/** Rounded dish photo used by every template that supports imagery. */
+function DishImage({ uri, size = 54, radius = 14, circle = false }: { uri: string; size?: number; radius?: number; circle?: boolean }) {
+  return (
+    <Animated.Image
+      source={{ uri }}
+      style={{
+        width: size,
+        height: size,
+        borderRadius: circle ? size / 2 : radius,
+        backgroundColor: 'rgba(128,128,128,0.15)',
+      }}
+      resizeMode="cover"
+    />
+  );
+}
 
 function MenuContactStrip({ contact, color, hairline }: { contact?: MenuContact; color: string; hairline: string }) {
   if (!contact || (!contact.phone && !contact.whatsapp && !contact.address)) return null;
@@ -84,7 +119,8 @@ function menuShadow() {
 
 /* ============================================================================
  * Full-size digital menu page — what customers see when they scan the QR.
- * 8 templates: five modern looks + three classics.
+ * 8 templates: five modern looks + three classics, all supporting dish photos,
+ * contact details and gentle entrance animation.
  * ========================================================================== */
 
 export default function MenuPage({
@@ -106,31 +142,39 @@ export default function MenuPage({
   /* ------------------------------ SLATE (modern dark) --------------------- */
   if (templateId === 'slate') {
     return (
-      <View style={{ backgroundColor: '#17181C', paddingBottom: 26 }}>
-        <View style={{ paddingHorizontal: 24, paddingTop: 26 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-            <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: '#BFF549', alignItems: 'center', justifyContent: 'center' }}>
-              <Ionicons name="flame" size={19} color="#111113" />
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={{ fontFamily: fonts.extrabold, fontSize: 22, letterSpacing: -0.6, color: '#F5F5F3' }}>{displayName}</Text>
-              <Text style={{ fontFamily: fonts.regular, fontSize: 12, color: '#8B8D94', marginTop: 1 }}>{tagline || 'Great food, no noise'}</Text>
-            </View>
-          </View>
-
-          {groups.map((g) => (
-            <View key={g.category} style={{ marginTop: 20 }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                <Text style={{ fontFamily: fonts.bold, fontSize: 12, letterSpacing: 2.4, color: '#BFF549' }}>{g.category.toUpperCase()}</Text>
-                <View style={{ flex: 1, height: 1, backgroundColor: 'rgba(245,245,243,0.08)' }} />
+      <View style={{ backgroundColor: '#16171B', paddingBottom: 26 }}>
+        <View style={{ paddingHorizontal: 22, paddingTop: 26 }}>
+          <Rise delay={0}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+              <View style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: '#BFF549', alignItems: 'center', justifyContent: 'center' }}>
+                <Ionicons name="flame" size={21} color="#111113" />
               </View>
-              {g.rows.map((it) => (
-                <View key={it.id} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 10, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: 'rgba(245,245,243,0.07)' }}>
-                  <Text style={{ flex: 1, fontFamily: fonts.semi, fontSize: 14.5, color: '#F5F5F3' }}>{it.name}</Text>
-                  <Text style={{ fontFamily: fonts.bold, fontSize: 13, color: '#BFF549' }}>{it.price}</Text>
-                </View>
-              ))}
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontFamily: fonts.extrabold, fontSize: 23, letterSpacing: -0.6, color: '#F5F5F3' }}>{displayName}</Text>
+                <Text style={{ fontFamily: fonts.regular, fontSize: 12, color: '#8B8D94', marginTop: 1 }}>{tagline || 'Great food, no noise'}</Text>
+              </View>
             </View>
+          </Rise>
+
+          {groups.map((g, gi) => (
+            <Rise key={g.category} delay={120 + gi * 90}>
+              <View style={{ marginTop: 22 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                  <View style={{ width: 4, height: 14, borderRadius: 2, backgroundColor: '#BFF549' }} />
+                  <Text style={{ fontFamily: fonts.bold, fontSize: 12, letterSpacing: 2.4, color: '#F5F5F3' }}>{g.category.toUpperCase()}</Text>
+                  <View style={{ flex: 1, height: 1, backgroundColor: 'rgba(245,245,243,0.08)' }} />
+                </View>
+                {g.rows.map((it) => (
+                  <View key={it.id} style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 10, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: 'rgba(245,245,243,0.07)' }}>
+                    {it.image ? <DishImage uri={it.image} size={52} /> : null}
+                    <Text style={{ flex: 1, fontFamily: fonts.semi, fontSize: 14.5, color: '#F5F5F3' }}>{it.name}</Text>
+                    <View style={{ backgroundColor: 'rgba(191,245,73,0.12)', borderRadius: 999, paddingHorizontal: 10, paddingVertical: 5 }}>
+                      <Text style={{ fontFamily: fonts.bold, fontSize: 12.5, color: '#BFF549' }}>{it.price}</Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            </Rise>
           ))}
           <MenuContactStrip contact={contact} color="#9FA1A8" hairline="rgba(245,245,243,0.12)" />
           <MenuFooter name={displayName} sub="#70727A" />
@@ -144,24 +188,29 @@ export default function MenuPage({
     return (
       <View style={{ backgroundColor: '#FCFBF8', paddingBottom: 26 }}>
         <View style={{ paddingHorizontal: 26, paddingTop: 30 }}>
-          <Text style={{ fontFamily: fonts.thin, fontSize: 30, letterSpacing: -0.5, color: '#191A1C' }}>{displayName}</Text>
-          <Text style={{ fontFamily: fonts.regular, fontSize: 12.5, color: '#8D8F94', marginTop: 4 }}>{tagline || 'Simple food, done well'}</Text>
-          <View style={{ width: 34, height: 3, backgroundColor: '#191A1C', marginTop: 14 }} />
+          <Rise delay={0}>
+            <Text style={{ fontFamily: fonts.thin, fontSize: 32, letterSpacing: -0.5, color: '#191A1C' }}>{displayName}</Text>
+            <Text style={{ fontFamily: fonts.regular, fontSize: 12.5, color: '#8D8F94', marginTop: 4 }}>{tagline || 'Simple food, done well'}</Text>
+            <View style={{ width: 34, height: 3, backgroundColor: '#191A1C', marginTop: 14 }} />
+          </Rise>
 
-          {groups.map((g) => (
-            <View key={g.category} style={{ marginTop: 24 }}>
-              <Text style={{ fontFamily: fonts.semi, fontSize: 11, letterSpacing: 3.2, color: '#8D8F94' }}>{g.category.toUpperCase()}</Text>
-              {g.rows.map((it, i) => (
-                <View key={it.id}>
-                  <View style={{ flexDirection: 'row', alignItems: 'baseline', paddingTop: 12 }}>
-                    <Text style={{ fontFamily: fonts.medium, fontSize: 15, color: '#191A1C' }}>{it.name}</Text>
-                    <View style={{ flex: 1 }} />
-                    <Text style={{ fontFamily: fonts.medium, fontSize: 14, color: '#191A1C' }}>{it.price}</Text>
+          {groups.map((g, gi) => (
+            <Rise key={g.category} delay={120 + gi * 90}>
+              <View style={{ marginTop: 26 }}>
+                <Text style={{ fontFamily: fonts.semi, fontSize: 11, letterSpacing: 3.2, color: '#8D8F94' }}>{g.category.toUpperCase()}</Text>
+                {g.rows.map((it, i) => (
+                  <View key={it.id}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingTop: 12 }}>
+                      {it.image ? <DishImage uri={it.image} size={44} radius={22} circle /> : null}
+                      <Text style={{ fontFamily: fonts.medium, fontSize: 15, color: '#191A1C', flexShrink: 1 }}>{it.name}</Text>
+                      <View style={{ flex: 1, borderBottomWidth: 1, borderStyle: 'dotted', borderColor: '#D8D7D2', marginBottom: 3 }} />
+                      <Text style={{ fontFamily: fonts.medium, fontSize: 14, color: '#191A1C' }}>{it.price}</Text>
+                    </View>
+                    {i < g.rows.length - 1 && !it.image && <View style={{ height: StyleSheet.hairlineWidth, backgroundColor: '#E8E7E2', marginTop: 12 }} />}
                   </View>
-                  {i < g.rows.length - 1 && <View style={{ height: StyleSheet.hairlineWidth, backgroundColor: '#E8E7E2', marginTop: 12 }} />}
-                </View>
-              ))}
-            </View>
+                ))}
+              </View>
+            </Rise>
           ))}
           <MenuContactStrip contact={contact} color="#8D8F94" hairline="#E8E7E2" />
           <MenuFooter name={displayName} sub="#B3B4B8" />
@@ -175,33 +224,38 @@ export default function MenuPage({
     return (
       <View style={{ backgroundColor: '#F3F7F0', paddingBottom: 26 }}>
         <View style={{ paddingHorizontal: 22, paddingTop: 24 }}>
-          <View style={{ backgroundColor: '#FFFFFF', borderRadius: 18, padding: 16, flexDirection: 'row', alignItems: 'center', gap: 12, ...menuShadow() }}>
-            <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: '#E4F0DC', alignItems: 'center', justifyContent: 'center' }}>
-              <Ionicons name="leaf" size={19} color="#4E7A3C" />
+          <Rise delay={0}>
+            <View style={{ backgroundColor: '#FFFFFF', borderRadius: 18, padding: 16, flexDirection: 'row', alignItems: 'center', gap: 12, ...menuShadow() }}>
+              <View style={{ width: 46, height: 46, borderRadius: 23, backgroundColor: '#E4F0DC', alignItems: 'center', justifyContent: 'center' }}>
+                <Ionicons name="leaf" size={20} color="#4E7A3C" />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontFamily: fonts.extrabold, fontSize: 20, letterSpacing: -0.4, color: '#24331C' }}>{displayName}</Text>
+                <Text style={{ fontFamily: fonts.medium, fontSize: 11.5, color: '#7C8E70' }}>{tagline || 'Fresh every morning'}</Text>
+              </View>
             </View>
-            <View style={{ flex: 1 }}>
-              <Text style={{ fontFamily: fonts.extrabold, fontSize: 20, letterSpacing: -0.4, color: '#24331C' }}>{displayName}</Text>
-              <Text style={{ fontFamily: fonts.medium, fontSize: 11.5, color: '#7C8E70' }}>{tagline || 'Fresh every morning'}</Text>
-            </View>
-          </View>
+          </Rise>
 
-          {groups.map((g) => (
-            <View key={g.category} style={{ marginTop: 18 }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 9 }}>
-                <View style={{ width: 7, height: 7, borderRadius: 3.5, backgroundColor: '#4E7A3C' }} />
-                <Text style={{ fontFamily: fonts.bold, fontSize: 12, letterSpacing: 1.8, color: '#24331C' }}>{g.category.toUpperCase()}</Text>
-              </View>
-              <View style={{ gap: 7 }}>
-                {g.rows.map((it) => (
-                  <View key={it.id} style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFFFFF', borderRadius: 12, paddingHorizontal: 14, paddingVertical: 11, ...menuShadow() }}>
-                    <Text style={{ flex: 1, fontFamily: fonts.semi, fontSize: 14, color: '#24331C' }}>{it.name}</Text>
-                    <View style={{ backgroundColor: '#E4F0DC', borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4 }}>
-                      <Text style={{ fontFamily: fonts.bold, fontSize: 12, color: '#3E6330' }}>{it.price}</Text>
+          {groups.map((g, gi) => (
+            <Rise key={g.category} delay={120 + gi * 90}>
+              <View style={{ marginTop: 18 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 9 }}>
+                  <View style={{ width: 7, height: 7, borderRadius: 3.5, backgroundColor: '#4E7A3C' }} />
+                  <Text style={{ fontFamily: fonts.bold, fontSize: 12, letterSpacing: 1.8, color: '#24331C' }}>{g.category.toUpperCase()}</Text>
+                </View>
+                <View style={{ gap: 7 }}>
+                  {g.rows.map((it) => (
+                    <View key={it.id} style={{ flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#FFFFFF', borderRadius: 14, padding: 8, paddingRight: 12, ...menuShadow() }}>
+                      {it.image ? <DishImage uri={it.image} size={50} radius={11} /> : null}
+                      <Text style={{ flex: 1, fontFamily: fonts.semi, fontSize: 14, color: '#24331C' }}>{it.name}</Text>
+                      <View style={{ backgroundColor: '#E4F0DC', borderRadius: 999, paddingHorizontal: 10, paddingVertical: 5 }}>
+                        <Text style={{ fontFamily: fonts.bold, fontSize: 12, color: '#3E6330' }}>{it.price}</Text>
+                      </View>
                     </View>
-                  </View>
-                ))}
+                  ))}
+                </View>
               </View>
-            </View>
+            </Rise>
           ))}
           <MenuContactStrip contact={contact} color="#7C8E70" hairline="#D8E3D0" />
           <MenuFooter name={displayName} sub="#9AAA8E" />
@@ -215,25 +269,34 @@ export default function MenuPage({
     return (
       <View style={{ backgroundColor: '#0B0A09', paddingBottom: 26 }}>
         <View style={{ paddingHorizontal: 26, paddingTop: 30, alignItems: 'center' }}>
-          <View style={{ borderWidth: StyleSheet.hairlineWidth, borderColor: 'rgba(216,180,110,0.55)', paddingHorizontal: 22, paddingVertical: 14, alignItems: 'center', width: '100%' }}>
-            <Text style={{ fontFamily: fonts.thin, fontSize: 26, letterSpacing: 4, color: '#EFE6D4' }}>{displayName.toUpperCase()}</Text>
-            <View style={{ width: 40, height: 1, backgroundColor: '#D8B46E', marginTop: 10 }} />
-            <Text style={{ fontFamily: fonts.regular, fontSize: 10.5, letterSpacing: 2.4, color: '#8C8069', marginTop: 8 }}>
-              {(tagline || 'EST. TASTE').toUpperCase()}
-            </Text>
-          </View>
-
-          {groups.map((g) => (
-            <View key={g.category} style={{ alignSelf: 'stretch', marginTop: 22 }}>
-              <Text style={{ fontFamily: fonts.semi, fontSize: 12, letterSpacing: 4, color: '#D8B46E', textAlign: 'center' }}>{g.category.toUpperCase()}</Text>
-              {g.rows.map((it) => (
-                <View key={it.id} style={{ marginTop: 13 }}>
-                  <Text style={{ fontFamily: fonts.medium, fontSize: 14.5, color: '#EFE6D4', textAlign: 'center' }}>{it.name}</Text>
-                  <Text style={{ fontFamily: fonts.regular, fontSize: 12, color: '#D8B46E', textAlign: 'center', marginTop: 3 }}>{it.price}</Text>
-                </View>
-              ))}
-              <View style={{ height: StyleSheet.hairlineWidth, backgroundColor: 'rgba(216,180,110,0.25)', marginTop: 16 }} />
+          <Rise delay={0}>
+            <View style={{ borderWidth: StyleSheet.hairlineWidth, borderColor: 'rgba(216,180,110,0.55)', paddingHorizontal: 22, paddingVertical: 16, alignItems: 'center', width: '100%' }}>
+              <Text style={{ fontFamily: fonts.thin, fontSize: 27, letterSpacing: 4, color: '#EFE6D4', textAlign: 'center' }}>{displayName.toUpperCase()}</Text>
+              <View style={{ width: 40, height: 1, backgroundColor: '#D8B46E', marginTop: 10 }} />
+              <Text style={{ fontFamily: fonts.regular, fontSize: 10.5, letterSpacing: 2.4, color: '#8C8069', marginTop: 8, textAlign: 'center' }}>
+                {(tagline || 'EST. TASTE').toUpperCase()}
+              </Text>
             </View>
+          </Rise>
+
+          {groups.map((g, gi) => (
+            <Rise key={g.category} delay={120 + gi * 90}>
+              <View style={{ alignSelf: 'stretch', marginTop: 24 }}>
+                <Text style={{ fontFamily: fonts.semi, fontSize: 12, letterSpacing: 4, color: '#D8B46E', textAlign: 'center' }}>{g.category.toUpperCase()}</Text>
+                {g.rows.map((it) => (
+                  <View key={it.id} style={{ marginTop: 14, alignItems: 'center' }}>
+                    {it.image ? (
+                      <View style={{ borderWidth: 1, borderColor: 'rgba(216,180,110,0.5)', borderRadius: 34, padding: 3, marginBottom: 8 }}>
+                        <DishImage uri={it.image} size={62} circle />
+                      </View>
+                    ) : null}
+                    <Text style={{ fontFamily: fonts.medium, fontSize: 14.5, color: '#EFE6D4', textAlign: 'center' }}>{it.name}</Text>
+                    <Text style={{ fontFamily: fonts.regular, fontSize: 12, color: '#D8B46E', textAlign: 'center', marginTop: 3 }}>{it.price}</Text>
+                  </View>
+                ))}
+                <View style={{ height: StyleSheet.hairlineWidth, backgroundColor: 'rgba(216,180,110,0.25)', marginTop: 18 }} />
+              </View>
+            </Rise>
           ))}
           <MenuContactStrip contact={contact} color="#8C8069" hairline="rgba(216,180,110,0.3)" />
           <MenuFooter name={displayName} sub="#6E6450" />
@@ -246,26 +309,31 @@ export default function MenuPage({
   if (templateId === 'street') {
     return (
       <View style={{ backgroundColor: '#121212', paddingBottom: 26 }}>
-        <View style={{ backgroundColor: '#F5D322', paddingHorizontal: 22, paddingVertical: 20 }}>
-          <Text style={{ fontFamily: fonts.extrabold, fontSize: 30, letterSpacing: -1, color: '#141414', textTransform: 'uppercase' }}>{displayName}</Text>
-          <Text style={{ fontFamily: fonts.bold, fontSize: 12, color: 'rgba(20,20,20,0.72)', marginTop: 3, textTransform: 'uppercase', letterSpacing: 1 }}>
-            {tagline || 'Big flavour · small prices'}
-          </Text>
-        </View>
+        <Rise delay={0}>
+          <View style={{ backgroundColor: '#F5D322', paddingHorizontal: 22, paddingVertical: 20 }}>
+            <Text style={{ fontFamily: fonts.extrabold, fontSize: 30, letterSpacing: -1, color: '#141414', textTransform: 'uppercase' }}>{displayName}</Text>
+            <Text style={{ fontFamily: fonts.bold, fontSize: 12, color: 'rgba(20,20,20,0.72)', marginTop: 3, textTransform: 'uppercase', letterSpacing: 1 }}>
+              {tagline || 'Big flavour · small prices'}
+            </Text>
+          </View>
+        </Rise>
         <View style={{ paddingHorizontal: 22, paddingTop: 20 }}>
-          {groups.map((g) => (
-            <View key={g.category} style={{ marginTop: 16 }}>
-              <View style={{ alignSelf: 'flex-start', backgroundColor: '#F5D322', paddingHorizontal: 10, paddingVertical: 4, transform: [{ rotate: '-1.5deg' }] }}>
-                <Text style={{ fontFamily: fonts.extrabold, fontSize: 12, letterSpacing: 1.4, color: '#141414' }}>{g.category.toUpperCase()}</Text>
-              </View>
-              {g.rows.map((it) => (
-                <View key={it.id} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 9 }}>
-                  <Text style={{ flex: 1, fontFamily: fonts.bold, fontSize: 15, color: '#F5F5F0', textTransform: 'uppercase' }}>{it.name}</Text>
-                  <Text style={{ fontFamily: fonts.extrabold, fontSize: 14, color: '#F5D322' }}>{it.price}</Text>
+          {groups.map((g, gi) => (
+            <Rise key={g.category} delay={120 + gi * 90}>
+              <View style={{ marginTop: 16 }}>
+                <View style={{ alignSelf: 'flex-start', backgroundColor: '#F5D322', paddingHorizontal: 10, paddingVertical: 4, transform: [{ rotate: '-1.5deg' }] }}>
+                  <Text style={{ fontFamily: fonts.extrabold, fontSize: 12, letterSpacing: 1.4, color: '#141414' }}>{g.category.toUpperCase()}</Text>
                 </View>
-              ))}
-              <View style={{ height: 2, backgroundColor: 'rgba(245,245,240,0.08)', marginTop: 6 }} />
-            </View>
+                {g.rows.map((it) => (
+                  <View key={it.id} style={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 9 }}>
+                    {it.image ? <DishImage uri={it.image} size={44} radius={10} /> : null}
+                    <Text style={{ flex: 1, fontFamily: fonts.bold, fontSize: 15, color: '#F5F5F0', textTransform: 'uppercase' }}>{it.name}</Text>
+                    <Text style={{ fontFamily: fonts.extrabold, fontSize: 14, color: '#F5D322' }}>{it.price}</Text>
+                  </View>
+                ))}
+                <View style={{ height: 2, backgroundColor: 'rgba(245,245,240,0.08)', marginTop: 6 }} />
+              </View>
+            </Rise>
           ))}
           <MenuContactStrip contact={contact} color="#8F8F88" hairline="rgba(245,245,240,0.14)" />
           <MenuFooter name={displayName} sub="#77776F" />
@@ -281,30 +349,35 @@ export default function MenuPage({
     return (
       <View style={{ backgroundColor: '#14161A', paddingBottom: 24 }}>
         <View style={{ paddingHorizontal: 24, paddingTop: 26, alignItems: 'center' }}>
-          <Ionicons name="restaurant-outline" size={20} color="#E8E4DA" />
-          <Text style={{ fontFamily: fonts.extrabold, fontSize: 26, letterSpacing: -0.6, color: '#F2EFE8', marginTop: 10, textAlign: 'center' }}>
-            {displayName}
-          </Text>
-          <Text style={{ fontFamily: fonts.regular, fontSize: 12.5, color: '#8D8A82', marginTop: 4, textAlign: 'center' }}>
-            {tagline || 'Fresh · Local · Delicious'}
-          </Text>
-          <View style={{ width: 46, height: 2, backgroundColor: '#E8E4DA', opacity: 0.5, marginTop: 14 }} />
+          <Rise delay={0}>
+            <Ionicons name="restaurant-outline" size={20} color="#E8E4DA" />
+            <Text style={{ fontFamily: fonts.extrabold, fontSize: 26, letterSpacing: -0.6, color: '#F2EFE8', marginTop: 10, textAlign: 'center' }}>
+              {displayName}
+            </Text>
+            <Text style={{ fontFamily: fonts.regular, fontSize: 12.5, color: '#8D8A82', marginTop: 4, textAlign: 'center' }}>
+              {tagline || 'Fresh · Local · Delicious'}
+            </Text>
+            <View style={{ width: 46, height: 2, backgroundColor: '#E8E4DA', opacity: 0.5, marginTop: 14, alignSelf: 'center' }} />
+          </Rise>
 
-          {groups.map((g) => (
-            <View key={g.category} style={{ alignSelf: 'stretch', marginTop: 20 }}>
-              <Text style={{ fontFamily: fonts.bold, fontSize: 11, letterSpacing: 3, color: '#B8B4A9', textAlign: 'center' }}>
-                {g.category.toUpperCase()}
-              </Text>
-              <View style={{ marginHorizontal: 6, marginTop: 8 }}>
-                {g.rows.map((it) => (
-                  <View key={it.id} style={{ flexDirection: 'row', alignItems: 'baseline', paddingVertical: 8 }}>
-                    <Text style={{ fontFamily: fonts.semi, fontSize: 14.5, color: '#F2EFE8' }}>{it.name}</Text>
-                    <View style={{ flex: 1, borderBottomWidth: 1, borderStyle: 'dashed', borderColor: 'rgba(232,228,218,0.3)', marginHorizontal: 8, marginBottom: 3 }} />
-                    <Text style={{ fontFamily: fonts.bold, fontSize: 13, color: '#E8E4DA' }}>{it.price}</Text>
-                  </View>
-                ))}
+          {groups.map((g, gi) => (
+            <Rise key={g.category} delay={120 + gi * 90}>
+              <View style={{ alignSelf: 'stretch', marginTop: 20 }}>
+                <Text style={{ fontFamily: fonts.bold, fontSize: 11, letterSpacing: 3, color: '#B8B4A9', textAlign: 'center' }}>
+                  {g.category.toUpperCase()}
+                </Text>
+                <View style={{ marginHorizontal: 6, marginTop: 8 }}>
+                  {g.rows.map((it) => (
+                    <View key={it.id} style={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 8 }}>
+                      {it.image ? <DishImage uri={it.image} size={40} radius={10} /> : null}
+                      <Text style={{ fontFamily: fonts.semi, fontSize: 14.5, color: '#F2EFE8' }}>{it.name}</Text>
+                      <View style={{ flex: 1, borderBottomWidth: 1, borderStyle: 'dashed', borderColor: 'rgba(232,228,218,0.3)', marginHorizontal: 4 }} />
+                      <Text style={{ fontFamily: fonts.bold, fontSize: 13, color: '#E8E4DA' }}>{it.price}</Text>
+                    </View>
+                  ))}
+                </View>
               </View>
-            </View>
+            </Rise>
           ))}
           <MenuContactStrip contact={contact} color="#8D8A82" hairline="rgba(232,228,218,0.2)" />
           <MenuFooter name={displayName} sub="#6F6C64" />
@@ -318,32 +391,37 @@ export default function MenuPage({
     return (
       <View style={{ backgroundColor: '#FBF6EE', paddingBottom: 24 }}>
         <View style={{ paddingHorizontal: 22, paddingTop: 24 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-            <View style={{ width: 42, height: 42, borderRadius: 14, backgroundColor: '#8C5A3C', alignItems: 'center', justifyContent: 'center' }}>
-              <Ionicons name="cafe" size={18} color="#FFF6EC" />
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={{ fontFamily: fonts.extrabold, fontSize: 20, letterSpacing: -0.4, color: '#3D2B1F' }}>{displayName}</Text>
-              <Text style={{ fontFamily: fonts.medium, fontSize: 11.5, color: '#9A8271' }}>{tagline || 'Coffee · Bites · Good vibes'}</Text>
-            </View>
-          </View>
-
-          {groups.map((g) => (
-            <View key={g.category} style={{ marginTop: 18 }}>
-              <Text style={{ fontFamily: fonts.bold, fontSize: 12, letterSpacing: 2, color: '#8C5A3C', marginBottom: 8 }}>
-                {g.category.toUpperCase()}
-              </Text>
-              <View style={{ gap: 8 }}>
-                {g.rows.map((it) => (
-                  <View key={it.id} style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFFFFF', borderRadius: 13, paddingHorizontal: 14, paddingVertical: 12, ...menuShadow() }}>
-                    <Text style={{ flex: 1, fontFamily: fonts.semi, fontSize: 14, color: '#3D2B1F' }}>{it.name}</Text>
-                    <View style={{ backgroundColor: '#F3E5D6', borderRadius: 999, paddingHorizontal: 10, paddingVertical: 5 }}>
-                      <Text style={{ fontFamily: fonts.bold, fontSize: 12, color: '#8C5A3C' }}>{it.price}</Text>
-                    </View>
-                  </View>
-                ))}
+          <Rise delay={0}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+              <View style={{ width: 42, height: 42, borderRadius: 14, backgroundColor: '#8C5A3C', alignItems: 'center', justifyContent: 'center' }}>
+                <Ionicons name="cafe" size={18} color="#FFF6EC" />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontFamily: fonts.extrabold, fontSize: 20, letterSpacing: -0.4, color: '#3D2B1F' }}>{displayName}</Text>
+                <Text style={{ fontFamily: fonts.medium, fontSize: 11.5, color: '#9A8271' }}>{tagline || 'Coffee · Bites · Good vibes'}</Text>
               </View>
             </View>
+          </Rise>
+
+          {groups.map((g, gi) => (
+            <Rise key={g.category} delay={120 + gi * 90}>
+              <View style={{ marginTop: 18 }}>
+                <Text style={{ fontFamily: fonts.bold, fontSize: 12, letterSpacing: 2, color: '#8C5A3C', marginBottom: 8 }}>
+                  {g.category.toUpperCase()}
+                </Text>
+                <View style={{ gap: 8 }}>
+                  {g.rows.map((it) => (
+                    <View key={it.id} style={{ flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#FFFFFF', borderRadius: 13, padding: 8, paddingRight: 12, ...menuShadow() }}>
+                      {it.image ? <DishImage uri={it.image} size={46} radius={10} /> : null}
+                      <Text style={{ flex: 1, fontFamily: fonts.semi, fontSize: 14, color: '#3D2B1F' }}>{it.name}</Text>
+                      <View style={{ backgroundColor: '#F3E5D6', borderRadius: 999, paddingHorizontal: 10, paddingVertical: 5 }}>
+                        <Text style={{ fontFamily: fonts.bold, fontSize: 12, color: '#8C5A3C' }}>{it.price}</Text>
+                      </View>
+                    </View>
+                  ))}
+                </View>
+              </View>
+            </Rise>
           ))}
           <MenuContactStrip contact={contact} color="#9A8271" hairline="#EBDFD0" />
           <MenuFooter name={displayName} sub="#B4A08E" />
@@ -356,35 +434,40 @@ export default function MenuPage({
   return (
     <View style={{ backgroundColor: '#0D0B08', paddingBottom: 24 }}>
       <View style={{ paddingHorizontal: 26, paddingTop: 28, alignItems: 'center' }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-          <View style={{ width: 30, height: StyleSheet.hairlineWidth, backgroundColor: '#D9B36C' }} />
-          <Ionicons name="wine-outline" size={15} color="#D9B36C" />
-          <View style={{ width: 30, height: StyleSheet.hairlineWidth, backgroundColor: '#D9B36C' }} />
-        </View>
-        <Text style={{ fontFamily: fonts.thin, fontSize: 28, letterSpacing: 2, color: '#F0E8D8', marginTop: 14, textAlign: 'center' }}>
-          {displayName.toUpperCase()}
-        </Text>
-        <Text style={{ fontFamily: fonts.regular, fontSize: 11.5, letterSpacing: 1.4, color: '#8E826E', marginTop: 6, textAlign: 'center' }}>
-          {(tagline || 'A fine dining experience').toUpperCase()}
-        </Text>
-
-        {groups.map((g) => (
-          <View key={g.category} style={{ alignSelf: 'stretch', marginTop: 24 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-              <View style={{ flex: 1, height: StyleSheet.hairlineWidth, backgroundColor: 'rgba(217,179,108,0.4)' }} />
-              <Text style={{ fontFamily: fonts.bold, fontSize: 11, letterSpacing: 3.4, color: '#D9B36C' }}>{g.category.toUpperCase()}</Text>
-              <View style={{ flex: 1, height: StyleSheet.hairlineWidth, backgroundColor: 'rgba(217,179,108,0.4)' }} />
-            </View>
-            {g.rows.map((it) => (
-              <View key={it.id} style={{ marginTop: 14 }}>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                  <Text style={{ fontFamily: fonts.semi, fontSize: 14.5, color: '#F0E8D8' }}>{it.name}</Text>
-                  <Text style={{ fontFamily: fonts.semi, fontSize: 13, color: '#D9B36C' }}>{it.price}</Text>
-                </View>
-                <View style={{ height: StyleSheet.hairlineWidth, backgroundColor: 'rgba(240,232,216,0.12)', marginTop: 8 }} />
-              </View>
-            ))}
+        <Rise delay={0}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+            <View style={{ width: 30, height: StyleSheet.hairlineWidth, backgroundColor: '#D9B36C' }} />
+            <Ionicons name="wine-outline" size={15} color="#D9B36C" />
+            <View style={{ width: 30, height: StyleSheet.hairlineWidth, backgroundColor: '#D9B36C' }} />
           </View>
+          <Text style={{ fontFamily: fonts.thin, fontSize: 28, letterSpacing: 2, color: '#F0E8D8', marginTop: 14, textAlign: 'center' }}>
+            {displayName.toUpperCase()}
+          </Text>
+          <Text style={{ fontFamily: fonts.regular, fontSize: 11.5, letterSpacing: 1.4, color: '#8E826E', marginTop: 6, textAlign: 'center' }}>
+            {(tagline || 'A fine dining experience').toUpperCase()}
+          </Text>
+        </Rise>
+
+        {groups.map((g, gi) => (
+          <Rise key={g.category} delay={120 + gi * 90}>
+            <View style={{ alignSelf: 'stretch', marginTop: 24 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                <View style={{ flex: 1, height: StyleSheet.hairlineWidth, backgroundColor: 'rgba(217,179,108,0.4)' }} />
+                <Text style={{ fontFamily: fonts.bold, fontSize: 11, letterSpacing: 3.4, color: '#D9B36C' }}>{g.category.toUpperCase()}</Text>
+                <View style={{ flex: 1, height: StyleSheet.hairlineWidth, backgroundColor: 'rgba(217,179,108,0.4)' }} />
+              </View>
+              {g.rows.map((it) => (
+                <View key={it.id} style={{ marginTop: 14 }}>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
+                    {it.image ? <DishImage uri={it.image} size={38} circle /> : null}
+                    <Text style={{ flex: 1, fontFamily: fonts.semi, fontSize: 14.5, color: '#F0E8D8' }}>{it.name}</Text>
+                    <Text style={{ fontFamily: fonts.semi, fontSize: 13, color: '#D9B36C' }}>{it.price}</Text>
+                  </View>
+                  <View style={{ height: StyleSheet.hairlineWidth, backgroundColor: 'rgba(240,232,216,0.12)', marginTop: 8 }} />
+                </View>
+              ))}
+            </View>
+          </Rise>
         ))}
         <MenuContactStrip contact={contact} color="#8E826E" hairline="rgba(217,179,108,0.35)" />
         <MenuFooter name={displayName} sub="#6E6452" />

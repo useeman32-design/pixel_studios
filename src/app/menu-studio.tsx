@@ -1,4 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
+import { Image as ExpoImage } from 'expo-image';
+import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
@@ -45,7 +47,7 @@ export default function MenuStudioScreen() {
   const [whatsapp, setWhatsapp] = useState('');
   const [address, setAddress] = useState('');
   const [items, setItems] = useState<MenuItem[]>(sampleItems);
-  const [newItem, setNewItem] = useState({ name: '', price: '', category: 'Mains' });
+  const [newItem, setNewItem] = useState<{ name: string; price: string; category: string; image: string | null }>({ name: '', price: '', category: 'Mains', image: null });
   const [templateId, setTemplateId] = useState('slate');
   const [packId, setPackId] = useState('page');
   const [material, setMaterial] = useState<'paper' | 'plastic'>('paper');
@@ -60,8 +62,28 @@ export default function MenuStudioScreen() {
 
   const addItem = () => {
     if (!newItem.name.trim() || !newItem.price.trim()) return;
-    setItems((prev) => [...prev, { id: `i${Date.now()}`, name: newItem.name.trim(), price: newItem.price.trim().startsWith('₦') ? newItem.price.trim() : `₦${newItem.price.trim()}`, category: newItem.category }]);
-    setNewItem({ name: '', price: '', category: newItem.category });
+    setItems((prev) => [
+      ...prev,
+      {
+        id: `i${Date.now()}`,
+        name: newItem.name.trim(),
+        price: newItem.price.trim().startsWith('₦') ? newItem.price.trim() : `₦${newItem.price.trim()}`,
+        category: newItem.category,
+        image: newItem.image,
+      },
+    ]);
+    setNewItem({ name: '', price: '', category: newItem.category, image: null });
+  };
+
+  const pickItemImage = async () => {
+    try {
+      const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!perm.granted) return;
+      const res = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.7 });
+      if (!res.canceled && res.assets[0]?.uri) setNewItem((s) => ({ ...s, image: res.assets[0].uri }));
+    } catch {
+      /* picker unavailable */
+    }
   };
 
   const removeItem = (id: string) => setItems((prev) => prev.filter((i) => i.id !== id));
@@ -141,6 +163,9 @@ Please share payment details!`;
           <View style={{ gap: sp.x2_ }}>
             {items.map((it) => (
               <View key={it.id} style={[styles.itemRow, { backgroundColor: colors.surface, borderColor: colors.hairline }]}>
+                {it.image ? (
+                  <ExpoImage source={{ uri: it.image }} style={{ width: 40, height: 40, borderRadius: 10 }} contentFit="cover" />
+                ) : null}
                 <View style={{ flex: 1 }}>
                   <Text style={[styles.itemName, { color: colors.text }]}>{it.name}</Text>
                   <Text style={styles.itemMeta}>{it.category}</Text>
@@ -170,6 +195,27 @@ Please share payment details!`;
                 </Pressable>
               ))}
             </View>
+
+            {/* Optional dish photo */}
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: sp.x2_ }}>
+              {newItem.image ? (
+                <View>
+                  <ExpoImage source={{ uri: newItem.image }} style={{ width: 52, height: 52, borderRadius: 12 }} contentFit="cover" />
+                  <Pressable
+                    onPress={() => setNewItem((s) => ({ ...s, image: null }))}
+                    hitSlop={6}
+                    style={{ position: 'absolute', top: -6, right: -6, width: 20, height: 20, borderRadius: 10, backgroundColor: colors.text, alignItems: 'center', justifyContent: 'center' }}>
+                    <Ionicons name="close" size={12} color={colors.bg} />
+                  </Pressable>
+                </View>
+              ) : (
+                <Pressable onPress={pickItemImage} style={[styles.photoPick, { borderColor: colors.hairline }]}>
+                  <Ionicons name="camera-outline" size={17} color={colors.muted} />
+                  <Text style={[styles.photoPickText, { color: colors.muted }]}>Add dish photo (optional)</Text>
+                </Pressable>
+              )}
+            </View>
+
             <View style={{ marginTop: sp.x2_ }}>
               <Button title="Add item" variant="secondary" icon="add" onPress={addItem} />
             </View>
@@ -337,6 +383,18 @@ function useStyles(colors: Palette) {
     addItemCard: { borderWidth: 1, borderStyle: 'dashed', borderRadius: radius.md, padding: 16, marginTop: sp.x2_ },
     catChip: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 999, borderWidth: 1 },
     catChipText: { fontFamily: fonts.medium, fontSize: 13 },
+    photoPick: {
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 8,
+      borderStyle: 'dashed',
+      borderWidth: 1,
+      borderRadius: radius.md,
+      paddingVertical: 13,
+    },
+    photoPickText: { fontFamily: fonts.medium, fontSize: 13 },
     templateWrap: { borderRadius: 20, borderWidth: 2, borderColor: 'transparent', overflow: 'hidden' },
     modernBadge: { position: 'absolute', top: 10, right: 10, borderRadius: 999, paddingHorizontal: 8, paddingVertical: 4 },
     modernBadgeText: { fontFamily: fonts.bold, fontSize: 9, letterSpacing: 1.2 },

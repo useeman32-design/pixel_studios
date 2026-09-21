@@ -4,7 +4,7 @@ import React, { useMemo } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Container, FadeIn } from '../components/ui';
+import { BackBar, Container, FadeIn } from '../components/ui';
 import { fonts, Palette, radius, sp, useTheme } from '../constants/theme';
 import { orders } from '../data/orders';
 import { formatNaira } from '../data/products';
@@ -20,7 +20,10 @@ export default function OrdersScreen() {
       style={{ flex: 1, backgroundColor: colors.bg }}
       contentContainerStyle={{ paddingBottom: 140 }}
       showsVerticalScrollIndicator={false}>
-      <Container style={{ marginTop: insets.top + sp.x4 }}>
+      <Container style={{ marginTop: insets.top + sp.x2 }}>
+        <BackBar title="My Orders" onBack={() => router.back()} />
+      </Container>
+      <Container style={{ marginTop: sp.x2 }}>
         <FadeIn>
           <Text style={styles.title}>Your orders</Text>
           <Text style={styles.subtitle}>Track everything from design approval to delivery.</Text>

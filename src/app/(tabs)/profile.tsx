@@ -1,27 +1,15 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useMemo, useState } from 'react';
-import { Image, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Container, FadeIn, RowItem } from '../../components/ui';
 import { fonts, Palette, radius, sp, useTheme } from '../../constants/theme';
-import { hapticSelect, hapticTap } from '../../lib/haptics';
+import { hapticSelect } from '../../lib/haptics';
+import { DEFAULT_PROFILE, loadProfile, profileUsername, StoredProfile } from '../../lib/profile';
 
 const avatarImage = require('../../../assets/images/avatar.jpg');
-
-export type StoredProfile = {
-  name: string;
-  email: string;
-  phone: string;
-};
-
-const DEFAULT_PROFILE: StoredProfile = {
-  name: 'Amina Bello',
-  email: 'amina@aureliahomes.ng',
-  phone: '0803 000 0000',
-};
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -30,45 +18,22 @@ export default function ProfileScreen() {
   const styles = useStyles(colors);
 
   const [profile, setProfile] = useState<StoredProfile>(DEFAULT_PROFILE);
-  const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState<StoredProfile>(DEFAULT_PROFILE);
 
+  // Reload whenever the tab regains focus so edits elsewhere appear instantly.
   useEffect(() => {
-    (async () => {
-      try {
-        const raw = await AsyncStorage.getItem('ps_profile');
-        if (raw) setProfile({ ...DEFAULT_PROFILE, ...JSON.parse(raw) });
-      } catch {
-        /* first launch — keep defaults */
-      }
-    })();
-  }, []);
+    loadProfile().then(setProfile);
+  });
 
-  const openEdit = () => {
-    setDraft(profile);
-    setEditing(true);
-  };
-
-  const saveProfile = async () => {
-    hapticTap();
-    const clean = {
-      name: draft.name.trim() || DEFAULT_PROFILE.name,
-      email: draft.email.trim(),
-      phone: draft.phone.trim(),
-    };
-    setProfile(clean);
-    try {
-      await AsyncStorage.setItem('ps_profile', JSON.stringify(clean));
-    } catch {
-      /* storage unavailable */
-    }
-    setEditing(false);
-  };
-
-  const username = profile.name
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '')
-    .slice(0, 16) || 'you';
+  const username = profileUsername(profile);
+  const socials = (
+    [
+      ['instagram', profile.instagram, 'logo-instagram'],
+      ['x', profile.x, 'logo-x'],
+      ['facebook', profile.facebook, 'logo-facebook'],
+      ['linkedin', profile.linkedin, 'logo-linkedin'],
+      ['website', profile.website, 'globe-outline'],
+    ] as const
+  ).filter(([, v]) => v && v.trim().length > 0);
 
   return (
     <ScrollView
@@ -90,6 +55,15 @@ export default function ProfileScreen() {
                 <Text style={styles.digiBadgeText}>ACTIVE</Text>
               </View>
             </View>
+            {socials.length > 0 && (
+              <View style={styles.socialChips}>
+                {socials.map(([key, , icon]) => (
+                  <View key={key} style={[styles.socialChip, { backgroundColor: colors.surface2 }]}>
+                    <Ionicons name={icon as any} size={13} color={colors.text} />
+                  </View>
+                ))}
+              </View>
+            )}
             <View style={styles.digiRow}>
               <Ionicons name="qr-code-outline" size={15} color={colors.muted} />
               <Text style={styles.digiRowText}>Tap to view your digital profile — share it with one tap.</Text>
@@ -108,7 +82,7 @@ export default function ProfileScreen() {
                 {profile.phone ? ` · ${profile.phone}` : ''}
               </Text>
             </View>
-            <Pressable onPress={openEdit} style={styles.editBtn}>
+            <Pressable onPress={() => router.push('/edit-profile' as any)} style={styles.editBtn}>
               <Ionicons name="create-outline" size={16} color={colors.text} />
               <Text style={styles.editBtnText}>Edit Profile</Text>
             </Pressable>
@@ -141,58 +115,15 @@ export default function ProfileScreen() {
                 </Text>
               }
             />
-            <RowItem icon="help-buoy-outline" label="Help & Support" onPress={() => router.push('/chat')} />
-            <RowItem icon="settings-outline" label="Settings" isLast onPress={() => router.push('/chat')} />
+            <RowItem icon="settings-outline" label="Settings" onPress={() => router.push('/settings' as any)} />
+            <RowItem icon="help-buoy-outline" label="Help & Support" isLast onPress={() => router.push('/chat')} />
           </View>
         </FadeIn>
 
         <FadeIn delay={210}>
-          <Text style={styles.version}>Pixel Studios · v3.0.0</Text>
+          <Text style={styles.version}>Pixel Studios · v3.1.0</Text>
         </FadeIn>
       </Container>
-
-      {/* ============================ EDIT PROFILE MODAL =========================== */}
-      <Modal visible={editing} transparent animationType="slide" onRequestClose={() => setEditing(false)}>
-        <View style={[styles.sheetBackdrop, { backgroundColor: 'rgba(5,5,7,0.7)' }]}>
-          <View style={[styles.sheet, { backgroundColor: colors.bg, borderColor: colors.hairlineStrong }]}>
-            <View style={styles.sheetHead}>
-              <Text style={[styles.sheetTitle, { color: colors.text }]}>Edit Profile</Text>
-              <Pressable onPress={() => setEditing(false)} hitSlop={8} style={[styles.sheetClose, { backgroundColor: colors.surface2 }]}>
-                <Ionicons name="close" size={19} color={colors.text} />
-              </Pressable>
-            </View>
-            <ScrollView contentContainerStyle={{ padding: 20, gap: sp.x3 }} keyboardShouldPersistTaps="handled">
-              {[
-                { key: 'name', label: 'Full name', placeholder: 'e.g. Amina Bello' },
-                { key: 'email', label: 'Email address', placeholder: 'you@business.ng' },
-                { key: 'phone', label: 'Phone number', placeholder: '0800 000 0000' },
-              ].map((f) => (
-                <View key={f.key}>
-                  <Text style={[styles.fieldLabel, { color: colors.subtext }]}>{f.label}</Text>
-                  <TextInput
-                    value={draft[f.key as keyof StoredProfile]}
-                    onChangeText={(t) => setDraft((d) => ({ ...d, [f.key]: t }))}
-                    placeholder={f.placeholder}
-                    placeholderTextColor={colors.muted}
-                    style={[
-                      styles.field,
-                      {
-                        backgroundColor: colors.surface,
-                        borderColor: colors.hairline,
-                        color: colors.text,
-                      },
-                    ]}
-                  />
-                </View>
-              ))}
-              <Pressable onPress={saveProfile} style={[styles.saveBtn, { backgroundColor: colors.lime }]}>
-                <Ionicons name="checkmark" size={18} color={colors.onLime} />
-                <Text style={[styles.saveBtnText, { color: colors.onLime }]}>Save changes</Text>
-              </Pressable>
-            </ScrollView>
-          </View>
-        </View>
-      </Modal>
     </ScrollView>
   );
 }
@@ -222,6 +153,14 @@ function useStyles(colors: Palette) {
           paddingVertical: 5,
         },
         digiBadgeText: { fontFamily: fonts.bold, fontSize: 9.5, letterSpacing: 1, color: colors.onLime },
+        socialChips: { flexDirection: 'row', gap: 7, marginTop: sp.x2_ },
+        socialChip: {
+          width: 30,
+          height: 30,
+          borderRadius: 10,
+          alignItems: 'center',
+          justifyContent: 'center',
+        },
         digiRow: {
           flexDirection: 'row',
           alignItems: 'center',
@@ -254,44 +193,6 @@ function useStyles(colors: Palette) {
           textAlign: 'center',
           marginTop: sp.x5,
         },
-        sheetBackdrop: { flex: 1, alignItems: 'center', justifyContent: 'flex-end' },
-        sheet: {
-          width: '100%',
-          maxWidth: 520,
-          maxHeight: '88%',
-          borderTopLeftRadius: 28,
-          borderTopRightRadius: 28,
-          borderWidth: StyleSheet.hairlineWidth,
-        },
-        sheetHead: {
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          paddingHorizontal: 20,
-          paddingTop: 18,
-          paddingBottom: 4,
-        },
-        sheetTitle: { fontFamily: fonts.semi, fontSize: 19, letterSpacing: -0.3 },
-        sheetClose: { width: 36, height: 36, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
-        fieldLabel: { fontFamily: fonts.medium, fontSize: 13, marginBottom: 7 },
-        field: {
-          borderWidth: 1,
-          borderRadius: radius.md,
-          paddingHorizontal: 14,
-          paddingVertical: 13,
-          fontFamily: fonts.regular,
-          fontSize: 15,
-        },
-        saveBtn: {
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 7,
-          borderRadius: radius.md,
-          paddingVertical: 15,
-          marginTop: sp.x1,
-        },
-        saveBtnText: { fontFamily: fonts.bold, fontSize: 15 },
       }),
     [colors],
   );

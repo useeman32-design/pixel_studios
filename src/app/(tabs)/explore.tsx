@@ -1,8 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import React, { useMemo, useState } from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useMemo, useRef, useState } from 'react';
+import { Dimensions, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Container, FadeIn } from '../../components/ui';
@@ -18,6 +18,8 @@ export default function ExploreScreen() {
   const styles = useStyles(colors);
   const [filter, setFilter] = useState('All');
   const [openPost, setOpenPost] = useState<ExplorePost | null>(null);
+  const [page, setPage] = useState(0);
+  const pager = useRef<ScrollView>(null);
 
   const posts = useMemo(
     () => (filter === 'All' ? explorePosts : explorePosts.filter((p) => p.category === filter)),
@@ -68,7 +70,10 @@ export default function ExploreScreen() {
             {posts.map((post, i) => (
               <FadeIn key={post.id} delay={i * 60}>
                 <Pressable
-                  onPress={() => setOpenPost(post)}
+                  onPress={() => {
+                    setPage(0);
+                    setOpenPost(post);
+                  }}
                   style={({ pressed }) => [styles.post, { backgroundColor: colors.surface, borderColor: colors.hairline }, pressed && { opacity: 0.9 }]}>
                   <View style={styles.postMediaWrap}>
                     <Image source={post.media[0]} style={styles.postMedia} contentFit="cover" />
@@ -123,22 +128,58 @@ export default function ExploreScreen() {
                   </Pressable>
                 </View>
                 <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 16, gap: 10 }}>
-                  {openPost.media.map((m, i) => (
-                    <View key={i} style={{ borderRadius: 18, overflow: 'hidden' }}>
-                      <Image source={m} style={{ width: '100%', height: 250 }} contentFit="cover" />
-                      {openPost.type === 'video' && i === 0 && (
-                        <View style={styles.playBadge}>
-                          <Ionicons name="play" size={26} color="#0C0C0F" />
-                        </View>
+                  {openPost.media.length <= 2 && openPost.type === 'photo' ? (
+                    /* One or two photos — show them stacked. */
+                    openPost.media.map((m, i) => (
+                      <View key={i} style={{ borderRadius: 18, overflow: 'hidden' }}>
+                        <Image source={m} style={{ width: '100%', height: 250 }} contentFit="cover" />
+                      </View>
+                    ))
+                  ) : (
+                    /* More than two items or a video — swipe through them. */
+                    <View>
+                      <ScrollView
+                        ref={pager}
+                        horizontal
+                        pagingEnabled
+                        showsHorizontalScrollIndicator={false}
+                        onMomentumScrollEnd={(e) =>
+                          setPage(Math.round(e.nativeEvent.contentOffset.x / Math.max(Dimensions.get('window').width - 64, 1)))
+                        }
+                        style={{ borderRadius: 18, overflow: 'hidden' }}>
+                        {openPost.media.map((m, i) => (
+                          <View key={i} style={{ width: Math.min(Dimensions.get('window').width - 64, 448), height: 270, borderRadius: 18, overflow: 'hidden' }}>
+                            <Image source={m} style={{ width: '100%', height: '100%' }} contentFit="cover" />
+                            {openPost.type === 'video' && (
+                              <View style={styles.playBadge}>
+                                <Ionicons name="play" size={26} color="#0C0C0F" />
+                              </View>
+                            )}
+                          </View>
+                        ))}
+                      </ScrollView>
+                      {/* dot indicator */}
+                      <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 6, marginTop: 10 }}>
+                        {openPost.media.map((_, i) => (
+                          <View
+                            key={i}
+                            style={{
+                              width: page === i ? 18 : 7,
+                              height: 7,
+                              borderRadius: 4,
+                              backgroundColor: page === i ? colors.lime : colors.hairlineStrong,
+                            }}
+                          />
+                        ))}
+                      </View>
+                      {openPost.media.length > 1 && (
+                        <Text style={[styles.swipeHint, { color: colors.muted }]}>
+                          {openPost.type === 'video' ? 'Video frames — swipe through · playback arrives with the studio backend' : 'Swipe to view more'}
+                        </Text>
                       )}
                     </View>
-                  ))}
-                  <Text style={[styles.viewerCaption, { color: colors.subtext }]}>{openPost.caption}</Text>
-                  {openPost.type === 'video' && (
-                    <Text style={[styles.videoNote, { color: colors.muted }]}>
-                      Video playback arrives with the studio backend — previews shown as frames for now.
-                    </Text>
                   )}
+                  <Text style={[styles.viewerCaption, { color: colors.subtext }]}>{openPost.caption}</Text>
                 </ScrollView>
                 <View style={[styles.viewerFoot, { borderColor: colors.hairline }]}>
                   <View style={{ flex: 1 }}>
@@ -214,7 +255,7 @@ function useStyles(colors: Palette) {
         viewerCat: { fontFamily: fonts.regular, fontSize: 12.5, marginTop: 2 },
         viewerClose: { width: 38, height: 38, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
         viewerCaption: { fontFamily: fonts.regular, fontSize: 14, lineHeight: 21 },
-        videoNote: { fontFamily: fonts.regular, fontSize: 12, fontStyle: 'italic' },
+        swipeHint: { fontFamily: fonts.regular, fontSize: 11.5, textAlign: 'center', marginTop: 6 },
         viewerFoot: {
           flexDirection: 'row',
           alignItems: 'center',
