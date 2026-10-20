@@ -8,11 +8,14 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BackBar, Container, Eyebrow, FadeIn, RowItem } from '../components/ui';
 import { CONTACT, waLink } from '../constants/contact';
 import { fonts, sp, useTheme } from '../constants/theme';
+import { useAuth } from '../lib/auth';
 
 export default function SettingsScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { colors, isDark, toggleTheme } = useTheme();
+  const { user, token, signOut } = useAuth();
+  const signedIn = !!token && !!user;
 
   return (
     <ScrollView
@@ -33,6 +36,21 @@ export default function SettingsScreen() {
 
         <FadeIn delay={90}>
           <View style={{ marginTop: sp.x4 }}>
+            {signedIn ? (
+              <>
+                <RowItem icon="person-circle-outline" label="Account" sub={user!.email} onPress={() => router.push('/edit-profile' as any)} />
+                <RowItem
+                  icon="log-out-outline"
+                  label="Log out"
+                  onPress={async () => {
+                    await signOut();
+                    router.replace('/auth' as any);
+                  }}
+                />
+              </>
+            ) : (
+              <RowItem icon="person-add-outline" label="Sign in / Create account" sub="Sync orders & profile across devices" onPress={() => router.push('/auth' as any)} />
+            )}
             <RowItem
               icon={isDark ? 'moon-outline' : 'sunny-outline'}
               label="Theme"

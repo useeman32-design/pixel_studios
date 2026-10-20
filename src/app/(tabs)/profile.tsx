@@ -1,11 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useMemo, useState } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Image, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Container, FadeIn, RowItem } from '../../components/ui';
 import { fonts, Palette, radius, sp, useTheme } from '../../constants/theme';
+import { useAuth } from '../../lib/auth';
 import { hapticSelect } from '../../lib/haptics';
 import { DEFAULT_PROFILE, loadProfile, profileUsername, StoredProfile } from '../../lib/profile';
 
@@ -16,13 +17,31 @@ export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const { colors, isDark, toggleTheme } = useTheme();
   const styles = useStyles(colors);
+  const { user, token, signOut } = useAuth();
 
-  const [profile, setProfile] = useState<StoredProfile>(DEFAULT_PROFILE);
+  const [localProfile, setLocalProfile] = useState<StoredProfile>(DEFAULT_PROFILE);
 
   // Reload whenever the tab regains focus so edits elsewhere appear instantly.
   useEffect(() => {
-    loadProfile().then(setProfile);
+    loadProfile().then(setLocalProfile);
   });
+
+  const signedIn = !!token && !!user;
+
+  // Server account wins; guests fall back to the on-device profile.
+  const profile: StoredProfile = signedIn
+    ? {
+        name: user!.name,
+        email: user!.email,
+        phone: user!.phone,
+        about: user!.about ?? '',
+        instagram: user!.instagram ?? '',
+        x: user!.x ?? '',
+        facebook: user!.facebook ?? '',
+        linkedin: user!.linkedin ?? '',
+        website: user!.website ?? '',
+      }
+    : localProfile;
 
   const username = profileUsername(profile);
   const socials = (
@@ -34,6 +53,21 @@ export default function ProfileScreen() {
       ['website', profile.website, 'globe-outline'],
     ] as const
   ).filter(([, v]) => v && v.trim().length > 0);
+
+  const doSignOut = () => {
+    const go = async () => {
+      await signOut();
+      router.replace('/auth' as any);
+    };
+    if (Platform.OS === 'web') {
+      go();
+    } else {
+      Alert.alert('Log out', 'You can sign back in anytime.', [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Log out', style: 'destructive', onPress: go },
+      ]);
+    }
+  };
 
   return (
     <ScrollView
@@ -89,6 +123,24 @@ export default function ProfileScreen() {
           </View>
         </FadeIn>
 
+        {/* ================================ ACCOUNT ================================ */}
+        {!signedIn && (
+          <FadeIn delay={120}>
+            <Pressable onPress={() => router.push('/auth' as any)} style={[styles.accountCard, { backgroundColor: colors.limeDim, borderColor: colors.lime }]}>
+              <View style={[styles.accountIcon, { backgroundColor: colors.lime }]}>
+                <Ionicons name="person-add-outline" size={17} color={colors.onLime} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.accountTitle, { color: colors.text }]}>Sign in or create an account</Text>
+                <Text style={[styles.accountSub, { color: colors.subtext }]}>
+                  Sync your orders and profile across devices.
+                </Text>
+              </View>
+              <Ionicons name="chevron-forward" size={17} color={colors.muted} />
+            </Pressable>
+          </FadeIn>
+        )}
+
         {/* ================================= ACTIONS =============================== */}
         <FadeIn delay={150}>
           <View style={{ marginTop: sp.x5 }}>
@@ -116,7 +168,11 @@ export default function ProfileScreen() {
               }
             />
             <RowItem icon="settings-outline" label="Settings" onPress={() => router.push('/settings' as any)} />
-            <RowItem icon="help-buoy-outline" label="Help & Support" isLast onPress={() => router.push('/chat')} />
+            {signedIn ? (
+              <RowItem icon="log-out-outline" label="Log out" sub={user!.email} isLast onPress={doSignOut} />
+            ) : (
+              <RowItem icon="help-buoy-outline" label="Help & Support" isLast onPress={() => router.push('/chat')} />
+            )}
           </View>
         </FadeIn>
 
@@ -171,6 +227,18 @@ function useStyles(colors: Palette) {
           borderTopColor: colors.hairline,
         },
         digiRowText: { flex: 1, fontFamily: fonts.regular, fontSize: 13, color: colors.subtext },
+        accountCard: {
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: sp.x2_,
+          marginTop: sp.x3,
+          borderWidth: 1,
+          borderRadius: radius.lg,
+          padding: sp.x3,
+        },
+        accountIcon: { width: 38, height: 38, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+        accountTitle: { fontFamily: fonts.semi, fontSize: 14.5 },
+        accountSub: { fontFamily: fonts.regular, fontSize: 12.5, marginTop: 2 },
         identity: { flexDirection: 'row', alignItems: 'center', gap: sp.x3, marginTop: sp.x4 },
         name: { fontFamily: fonts.semi, fontSize: 22, letterSpacing: -0.4, color: colors.text },
         meta: { fontFamily: fonts.regular, fontSize: 13, color: colors.muted, marginTop: 3 },

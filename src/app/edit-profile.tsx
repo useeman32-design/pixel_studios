@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BackBar, Button, Container, Eyebrow, FadeIn } from '../components/ui';
 import { fonts, Palette, radius, sp, useTheme } from '../constants/theme';
+import { useAuth } from '../lib/auth';
 import { hapticTap } from '../lib/haptics';
 import { DEFAULT_PROFILE, loadProfile, saveProfile, StoredProfile } from '../lib/profile';
 
@@ -29,10 +30,28 @@ export default function EditProfileScreen() {
   const [draft, setDraft] = useState<StoredProfile>(DEFAULT_PROFILE);
   const [avatarUri, setAvatarUri] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { user, token, updateProfile } = useAuth();
+  const signedIn = !!token && !!user;
 
   useEffect(() => {
-    loadProfile().then(setDraft);
-  }, []);
+    if (signedIn && user) {
+      // Seed the form from the server account.
+      setDraft({
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        about: user.about ?? '',
+        instagram: user.instagram ?? '',
+        x: user.x ?? '',
+        facebook: user.facebook ?? '',
+        linkedin: user.linkedin ?? '',
+        website: user.website ?? '',
+      });
+    } else {
+      loadProfile().then(setDraft);
+    }
+  }, [signedIn, user]);
 
   const set = (key: keyof StoredProfile) => (text: string) => setDraft((d) => ({ ...d, [key]: text }));
 
@@ -48,8 +67,22 @@ export default function EditProfileScreen() {
   };
 
   const save = async () => {
+    if (saved) return;
     hapticTap();
+    setError(null);
+
+    // Always keep a local copy so guests (and offline edits) work.
     await saveProfile(draft);
+
+    if (signedIn) {
+      try {
+        await updateProfile(draft);
+      } catch (e: any) {
+        setError(String(e?.message || 'Could not sync with the server. Saved on this device.'));
+        return;
+      }
+    }
+
     setSaved(true);
     setTimeout(() => router.back(), 700);
   };
@@ -68,7 +101,11 @@ export default function EditProfileScreen() {
         <FadeIn>
           <Eyebrow>Your account</Eyebrow>
           <Text style={styles.title}>Edit Profile</Text>
-          <Text style={styles.subtitle}>Update your details and connect your socials.</Text>
+          <Text style={styles.subtitle}>
+            {signedIn
+              ? 'Changes sync to your Pixel Studios account.'
+              : 'Update your details and connect your socials.'}
+          </Text>
         </FadeIn>
 
         {/* Avatar */}
@@ -115,6 +152,11 @@ export default function EditProfileScreen() {
         </FadeIn>
 
         <FadeIn delay={200} style={{ marginTop: sp.x5 }}>
+          {error && (
+            <Text style={{ fontFamily: fonts.medium, fontSize: 13, lineHeight: 18, color: '#E5484D', marginBottom: sp.x2_ }}>
+              {error}
+            </Text>
+          )}
           <Button title={saved ? 'Saved ✓' : 'Save changes'} icon={saved ? 'checkmark' : 'save-outline'} onPress={save} disabled={saved} />
         </FadeIn>
       </Container>

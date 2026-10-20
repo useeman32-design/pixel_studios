@@ -21,6 +21,7 @@ import {
   ThemeContext,
   ThemeMode,
 } from '../constants/theme';
+import { AuthProvider, hasSession } from '../lib/auth';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -38,7 +39,8 @@ export default function RootLayout() {
     Outfit_800ExtraBold,
   });
 
-  // Restore persisted preferences, then route first-time users to onboarding.
+  // Restore persisted preferences, then route first-time users to onboarding
+  // and users without a session (account or guest) to the auth welcome screen.
   useEffect(() => {
     (async () => {
       try {
@@ -47,6 +49,8 @@ export default function RootLayout() {
         const onboarded = await AsyncStorage.getItem('ps_onboarded');
         if (onboarded !== '1') {
           router.replace('/onboarding');
+        } else if (!(await hasSession())) {
+          router.replace('/auth' as any);
         }
       } catch {
         // storage unavailable — defaults are fine
@@ -109,17 +113,19 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeContext.Provider value={themeValue}>
-      <ThemeProvider value={navTheme}>
-        <StatusBar style={mode === 'dark' ? 'light' : 'dark'} />
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            contentStyle: { backgroundColor: themeValue.colors.bg },
-            animation: 'fade',
-          }}
-        />
-      </ThemeProvider>
-    </ThemeContext.Provider>
+    <AuthProvider>
+      <ThemeContext.Provider value={themeValue}>
+        <ThemeProvider value={navTheme}>
+          <StatusBar style={mode === 'dark' ? 'light' : 'dark'} />
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              contentStyle: { backgroundColor: themeValue.colors.bg },
+              animation: 'fade',
+            }}
+          />
+        </ThemeProvider>
+      </ThemeContext.Provider>
+    </AuthProvider>
   );
 }

@@ -70,7 +70,9 @@ export default function OnboardingScreen() {
     try {
       await AsyncStorage.setItem('ps_onboarded', '1');
     } catch {}
-    router.replace('/');
+    // Fresh installs go to the account welcome screen unless a session exists.
+    const { hasSession } = await import('../lib/auth');
+    router.replace((await hasSession()) ? '/' : ('/auth' as any));
   };
 
   const next = () => {

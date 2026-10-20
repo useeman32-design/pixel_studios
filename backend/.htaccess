@@ -1,0 +1,23 @@
+# Pixel Studios API — Apache config
+
+# 1) Never serve the credentials file over HTTP.
+<Files "config.php">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</Files>
+
+# 2) Some shared hosts strip the Authorization header before PHP sees it.
+#    This passes it through so Bearer tokens work everywhere.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{HTTP:Authorization} ^(.*)
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%1]
+</IfModule>
+
+# 3) Block directory listing.
+Options -Indexes
