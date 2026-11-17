@@ -1,0 +1,74 @@
+# ============================================================
+#  PIXEL STUDIOS · NFC landing + card & device manager
+#  Drop this whole folder into public_html on cPanel.
+# ============================================================
+
+Options -MultiViews -Indexes
+DirectoryIndex index.html
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Force HTTPS (uncomment once your SSL is active)
+  # RewriteCond %{HTTPS} off
+  # RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
+
+  # Pretty URLs -------------------------------------------------
+  # pixelstudios.com/card/amina   ->  /card/amina.html
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^card/([A-Za-z0-9_\-]+)/?$ card/$1.html [L,QSA]
+
+  # pixelstudios.com/menu/aurelia ->  /card/aurelia.html?view=menu
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteRule ^menu/([A-Za-z0-9_\-]+)/?$ card/$1.html?view=menu [L,QSA]
+
+  # pixelstudios.com/dashboard    ->  /dashboard/
+  RewriteRule ^dashboard/?$ dashboard/index.html [L]
+
+  # Any other extension-less path -> try the .html file
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{DOCUMENT_ROOT}/$1.html -f
+  RewriteRule ^([A-Za-z0-9_\-]+)/?$ $1.html [L]
+</IfModule>
+
+# Compression -------------------------------------------------
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml application/javascript application/json image/svg+xml
+</IfModule>
+
+# Caching -----------------------------------------------------
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/html "access plus 0 seconds"
+  ExpiresByType text/css "access plus 7 days"
+  ExpiresByType application/javascript "access plus 7 days"
+  ExpiresByType image/jpeg "access plus 30 days"
+  ExpiresByType image/png "access plus 30 days"
+  ExpiresByType image/svg+xml "access plus 30 days"
+</IfModule>
+
+# Security headers --------------------------------------------
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+  Header set X-Frame-Options "SAMEORIGIN"
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+  # Uncomment when you serve the card pages for other businesses:
+  # Header set Content-Security-Policy "default-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com data:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com"
+</IfModule>
+
+# Never cache the dashboard or the API responses ---------------
+<FilesMatch "(index|dashboard)\.html$">
+  <IfModule mod_headers.c>
+    Header set Cache-Control "no-cache, must-revalidate"
+  </IfModule>
+</FilesMatch>
+
+# PHP (only needed once you wire up /api) ----------------------
+<IfModule mod_php.c>
+  php_value upload_max_filesize 8M
+  php_value post_max_size 10M
+  php_value max_execution_time 60
+</IfModule>

@@ -115,10 +115,17 @@ export function generateQR(text: string): QRMatrix | null {
   // Alignment patterns
   const centers = ALIGNMENT_CENTERS[version - 1];
   if (centers.length > 0) {
+    // The three alignment patterns that would sit on top of a finder
+    // pattern are omitted: (first,first), (last,first) and (first,last).
+    const first = centers[0];
     const last = centers[centers.length - 1];
     for (const cy of centers) {
       for (const cx of centers) {
-        if ((cx === 3 && cy === 3) || (cx === last && cy === 3) || (cx === 3 && cy === last)) continue;
+        if (
+          (cx === first && cy === first) ||
+          (cx === last && cy === first) ||
+          (cx === first && cy === last)
+        ) continue;
         for (let dy = -2; dy <= 2; dy++) {
           for (let dx = -2; dx <= 2; dx++) {
             setFunc(cx + dx, cy + dy, Math.max(Math.abs(dx), Math.abs(dy)) !== 1);
