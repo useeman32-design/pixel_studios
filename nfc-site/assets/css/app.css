@@ -20,6 +20,14 @@
   --dark-2: #182023;
   --red: #e05252;
   --amber: #e0a03a;
+  --bg-outer: #e9efef;
+  --brand-deep: #00726c;
+  --ghost-bg: rgba(19, 19, 22, .04);
+  --hover-bg: rgba(19, 19, 22, .06);
+  --hover-bg-2: rgba(19, 19, 22, .1);
+  --auth-glow: rgba(255, 255, 255, .5);
+  --danger-bd: #e6bcbc;
+  --danger-ink: #a03a3a;
 
   --r-xs: 8px;
   --r-sm: 12px;
@@ -74,7 +82,7 @@ p { margin: 0; }
 .btn-outline { border-color: var(--hairline-2); background: var(--surface); color: var(--ink); }
 .btn-outline:hover { border-color: var(--ink); transform: translateY(-2px); }
 .btn-ghost { color: var(--ink-2); }
-.btn-ghost:hover { background: rgba(19, 19, 22, .05); color: var(--ink); }
+.btn-ghost:hover { background: var(--hover-bg); color: var(--ink); }
 .btn-sm { padding: 8px 14px; font-size: 13px; }
 .btn-block { width: 100%; }
 .btn:active { transform: scale(.98); }
@@ -84,7 +92,7 @@ p { margin: 0; }
   display: inline-flex; align-items: center; gap: 6px;
   padding: 4px 11px; border-radius: var(--pill);
   font-size: 11.5px; font-weight: 600; letter-spacing: .01em;
-  background: rgba(19, 19, 22, .06); color: var(--ink-2);
+  background: var(--hover-bg); color: var(--ink-2);
 }
 .pill .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 .pill-live { background: var(--brand-soft); color: #00726c; }
@@ -207,8 +215,8 @@ p { margin: 0; }
 .modal-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 20px 22px 0; }
 .modal-head h3 { font-size: 18px; }
 .modal-body { padding: 16px 22px 22px; overflow-y: auto; }
-.modal-x { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; color: var(--ink-2); background: rgba(19,19,22,.05); }
-.modal-x:hover { background: rgba(19,19,22,.1); }
+.modal-x { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; color: var(--ink-2); background: var(--hover-bg); }
+.modal-x:hover { background: var(--hover-bg-2); }
 .modal-x svg { width: 15px; height: 15px; }
 
 /* ---------------- reveal ---------------- */
@@ -223,3 +231,51 @@ p { margin: 0; }
 @media (max-width: 620px) {
   .grid-2 { grid-template-columns: 1fr; }
 }
+
+/* ================= DARK THEME ================= */
+:root[data-theme="dark"] {
+  --bg: #0c1011;
+  --surface: #141a1b;
+  --surface-2: #1a2124;
+  --ink: #f2f5f5;
+  --ink-2: #a4b1af;
+  --ink-3: #6e7b79;
+  --hairline: rgba(255, 255, 255, 0.08);
+  --hairline-2: rgba(255, 255, 255, 0.14);
+  --brand: #00bfb8;
+  --brand-soft: rgba(0, 191, 184, 0.14);
+  --on-brand: #0e1315;
+  --dark: #090d0e;
+  --dark-2: #101418;
+  --bg-outer: #070b0c;
+  --brand-deep: #52d6ce;
+  --ghost-bg: rgba(255, 255, 255, .04);
+  --hover-bg: rgba(255, 255, 255, .06);
+  --hover-bg-2: rgba(255, 255, 255, .12);
+  --auth-glow: rgba(255, 255, 255, .05);
+  --danger-bd: rgba(224, 82, 82, .45);
+  --danger-ink: #ff9a9a;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, .4), 0 4px 14px -6px rgba(0, 0, 0, .5);
+  --shadow-md: 0 10px 34px -14px rgba(0, 0, 0, .55);
+  --shadow-lg: 0 34px 70px -26px rgba(0, 0, 0, .6);
+}
+
+/* ================= THEME TOGGLE + LOGO PAIR ================= */
+.theme-toggle {
+  width: 38px; height: 38px; border-radius: 50%;
+  display: grid; place-items: center; flex: 0 0 auto;
+  background: var(--ghost-bg); border: 1px solid var(--hairline-2);
+  color: var(--ink-2); cursor: pointer;
+  transition: color .2s var(--ease), border-color .2s, background .2s;
+}
+.theme-toggle:hover { color: var(--ink); border-color: var(--brand); }
+.theme-toggle svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.logo-pair { display: inline-grid; align-items: center; line-height: 0; }
+.logo-pair > img { grid-area: 1 / 1; }
+.theme-toggle .i-sun { display: none; }
+[data-theme="dark"] .theme-toggle .i-sun { display: block; }
+[data-theme="dark"] .theme-toggle .i-moon { display: none; }
+/* logo variants: app surfaces default to light */
+img[src$="-dark.svg"] { visibility: hidden; }
+[data-theme="dark"] img[src$="-dark.svg"] { visibility: visible; }
+[data-theme="dark"] img[src$="-light.svg"] { visibility: hidden; }

@@ -28,6 +28,11 @@ nfc-site/
 
 ---
 
+### THEMES
+Light/dark theme on every page: toggle in the nav / topbar / card cover / login corner.
+Preference persists in `localStorage.ps_theme`; first visit follows the OS `prefers-color-scheme`.
+Logo variants swap via pure CSS (`[data-theme]` + paired `<img>`), so there is no flash on load.
+
 ## 1 · Upload to cPanel
 
 1. cPanel → **File Manager** → open `public_html`.

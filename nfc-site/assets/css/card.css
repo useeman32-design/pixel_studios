@@ -2,7 +2,7 @@
    PIXEL STUDIOS · Public business page (what a card tap opens)
    ============================================================ */
 
-body { background: #e9eeee; }
+body { background: var(--bg-outer); }
 
 .page {
   max-width: 460px;
@@ -10,7 +10,7 @@ body { background: #e9eeee; }
   min-height: 100vh;
   background: var(--bg);
   position: relative;
-  box-shadow: 0 0 60px -20px rgba(19, 19, 22, .3);
+  box-shadow: var(--shadow-lg);
 }
 
 /* ---------- cover ---------- */
@@ -67,6 +67,8 @@ body { background: #e9eeee; }
   transition: background .2s, transform .2s;
 }
 .icon-btn:hover { background: rgba(12, 12, 15, .75); transform: translateY(-1px); }
+.topbar .theme-toggle { background: rgba(12, 12, 15, .5); border-color: rgba(255, 255, 255, .14); color: #fff; width: 34px; height: 34px; }
+.topbar .theme-toggle:hover { background: rgba(12, 12, 15, .75); color: #fff; }
 .icon-btn svg { width: 15px; height: 15px; }
 
 /* ---------- identity ---------- */
@@ -74,7 +76,7 @@ body { background: #e9eeee; }
 .avatar-ring {
   width: 108px; height: 108px; border-radius: 50%;
   padding: 4px; background: var(--bg);
-  box-shadow: 0 8px 24px -10px rgba(19, 19, 22, .35);
+  box-shadow: var(--shadow-md);
 }
 .avatar {
   width: 100%; height: 100%; border-radius: 50%;
@@ -96,7 +98,7 @@ body { background: #e9eeee; }
 }
 .name-row { display: flex; align-items: center; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
 .name { font-size: 27px; font-weight: 800; letter-spacing: -.035em; }
-.rank { font-size: 12.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #00837d; margin-top: 4px; }
+.rank { font-size: 12.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--brand-deep); margin-top: 4px; }
 .business { font-size: 14px; color: var(--ink-2); margin-top: 7px; font-weight: 400; }
 .business b { color: var(--ink); font-weight: 600; }
 .bio { font-size: 14.5px; color: var(--ink-2); margin-top: 14px; line-height: 1.6; font-weight: 300; }
@@ -254,7 +256,7 @@ body { background: #e9eeee; }
 .page-foot a:hover { color: var(--ink); }
 .powered { display: inline-flex; align-items: center; }
 .powered img { height: 20px; width: auto; margin-left: 10px; display: block; }
-.page-foot p { font-size: 11px; color: #b3b3ac; margin-top: 9px; }
+.page-foot p { font-size: 11px; color: var(--ink-3); margin-top: 9px; }
 
 /* ---------- sticky save bar ---------- */
 .savebar {
