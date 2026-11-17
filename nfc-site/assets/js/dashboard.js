@@ -109,7 +109,7 @@
       website: "https://aureliahomes.ng", address: "14B Adeola Hopewell Crescent, Wuse 2, Abuja",
       instagram: "https://instagram.com/aureliahomes", x: "https://x.com/aureliahomes",
       facebook: "https://facebook.com/aureliahomes", linkedin: "https://linkedin.com/company/aureliahomes",
-      accent: "#a5e22c",
+      accent: "#00bfb8",
       buttons: { save: true, whatsapp: true, call: true, email: true, directions: true, website: false }
     },
     services: [
@@ -327,7 +327,7 @@
       DASH.devices.forEach(function (d) { byType[d.type] = (byType[d.type] || 0) + 1; });
       sum.innerHTML =
         '<div class="panel card-pad reveal"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;"><div><div style="font-size:12.5px;color:var(--ink-3)">Total views</div><div style="font-size:28px;font-weight:800;letter-spacing:-.04em;margin-top:4px;">' +
-          num(DASH.devices.reduce(function (a, d) { return a + d.views; }, 0)) + '</div></div><span class="ic lime" style="width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:var(--lime-soft);color:#567d0c">' + I.eye + '</span></div></div>' +
+          num(DASH.devices.reduce(function (a, d) { return a + d.views; }, 0)) + '</div></div><span class="ic lime" style="width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:var(--lime-soft);color:#00726c">' + I.eye + '</span></div></div>' +
         '<div class="panel card-pad reveal"><div style="font-size:12.5px;color:var(--ink-3)">Devices by type</div>' +
           '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;">' +
           Object.keys(byType).map(function (k) { return '<span class="pill">' + k + ' × ' + byType[k] + '</span>'; }).join("") +
@@ -383,7 +383,7 @@
     DASH.menu.forEach(function (cat, ci) {
       var box = el("div", "menu-cat");
       var head = el("div", "menu-cat-head");
-      head.innerHTML = '<span style="color:#6f9e10;font-weight:800;font-size:12px;">' + String(ci + 1).padStart(2, "0") + '</span>' +
+      head.innerHTML = '<span style="color:#00837d;font-weight:800;font-size:12px;">' + String(ci + 1).padStart(2, "0") + '</span>' +
         '<input value="' + cat.cat.replace(/"/g, "&quot;") + '" data-cat="' + ci + '" aria-label="Category name" />' +
         '<button class="mini" data-additem="' + ci + '" title="Add item">+</button>' +
         '<button class="mini danger" data-delcat="' + ci + '" title="Delete category">' + I.trash + '</button>';
@@ -458,7 +458,7 @@
       t.appendChild(el("tr", "",
         '<td style="font-weight:600;">' + w.w + '</td><td>' + num(w.views) + '</td><td>' + num(w.taps) + '</td>' +
         '<td>' + num(w.saves) + '</td><td>' + num(w.chats) + '</td>' +
-        '<td><span class="chg ' + (w.chg >= 0 ? "up" : "down") + '" style="display:inline-flex;align-items:center;gap:4px;font-weight:600;color:' + (w.chg >= 0 ? "#567d0c" : "#a03a3a") + '">' +
+        '<td><span class="chg ' + (w.chg >= 0 ? "up" : "down") + '" style="display:inline-flex;align-items:center;gap:4px;font-weight:600;color:' + (w.chg >= 0 ? "#00726c" : "#a03a3a") + '">' +
         (w.chg >= 0 ? I.up : I.downChev) + Math.abs(w.chg) + '%</span></td>'));
     });
   }
@@ -515,7 +515,7 @@
     // accent drives the preview
     $("#pvAv").style.background = "linear-gradient(150deg," + p.accent + "," + shade(p.accent, -.35) + ")";
     $("#pvCover").style.background =
-      "radial-gradient(90% 90% at 20% 0%," + hexa(p.accent, .55) + ",transparent 60%), linear-gradient(150deg,#1a1a1f,#0c0c0f)";
+      "radial-gradient(90% 90% at 20% 0%," + hexa(p.accent, .55) + ",transparent 60%), linear-gradient(150deg,#1a1a1f,#0e1315)";
 
     // socials
     var soc = $("#pvSocials");
@@ -591,7 +591,7 @@
         '<div class="grid-2"><button class="btn btn-dark btn-sm" id="qrPng">Download PNG</button>' +
         '<button class="btn btn-outline btn-sm" id="qrPrint">Print sheet</button></div>' +
         '<p style="font-size:11.5px;color:var(--ink-3);margin-top:14px;text-align:center;">Print it on flyers, stands or stickers — same page, no NFC needed.</p>';
-      if (window.PixelQR) window.PixelQR.render($("#modalQR"), url, { size: 220, fg: "#131316", bg: "#ffffff", radius: .22, quiet: 2 });
+      if (window.PixelQR) window.PixelQR.render($("#modalQR"), url, { size: 220, fg: "#101418", bg: "#ffffff", radius: .22, quiet: 2 });
       $("#qrPng").addEventListener("click", function () {
         var c = $("#modalQR");
         var a = document.createElement("a");

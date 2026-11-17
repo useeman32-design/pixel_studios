@@ -137,7 +137,7 @@
     document.body.style.overflow = "hidden";
     if (window.PixelQR) {
       window.PixelQR.render($("#shareQR"), PROFILE.pageUrl, {
-        size: 190, fg: "#131316", bg: "#ffffff", radius: 0.22, quiet: 2
+        size: 190, fg: "#101418", bg: "#ffffff", radius: 0.22, quiet: 2
       });
     }
   }

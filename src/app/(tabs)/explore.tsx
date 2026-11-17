@@ -72,7 +72,7 @@ function MediaCarousel({
               <Image source={m} style={{ width, height: 270 }} contentFit="cover" />
               {isVideo && (
                 <View style={playBadge}>
-                  <Ionicons name="play" size={26} color="#0C0C0F" />
+                  <Ionicons name="play" size={26} color="#0E1315" />
                 </View>
               )}
             </View>
@@ -162,7 +162,7 @@ export default function ExploreScreen() {
                     <Image source={post.media[0]} style={styles.postMedia} contentFit="cover" />
                     {post.type === 'video' && (
                       <View style={styles.playBadge}>
-                        <Ionicons name="play" size={20} color="#0C0C0F" />
+                        <Ionicons name="play" size={20} color="#0E1315" />
                       </View>
                     )}
                     {post.media.length > 1 && (
@@ -295,7 +295,7 @@ function useStyles(colors: Palette) {
           width: 52,
           height: 52,
           borderRadius: 26,
-          backgroundColor: '#BFF549',
+          backgroundColor: '#00BFB8',
           alignItems: 'center',
           justifyContent: 'center',
         },

@@ -59,8 +59,8 @@ const BRIEF_TYPES: Record<string, { label: string; desc: string }[]> = {
 };
 
 const COLOR_COMBOS: { name: string; colors: string[] }[] = [
-  { name: 'Charcoal & Lime', colors: ['#141416', '#BFF549'] },
-  { name: 'Black & White', colors: ['#0C0C0F', '#F5F5F1'] },
+  { name: 'Charcoal & Teal', colors: ['#141a1b', '#00BFB8'] },
+  { name: 'Black & White', colors: ['#0E1315', '#F4F7F7'] },
   { name: 'Navy & Gold', colors: ['#1E3A5F', '#E8C36A'] },
   { name: 'Forest & Cream', colors: ['#1E3B2C', '#F3EBDD'] },
   { name: 'Burgundy & Blush', colors: ['#5C1F2E', '#F2C9CF'] },
@@ -94,7 +94,7 @@ function isLightHex(hex: string): boolean {
 /** Outer ring: saturated hues. Inner ring: soft pastels. Center: neutrals. */
 const WHEEL_OUTER = Array.from({ length: HUES }, (_, i) => hslToHex(i * (360 / HUES), 0.85, 0.52));
 const WHEEL_INNER = Array.from({ length: HUES }, (_, i) => hslToHex(i * (360 / HUES), 0.5, 0.8));
-const WHEEL_NEUTRALS = ['#FFFFFF', '#C9CBD1', '#8A8A90', '#3B3B40', '#0C0C0F'];
+const WHEEL_NEUTRALS = ['#FFFFFF', '#C9CBD1', '#8A8A90', '#3B3B40', '#0E1315'];
 
 function wheelPos(angle: number, r: number, size: number) {
   return {
@@ -341,7 +341,7 @@ Phone: ${phone || '-'}`;
                   <Pressable key={`o${c}`} onPress={() => togglePaletteColor(c)} style={[wheelPos((i * 2 * Math.PI) / HUES - Math.PI / 2, 96, 32), { backgroundColor: c, borderWidth: active ? 3 : 1, borderColor: active ? colors.text : 'rgba(120,120,120,0.25)', zIndex: active ? 2 : 1 }]}>
                     {active && (
                       <View style={styles.wheelCheck}>
-                        <Ionicons name="checkmark" size={12} color={isLightHex(c) ? '#141416' : '#FFFFFF'} />
+                        <Ionicons name="checkmark" size={12} color={isLightHex(c) ? '#141a1b' : '#FFFFFF'} />
                       </View>
                     )}
                   </Pressable>
@@ -353,7 +353,7 @@ Phone: ${phone || '-'}`;
                   <Pressable key={`i${c}`} onPress={() => togglePaletteColor(c)} style={[wheelPos((i * 2 * Math.PI) / HUES - Math.PI / 2 + Math.PI / HUES, 58, 24), { backgroundColor: c, borderWidth: active ? 3 : 1, borderColor: active ? colors.text : 'rgba(120,120,120,0.25)', zIndex: active ? 2 : 1 }]}>
                     {active && (
                       <View style={styles.wheelCheck}>
-                        <Ionicons name="checkmark" size={10} color={isLightHex(c) ? '#141416' : '#FFFFFF'} />
+                        <Ionicons name="checkmark" size={10} color={isLightHex(c) ? '#141a1b' : '#FFFFFF'} />
                       </View>
                     )}
                   </Pressable>
@@ -366,7 +366,7 @@ Phone: ${phone || '-'}`;
                   <Pressable key={`n${c}`} onPress={() => togglePaletteColor(c)} style={[wheelPos(angle, 20, 17), { backgroundColor: c, borderWidth: active ? 2.5 : 1, borderColor: active ? colors.text : 'rgba(120,120,120,0.3)', zIndex: active ? 2 : 1 }]}>
                     {active && (
                       <View style={styles.wheelCheck}>
-                        <Ionicons name="checkmark" size={9} color={isLightHex(c) ? '#141416' : '#FFFFFF'} />
+                        <Ionicons name="checkmark" size={9} color={isLightHex(c) ? '#141a1b' : '#FFFFFF'} />
                       </View>
                     )}
                   </Pressable>
@@ -518,7 +518,7 @@ function useStyles(colors: Palette) {
       width: 15,
       height: 15,
       borderRadius: 8,
-      backgroundColor: '#BFF549',
+      backgroundColor: '#00BFB8',
       alignItems: 'center',
       justifyContent: 'center',
     },

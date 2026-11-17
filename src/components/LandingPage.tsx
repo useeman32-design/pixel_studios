@@ -168,7 +168,7 @@ function BusinessSection({ d, dark }: { d: LandingData; dark: boolean }) {
         {cfg.items.map((it, i) => (
           <View key={it.label} style={[{ flexDirection: 'row', alignItems: 'center', paddingVertical: 11 }, i > 0 && { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: dark ? 'rgba(255,255,255,0.1)' : 'rgba(20,20,22,0.1)' }]}>
             <Ionicons name="checkmark-circle" size={14} color={accent} style={{ marginRight: 10 }} />
-            <Text style={{ flex: 1, fontFamily: fonts.semi, fontSize: 13, color: dark ? '#F4F4F2' : '#141416' }}>{it.label}</Text>
+            <Text style={{ flex: 1, fontFamily: fonts.semi, fontSize: 13, color: dark ? '#F2F5F5' : '#141a1b' }}>{it.label}</Text>
             {it.price ? <Text style={{ fontFamily: fonts.bold, fontSize: 12.5, color: accent }}>{it.price}</Text> : null}
           </View>
         ))}
@@ -184,8 +184,8 @@ function BusinessSection({ d, dark }: { d: LandingData; dark: boolean }) {
       </View>
       {tiles.slice(0, 2).map((it, i) => (
         <View key={it.label} style={{ flex: 1, borderRadius: 12, backgroundColor: accent + (i === 0 ? '40' : '22'), alignItems: 'center', justifyContent: 'center', height: 84, gap: 4 }}>
-          <Ionicons name={d.businessType.icon as any} size={20} color={dark ? '#F4F4F2' : '#141416'} />
-          <Text style={{ fontFamily: fonts.semi, fontSize: 9.5, color: dark ? '#F4F4F2' : '#141416', textAlign: 'center', paddingHorizontal: 4 }}>{it.label}</Text>
+          <Ionicons name={d.businessType.icon as any} size={20} color={dark ? '#F2F5F5' : '#141a1b'} />
+          <Text style={{ fontFamily: fonts.semi, fontSize: 9.5, color: dark ? '#F2F5F5' : '#141a1b', textAlign: 'center', paddingHorizontal: 4 }}>{it.label}</Text>
         </View>
       ))}
     </View>
@@ -229,7 +229,7 @@ function SignatureDark({ d }: { d: LandingData }) {
   const accent = d.businessType.accent;
 
   return (
-    <View style={{ backgroundColor: '#0C0C0F', paddingBottom: 26 }}>
+    <View style={{ backgroundColor: '#0E1315', paddingBottom: 26 }}>
       <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, opacity: 0.35 }}>
         {[0, 1, 2, 3].map((i) => (
           <View key={i} style={{ borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: 'rgba(255,255,255,0.06)', height: 90 }} />
@@ -237,18 +237,18 @@ function SignatureDark({ d }: { d: LandingData }) {
       </View>
       <View style={{ paddingHorizontal: 22, paddingTop: 22 }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <View style={chipRow('rgba(191,245,73,0.12)')}>
-            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#BFF549' }} />
-            <Text style={{ fontFamily: fonts.semi, fontSize: 10.5, color: '#BFF549', letterSpacing: 0.4 }}>Open now</Text>
+          <View style={chipRow('rgba(0,191,184,0.12)')}>
+            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#00BFB8' }} />
+            <Text style={{ fontFamily: fonts.semi, fontSize: 10.5, color: '#00BFB8', letterSpacing: 0.4 }}>Open now</Text>
           </View>
           <View style={chipRow('rgba(255,255,255,0.07)')}>
             <Ionicons name="star" size={10} color="#FBBF24" />
-            <Text style={{ fontFamily: fonts.semi, fontSize: 10.5, color: '#F4F4F2' }}>{d.businessType.rating}</Text>
+            <Text style={{ fontFamily: fonts.semi, fontSize: 10.5, color: '#F2F5F5' }}>{d.businessType.rating}</Text>
             <Text style={{ fontFamily: fonts.regular, fontSize: 10, color: '#9B9BA1' }}>· {d.businessType.reviews}</Text>
           </View>
         </View>
 
-        <Text style={{ fontFamily: fonts.extrabold, fontSize: 27, lineHeight: 31, letterSpacing: -0.9, color: '#F4F4F2', marginTop: 16, maxWidth: 330 }}>
+        <Text style={{ fontFamily: fonts.extrabold, fontSize: 27, lineHeight: 31, letterSpacing: -0.9, color: '#F2F5F5', marginTop: 16, maxWidth: 330 }}>
           {cfg.headline}
         </Text>
         <Text style={{ fontFamily: fonts.regular, fontSize: 13.5, color: '#9B9BA1', marginTop: 6, maxWidth: 330 }}>
@@ -263,20 +263,20 @@ function SignatureDark({ d }: { d: LandingData }) {
               <LinearGradient colors={['rgba(12,12,15,0.6)', 'transparent']} locations={[0, 0.4]} style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 70 }} />
             </View>
           </View>
-          <View style={{ position: 'absolute', top: -12, left: -6, flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#0C0C0F', borderRadius: 999, borderWidth: 1, borderColor: 'rgba(255,255,255,0.14)', paddingHorizontal: 11, paddingVertical: 7, transform: [{ rotate: '-3deg' }], ...shadow(0.45, 12, 6) }}>
+          <View style={{ position: 'absolute', top: -12, left: -6, flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#0E1315', borderRadius: 999, borderWidth: 1, borderColor: 'rgba(255,255,255,0.14)', paddingHorizontal: 11, paddingVertical: 7, transform: [{ rotate: '-3deg' }], ...shadow(0.45, 12, 6) }}>
             <Ionicons name={d.businessType.icon as any} size={12} color={accent} />
-            <Text style={{ fontFamily: fonts.bold, fontSize: 10.5, color: '#F4F4F2', letterSpacing: 0.8 }}>{d.businessType.badge}</Text>
+            <Text style={{ fontFamily: fonts.bold, fontSize: 10.5, color: '#F2F5F5', letterSpacing: 0.8 }}>{d.businessType.badge}</Text>
           </View>
-          <View style={{ position: 'absolute', bottom: -10, right: -4, flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#0C0C0F', borderRadius: 999, borderWidth: 1, borderColor: 'rgba(191,245,73,0.4)', paddingHorizontal: 11, paddingVertical: 7, transform: [{ rotate: '2deg' }], ...shadow(0.45, 12, 6) }}>
-            <Ionicons name="checkmark-circle" size={13} color="#BFF549" />
-            <Text style={{ fontFamily: fonts.semi, fontSize: 10.5, color: '#BFF549' }}>Verified Business</Text>
+          <View style={{ position: 'absolute', bottom: -10, right: -4, flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#0E1315', borderRadius: 999, borderWidth: 1, borderColor: 'rgba(0,191,184,0.4)', paddingHorizontal: 11, paddingVertical: 7, transform: [{ rotate: '2deg' }], ...shadow(0.45, 12, 6) }}>
+            <Ionicons name="checkmark-circle" size={13} color="#00BFB8" />
+            <Text style={{ fontFamily: fonts.semi, fontSize: 10.5, color: '#00BFB8' }}>Verified Business</Text>
           </View>
         </View>
 
-        <OwnerBlock d={d} text="#F4F4F2" sub="#9B9BA1" accent={accent} />
+        <OwnerBlock d={d} text="#F2F5F5" sub="#9B9BA1" accent={accent} />
         <ActionButtons accent={accent} surface="rgba(255,255,255,0.07)" border="rgba(255,255,255,0.12)" />
         <BusinessSection d={d} dark />
-        <StatsHours d={d} text="#F4F4F2" sub="#9B9BA1" accent={accent} />
+        <StatsHours d={d} text="#F2F5F5" sub="#9B9BA1" accent={accent} />
 
         {d.description ? (
           <Text style={{ fontFamily: fonts.regular, fontSize: 12.5, lineHeight: 18, color: '#9B9BA1', marginTop: 16 }}>{d.description}</Text>
@@ -286,17 +286,17 @@ function SignatureDark({ d }: { d: LandingData }) {
           <View style={{ flexDirection: 'row', gap: 2, marginBottom: 6 }}>
             {[0, 1, 2, 3, 4].map((i) => <Ionicons key={i} name="star" size={10} color="#FBBF24" />)}
           </View>
-          <Text style={{ fontFamily: fonts.regular, fontSize: 12.5, lineHeight: 18, color: '#F4F4F2', fontStyle: 'italic' }}>
+          <Text style={{ fontFamily: fonts.regular, fontSize: 12.5, lineHeight: 18, color: '#F2F5F5', fontStyle: 'italic' }}>
             "Absolutely reliable — the quality speaks for itself. I recommend {displayName} to everyone."
           </Text>
           <Text style={{ fontFamily: fonts.semi, fontSize: 10.5, color: '#9B9BA1', marginTop: 6 }}>— A happy customer</Text>
         </View>
 
-        <ContactRows d={d} text="#F4F4F2" sub="#9B9BA1" />
+        <ContactRows d={d} text="#F2F5F5" sub="#9B9BA1" />
 
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 18, borderRadius: 13, paddingVertical: 14, backgroundColor: accent, ...shadow(0.5, 18, 8) }}>
-          <Ionicons name={cfg.ctaIcon as any} size={16} color="#0C0C0F" />
-          <Text style={{ fontFamily: fonts.bold, fontSize: 14.5, color: '#0C0C0F' }}>{cfg.cta}</Text>
+          <Ionicons name={cfg.ctaIcon as any} size={16} color="#0E1315" />
+          <Text style={{ fontFamily: fonts.bold, fontSize: 14.5, color: '#0E1315' }}>{cfg.cta}</Text>
         </View>
         <Footer d={d} sub="#5E5E66" />
       </View>
@@ -314,20 +314,20 @@ function CleanLight({ d }: { d: LandingData }) {
   return (
     <View style={{ backgroundColor: '#F5F4F0', paddingBottom: 26 }}>
       <View style={{ paddingHorizontal: 22, paddingTop: 20 }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#141416' }}>
-          <Text style={{ fontFamily: fonts.bold, fontSize: 9.5, letterSpacing: 2.4, color: '#141416' }}>PORTFOLIO — {displayName.toUpperCase()}</Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#141a1b' }}>
+          <Text style={{ fontFamily: fonts.bold, fontSize: 9.5, letterSpacing: 2.4, color: '#141a1b' }}>PORTFOLIO — {displayName.toUpperCase()}</Text>
           <Text style={{ fontFamily: fonts.medium, fontSize: 9.5, letterSpacing: 1.6, color: '#6B6C72' }}>GUSAU, NG</Text>
         </View>
 
         <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 18 }}>
           <View style={{ flex: 1 }}>
-            <Text style={{ fontFamily: fonts.extrabold, fontSize: 30, lineHeight: 32, letterSpacing: -1.1, color: '#141416' }}>{displayName}</Text>
+            <Text style={{ fontFamily: fonts.extrabold, fontSize: 30, lineHeight: 32, letterSpacing: -1.1, color: '#141a1b' }}>{displayName}</Text>
             <Text style={{ fontFamily: fonts.regular, fontSize: 13, color: '#6B6C72', marginTop: 6, maxWidth: 260 }}>{cfg.headline}</Text>
           </View>
           {d.logoUri ? (
             <Image source={{ uri: d.logoUri }} style={{ width: 38, height: 38, borderRadius: 10 }} />
           ) : (
-            <View style={{ width: 38, height: 38, borderRadius: 10, backgroundColor: '#141416', alignItems: 'center', justifyContent: 'center' }}>
+            <View style={{ width: 38, height: 38, borderRadius: 10, backgroundColor: '#141a1b', alignItems: 'center', justifyContent: 'center' }}>
               <Text style={{ fontSize: 14, color: '#F5F4F0' }}>▚</Text>
             </View>
           )}
@@ -341,19 +341,19 @@ function CleanLight({ d }: { d: LandingData }) {
                 Fig. 01 — Signature work, {d.businessType.label}
               </Text>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                <Ionicons name="star" size={9} color="#141416" />
-                <Text style={{ fontFamily: fonts.semi, fontSize: 10, color: '#141416' }}>{d.businessType.rating}</Text>
+                <Ionicons name="star" size={9} color="#141a1b" />
+                <Text style={{ fontFamily: fonts.semi, fontSize: 10, color: '#141a1b' }}>{d.businessType.rating}</Text>
               </View>
             </View>
           </View>
         </View>
 
-        <OwnerBlock d={d} text="#141416" sub="#6B6C72" accent="#141416" />
+        <OwnerBlock d={d} text="#141a1b" sub="#6B6C72" accent="#141a1b" />
 
         <View style={{ marginTop: 22 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-            <Text style={{ fontFamily: fonts.extrabold, fontSize: 12, color: '#141416' }}>01</Text>
-            <View style={{ flex: 1, height: 1, backgroundColor: '#141416' }} />
+            <Text style={{ fontFamily: fonts.extrabold, fontSize: 12, color: '#141a1b' }}>01</Text>
+            <View style={{ flex: 1, height: 1, backgroundColor: '#141a1b' }} />
             <Text style={{ fontFamily: fonts.semi, fontSize: 10, letterSpacing: 2, color: '#6B6C72' }}>
               {cfg.layout === 'menu' ? 'MENU' : cfg.layout === 'services' ? 'SERVICES' : 'WHAT WE DO'}
             </Text>
@@ -361,23 +361,23 @@ function CleanLight({ d }: { d: LandingData }) {
           {cfg.items.map((it, i) => (
             <View key={it.label} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 12, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: 'rgba(20,20,22,0.18)' }}>
               <Text style={{ fontFamily: fonts.medium, fontSize: 10.5, color: '#9C9DA3', width: 24 }}>{String(i + 1).padStart(2, '0')}</Text>
-              <Text style={{ flex: 1, fontFamily: fonts.semi, fontSize: 14, color: '#141416' }}>{it.label}</Text>
+              <Text style={{ flex: 1, fontFamily: fonts.semi, fontSize: 14, color: '#141a1b' }}>{it.label}</Text>
               {it.price ? (
-                <Text style={{ fontFamily: fonts.semi, fontSize: 13, color: '#141416' }}>{it.price}</Text>
+                <Text style={{ fontFamily: fonts.semi, fontSize: 13, color: '#141a1b' }}>{it.price}</Text>
               ) : (
-                <Ionicons name="arrow-forward" size={13} color="#141416" />
+                <Ionicons name="arrow-forward" size={13} color="#141a1b" />
               )}
             </View>
           ))}
         </View>
 
-        <StatsHours d={d} text="#141416" sub="#6B6C72" accent="#141416" />
+        <StatsHours d={d} text="#141a1b" sub="#6B6C72" accent="#141a1b" />
         {d.description ? (
           <Text style={{ fontFamily: fonts.regular, fontSize: 12.5, lineHeight: 18, color: '#6B6C72', marginTop: 16 }}>{d.description}</Text>
         ) : null}
-        <ContactRows d={d} text="#141416" sub="#6B6C72" />
+        <ContactRows d={d} text="#141a1b" sub="#6B6C72" />
 
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 18, borderRadius: 4, paddingVertical: 14, paddingHorizontal: 18, backgroundColor: '#141416' }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 18, borderRadius: 4, paddingVertical: 14, paddingHorizontal: 18, backgroundColor: '#141a1b' }}>
           <Text style={{ fontFamily: fonts.bold, fontSize: 14, color: '#F5F4F0' }}>{cfg.cta}</Text>
           <Ionicons name="arrow-forward" size={16} color="#F5F4F0" />
         </View>
@@ -403,7 +403,7 @@ function BoldBrand({ d }: { d: LandingData }) {
       <View style={{ paddingHorizontal: 22, paddingTop: 20 }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
           <View style={{ backgroundColor: '#FFFFFF', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6, transform: [{ rotate: '-4deg' }], ...shadow(0.4, 10, 5) }}>
-            <Text style={{ fontFamily: fonts.extrabold, fontSize: 10.5, color: '#141416', letterSpacing: 1 }}>★ {d.businessType.badge}</Text>
+            <Text style={{ fontFamily: fonts.extrabold, fontSize: 10.5, color: '#141a1b', letterSpacing: 1 }}>★ {d.businessType.badge}</Text>
           </View>
           {d.logoUri ? (
             <Image source={{ uri: d.logoUri }} style={{ width: 34, height: 34, borderRadius: 8, borderWidth: 2, borderColor: '#FFFFFF' }} />
@@ -422,12 +422,12 @@ function BoldBrand({ d }: { d: LandingData }) {
         <View style={{ flexDirection: 'row', marginTop: 20, marginBottom: 6 }}>
           <View style={{ width: '58%', backgroundColor: '#FFFFFF', padding: 7, paddingBottom: 18, borderRadius: 6, transform: [{ rotate: '-4deg' }], ...shadow(0.55, 18, 12) }}>
             <Image source={d.businessType.hero} style={{ width: '100%', height: 120, borderRadius: 3 }} contentFit="cover" />
-            <Text style={{ fontFamily: fonts.semi, fontSize: 9.5, color: '#141416', textAlign: 'center', marginTop: 6 }}>{d.businessType.label}</Text>
+            <Text style={{ fontFamily: fonts.semi, fontSize: 9.5, color: '#141a1b', textAlign: 'center', marginTop: 6 }}>{d.businessType.label}</Text>
           </View>
           <View style={{ flex: 1, marginLeft: -14, marginTop: 26 }}>
             <View style={{ backgroundColor: accent, borderRadius: 6, padding: 10, transform: [{ rotate: '5deg' }], ...shadow(0.45, 14, 10), marginBottom: 14 }}>
-              <Ionicons name={d.businessType.icon as any} size={20} color="#141416" />
-              <Text style={{ fontFamily: fonts.extrabold, fontSize: 11, color: '#141416', marginTop: 4 }}>{d.businessType.rating} ★</Text>
+              <Ionicons name={d.businessType.icon as any} size={20} color="#141a1b" />
+              <Text style={{ fontFamily: fonts.extrabold, fontSize: 11, color: '#141a1b', marginTop: 4 }}>{d.businessType.rating} ★</Text>
               <Text style={{ fontFamily: fonts.semi, fontSize: 8.5, color: 'rgba(20,20,22,0.7)' }}>{d.businessType.reviews}</Text>
             </View>
             {d.profileUri ? (
@@ -444,8 +444,8 @@ function BoldBrand({ d }: { d: LandingData }) {
 
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 14 }}>
           {cfg.items.map((it) => (
-            <View key={it.label} style={{ backgroundColor: '#FFFFFF', borderRadius: 999, paddingHorizontal: 12, paddingVertical: 7, borderWidth: 2, borderColor: '#141416', ...shadow(0.4, 6, 3) }}>
-              <Text style={{ fontFamily: fonts.semi, fontSize: 11, color: '#141416' }}>
+            <View key={it.label} style={{ backgroundColor: '#FFFFFF', borderRadius: 999, paddingHorizontal: 12, paddingVertical: 7, borderWidth: 2, borderColor: '#141a1b', ...shadow(0.4, 6, 3) }}>
+              <Text style={{ fontFamily: fonts.semi, fontSize: 11, color: '#141a1b' }}>
                 {it.label}{it.price ? ` · ${it.price}` : ''}
               </Text>
             </View>
@@ -457,9 +457,9 @@ function BoldBrand({ d }: { d: LandingData }) {
         ) : null}
         <ContactRows d={d} text="#FFFFFF" sub="rgba(255,255,255,0.6)" />
 
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 18, borderRadius: 12, borderWidth: 2, borderColor: '#141416', backgroundColor: accent, paddingVertical: 14, ...shadow(0.5, 8, 5) }}>
-          <Ionicons name={cfg.ctaIcon as any} size={16} color="#141416" />
-          <Text style={{ fontFamily: fonts.extrabold, fontSize: 14.5, color: '#141416' }}>{cfg.cta}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 18, borderRadius: 12, borderWidth: 2, borderColor: '#141a1b', backgroundColor: accent, paddingVertical: 14, ...shadow(0.5, 8, 5) }}>
+          <Ionicons name={cfg.ctaIcon as any} size={16} color="#141a1b" />
+          <Text style={{ fontFamily: fonts.extrabold, fontSize: 14.5, color: '#141a1b' }}>{cfg.cta}</Text>
         </View>
         <View style={{ marginTop: 16, overflow: 'hidden' }}>
           <Text style={{ fontFamily: fonts.bold, fontSize: 9, letterSpacing: 3, color: accent, textAlign: 'center' }}>

@@ -281,7 +281,7 @@ function useStyles(colors: Palette) {
       borderRadius: 999,
       backgroundColor: colors.limeDim,
       borderWidth: 1,
-      borderColor: colors.isDark ? 'rgba(191,245,73,0.3)' : 'rgba(120,180,20,0.35)',
+      borderColor: colors.isDark ? 'rgba(0,191,184,0.3)' : 'rgba(120,180,20,0.35)',
     },
     chipText: { fontFamily: fonts.medium, fontSize: 13.5, color: colors.text },
     inputBar: {

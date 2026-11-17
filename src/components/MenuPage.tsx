@@ -146,7 +146,7 @@ export default function MenuPage({
         <View style={{ paddingHorizontal: 22, paddingTop: 26 }}>
           <Rise delay={0}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-              <View style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: '#BFF549', alignItems: 'center', justifyContent: 'center' }}>
+              <View style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: '#00BFB8', alignItems: 'center', justifyContent: 'center' }}>
                 <Ionicons name="flame" size={21} color="#111113" />
               </View>
               <View style={{ flex: 1 }}>
@@ -160,7 +160,7 @@ export default function MenuPage({
             <Rise key={g.category} delay={120 + gi * 90}>
               <View style={{ marginTop: 22 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                  <View style={{ width: 4, height: 14, borderRadius: 2, backgroundColor: '#BFF549' }} />
+                  <View style={{ width: 4, height: 14, borderRadius: 2, backgroundColor: '#00BFB8' }} />
                   <Text style={{ fontFamily: fonts.bold, fontSize: 12, letterSpacing: 2.4, color: '#F5F5F3' }}>{g.category.toUpperCase()}</Text>
                   <View style={{ flex: 1, height: 1, backgroundColor: 'rgba(245,245,243,0.08)' }} />
                 </View>
@@ -168,8 +168,8 @@ export default function MenuPage({
                   <View key={it.id} style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 10, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: 'rgba(245,245,243,0.07)' }}>
                     {it.image ? <DishImage uri={it.image} size={52} /> : null}
                     <Text style={{ flex: 1, fontFamily: fonts.semi, fontSize: 14.5, color: '#F5F5F3' }}>{it.name}</Text>
-                    <View style={{ backgroundColor: 'rgba(191,245,73,0.12)', borderRadius: 999, paddingHorizontal: 10, paddingVertical: 5 }}>
-                      <Text style={{ fontFamily: fonts.bold, fontSize: 12.5, color: '#BFF549' }}>{it.price}</Text>
+                    <View style={{ backgroundColor: 'rgba(0,191,184,0.12)', borderRadius: 999, paddingHorizontal: 10, paddingVertical: 5 }}>
+                      <Text style={{ fontFamily: fonts.bold, fontSize: 12.5, color: '#00BFB8' }}>{it.price}</Text>
                     </View>
                   </View>
                 ))}

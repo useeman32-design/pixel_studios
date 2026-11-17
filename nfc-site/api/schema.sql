@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS pages (
   x_handle VARCHAR(190) NOT NULL DEFAULT '',
   facebook VARCHAR(190) NOT NULL DEFAULT '',
   linkedin VARCHAR(190) NOT NULL DEFAULT '',
-  accent_color CHAR(7) NOT NULL DEFAULT '#a5e22c',
+  accent_color CHAR(7) NOT NULL DEFAULT '#00bfb8',
   buttons TEXT NULL,                       -- JSON: {save,whatsapp,call,email,directions,website}
   plan VARCHAR(40) NOT NULL DEFAULT 'Premium Portfolio',
   is_live TINYINT(1) NOT NULL DEFAULT 1,
@@ -207,7 +207,7 @@ VALUES
  '14B Adeola Hopewell Crescent, Wuse 2, Abuja',
  'https://instagram.com/aureliahomes', 'https://x.com/aureliahomes',
  'https://facebook.com/aureliahomes', 'https://linkedin.com/company/aureliahomes',
- '#a5e22c',
+ '#00bfb8',
  '{"save":true,"whatsapp":true,"call":true,"email":true,"directions":true,"website":false}',
  'Premium Portfolio');
 

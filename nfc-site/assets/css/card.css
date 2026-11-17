@@ -2,7 +2,7 @@
    PIXEL STUDIOS · Public business page (what a card tap opens)
    ============================================================ */
 
-body { background: #ededea; }
+body { background: #e9eeee; }
 
 .page {
   max-width: 460px;
@@ -18,9 +18,9 @@ body { background: #ededea; }
   position: relative;
   height: 190px;
   background:
-    radial-gradient(90% 80% at 18% 0%, rgba(165, 226, 44, .5), transparent 62%),
+    radial-gradient(90% 80% at 18% 0%, rgba(0, 179, 171, .5), transparent 62%),
     radial-gradient(70% 70% at 92% 12%, rgba(255, 255, 255, .55), transparent 60%),
-    linear-gradient(150deg, #1a1a1f, #0c0c0f);
+    linear-gradient(150deg, #1a1a1f, #0e1315);
   overflow: hidden;
 }
 .cover::after {
@@ -78,7 +78,7 @@ body { background: #ededea; }
 }
 .avatar {
   width: 100%; height: 100%; border-radius: 50%;
-  background: linear-gradient(150deg, #bff549, #7cb816);
+  background: linear-gradient(150deg, #00bfb8, #008b85);
   color: var(--lime-ink);
   display: grid; place-items: center;
   font-size: 38px; font-weight: 800; letter-spacing: -.04em;
@@ -96,7 +96,7 @@ body { background: #ededea; }
 }
 .name-row { display: flex; align-items: center; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
 .name { font-size: 27px; font-weight: 800; letter-spacing: -.035em; }
-.rank { font-size: 12.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #6f9e10; margin-top: 4px; }
+.rank { font-size: 12.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #00837d; margin-top: 4px; }
 .business { font-size: 14px; color: var(--ink-2); margin-top: 7px; font-weight: 400; }
 .business b { color: var(--ink); font-weight: 600; }
 .bio { font-size: 14.5px; color: var(--ink-2); margin-top: 14px; line-height: 1.6; font-weight: 300; }
@@ -153,7 +153,7 @@ body { background: #ededea; }
 .act.primary .ico { background: rgba(255, 255, 255, .1); border-color: rgba(255, 255, 255, .14); color: var(--lime); }
 .act.primary .t2 { color: rgba(255, 255, 255, .55); }
 .act.primary .chev { color: rgba(255, 255, 255, .35); }
-.act.whatsapp .ico { background: var(--lime-soft); border-color: rgba(165, 226, 44, .4); color: #567d0c; }
+.act.whatsapp .ico { background: var(--lime-soft); border-color: rgba(0, 179, 171, .4); color: #00726c; }
 .act-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .act-row .act .t2 { display: none; }
 
@@ -184,7 +184,7 @@ body { background: #ededea; }
 .svc .body { flex: 1; min-width: 0; }
 .svc .n { font-size: 14px; font-weight: 600; }
 .svc .d { font-size: 12.5px; color: var(--ink-3); margin-top: 2px; }
-.svc .price { font-size: 14px; font-weight: 700; color: #567d0c; white-space: nowrap; }
+.svc .price { font-size: 14px; font-weight: 700; color: #00726c; white-space: nowrap; }
 
 .gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
 .gallery a {
@@ -209,7 +209,7 @@ body { background: #ededea; }
 .hours .row.today { color: var(--ink); font-weight: 600; }
 .hours .row.today .d::after {
   content: "Today"; margin-left: 8px; font-size: 10px; font-weight: 700;
-  padding: 2px 7px; border-radius: var(--pill); background: var(--lime-soft); color: #567d0c;
+  padding: 2px 7px; border-radius: var(--pill); background: var(--lime-soft); color: #00726c;
   letter-spacing: .04em; text-transform: uppercase;
 }
 .hours .d { color: var(--ink-2); }
@@ -252,10 +252,8 @@ body { background: #ededea; }
   transition: color .2s;
 }
 .page-foot a:hover { color: var(--ink); }
-.page-foot .mark {
-  display: grid; place-items: center; width: 19px; height: 19px;
-  border-radius: 6px; background: var(--dark); color: var(--lime); font-size: 10px;
-}
+.powered { display: inline-flex; align-items: center; }
+.powered img { height: 15px; width: auto; margin-left: 8px; }
 .page-foot p { font-size: 11px; color: #b3b3ac; margin-top: 9px; }
 
 /* ---------- sticky save bar ---------- */
@@ -278,7 +276,7 @@ body { background: #ededea; }
   font-size: 14px; font-weight: 500; width: 100%; text-align: left;
   transition: background .2s, border-color .2s;
 }
-.sheet-item:hover { background: var(--lime-soft); border-color: rgba(165, 226, 44, .4); }
+.sheet-item:hover { background: var(--lime-soft); border-color: rgba(0, 179, 171, .4); }
 .sheet-item svg { width: 16px; height: 16px; color: var(--ink-2); }
 .qr-box { display: grid; place-items: center; padding: 8px 0 16px; }
 .qr-box canvas { border-radius: 12px; box-shadow: var(--shadow-sm); }

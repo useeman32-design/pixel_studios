@@ -41,7 +41,7 @@ export const businessTypes: BusinessType[] = [
   { id: 'medical', label: 'Medical & Pharmacy', icon: 'medkit-outline', sample: 'CarePoint Clinic', tagline: 'Quality care, close to home', accent: '#86EFAC', hours: 'Every day · 8am – 10pm', hero: require('../../assets/images/biz/doctor.jpg'), rating: '4.9', reviews: '1,200+ patients', badge: 'TRUSTED CARE', rankOptions: [...OWNER_RANKS, 'Chief Doctor', 'Head Pharmacist'] },
   { id: 'school', label: 'School & Academy', icon: 'school-outline', sample: 'Brightpath Academy', tagline: 'Building confident learners, one class at a time', accent: '#FDE68A', hours: 'Mon – Fri · 8am – 4pm', hero: require('../../assets/images/biz/school.jpg'), rating: '4.9', reviews: '250+ students', badge: 'ACCREDITED', rankOptions: INSTITUTION_RANKS, institutional: true, team: [{ name: 'Mrs. Amina Bello', rank: 'Proprietor' }, { name: 'Mr. John Yakubu', rank: 'Principal' }, { name: 'Office of Admissions', rank: 'Administration' }] },
   { id: 'organization', label: 'Organization / NGO', icon: 'earth-outline', sample: 'Hope Bridge Foundation', tagline: 'Serving our community with purpose', accent: '#93C5FD', hours: 'Mon – Fri · 9am – 5pm', hero: require('../../assets/images/biz/general.jpg'), rating: '4.9', reviews: 'Verified organization', badge: 'REGISTERED', rankOptions: INSTITUTION_RANKS, institutional: true, team: [{ name: 'Alhaji Sani Usman', rank: 'Executive Director' }, { name: 'Ms. Fatima Adamu', rank: 'Programs Manager' }, { name: 'Front Desk', rank: 'Administration' }] },
-  { id: 'general', label: 'Other Business', icon: 'briefcase-outline', sample: 'Your Business', tagline: 'Your business, one beautiful page', accent: '#BFF549', hours: 'Mon – Sat · 9am – 6pm', hero: require('../../assets/images/biz/general.jpg'), rating: '5.0', reviews: 'Verified business', badge: 'VERIFIED', rankOptions: OWNER_RANKS },
+  { id: 'general', label: 'Other Business', icon: 'briefcase-outline', sample: 'Your Business', tagline: 'Your business, one beautiful page', accent: '#00BFB8', hours: 'Mon – Sat · 9am – 6pm', hero: require('../../assets/images/biz/general.jpg'), rating: '5.0', reviews: 'Verified business', badge: 'VERIFIED', rankOptions: OWNER_RANKS },
 ];
 
 export type CardTemplate = {
@@ -56,8 +56,8 @@ export type CardTemplate = {
 
 /* Six structurally different landing page designs. */
 export const cardTemplates: CardTemplate[] = [
-  { id: 'signature', name: 'Signature Dark', bg: '#0C0C0F', surface: '#17171B', text: '#F4F4F2', subtext: '#9B9BA1', accent: '#BFF549' },
-  { id: 'clean', name: 'Clean Light', bg: '#F5F4F0', surface: '#FFFFFF', text: '#141416', subtext: '#6B6C72', accent: '#141416' },
+  { id: 'signature', name: 'Signature Dark', bg: '#0E1315', surface: '#182023', text: '#F2F5F5', subtext: '#9B9BA1', accent: '#00BFB8' },
+  { id: 'clean', name: 'Clean Light', bg: '#F5F4F0', surface: '#FFFFFF', text: '#141a1b', subtext: '#6B6C72', accent: '#141a1b' },
   { id: 'bold', name: 'Bold Brand', bg: '#1B1035', surface: 'rgba(255,255,255,0.07)', text: '#FFFFFF', subtext: 'rgba(255,255,255,0.65)', accent: '#22D3EE' },
   { id: 'luxe', name: 'Elegant Luxe', bg: '#100D09', surface: '#1B1610', text: '#F3EADA', subtext: '#A79B85', accent: '#E6C079' },
   { id: 'trust', name: 'Trust Pro', bg: '#F4F7FB', surface: '#FFFFFF', text: '#0F1B2D', subtext: '#5A6B84', accent: '#1D6FE0' },
@@ -114,7 +114,7 @@ export const cardDesigns: CardDesign[] = [
   { id: 'blush', name: 'Blush Petal', desc: 'Gentle rose for beauty & fashion', bg: '#FBF3F4', text: '#332024', sub: 'rgba(51,32,36,0.5)', accent: '#E39AA7', deco: 'dots' },
   { id: 'sage', name: 'Sage Garden', desc: 'Fresh sage with a natural feel', bg: '#F3F6F0', text: '#1E2B1C', sub: 'rgba(30,43,28,0.5)', accent: '#86B284', deco: 'frame' },
   /* ------------------------------- dark faces ------------------------------ */
-  { id: 'midnight', name: 'Midnight Noir', desc: 'Matte black, one electric lime line', bg: '#0E0E11', text: '#F4F4F2', sub: 'rgba(244,244,242,0.55)', accent: '#BFF549', deco: 'line', dark: true },
+  { id: 'midnight', name: 'Midnight Noir', desc: 'Matte black, one brand teal line', bg: '#0E0E11', text: '#F2F5F5', sub: 'rgba(244,244,242,0.55)', accent: '#00BFB8', deco: 'line', dark: true },
   { id: 'graphite', name: 'Graphite Weave', desc: 'Charcoal with a fine woven texture', bg: '#1B1B1F', text: '#EDEDEF', sub: 'rgba(237,237,239,0.5)', accent: '#9BA1AE', deco: 'texture', dark: true },
   { id: 'ember', name: 'Ember Luxe', desc: 'Dark cocoa brushed with warm gold', bg: '#251B15', text: '#F5EDE6', sub: 'rgba(245,237,230,0.55)', accent: '#D9A45B', deco: 'frame', dark: true },
   /* ---------------------------- dark + light duo --------------------------- */
@@ -123,9 +123,9 @@ export const cardDesigns: CardDesign[] = [
     name: 'Duo Split',
     desc: 'Charcoal top, warm paper below',
     bg: '#141417',
-    text: '#F4F4F2',
+    text: '#F2F5F5',
     sub: 'rgba(244,244,242,0.55)',
-    accent: '#BFF549',
+    accent: '#00BFB8',
     deco: 'split',
     dark: true,
     splitBg: '#F5F2EA',

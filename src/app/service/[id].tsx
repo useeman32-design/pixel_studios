@@ -37,8 +37,8 @@ export default function ServiceDetailScreen() {
         </Container>
         <Container style={{ position: 'absolute', bottom: 18, left: 0, right: 0, width: '100%', alignSelf: 'center', maxWidth: MAX_CONTENT_WIDTH, paddingHorizontal: sp.x3 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#BFF549' }} />
-            <Text style={{ fontFamily: fonts.semi, fontSize: 10, letterSpacing: 2.5, color: '#BFF549' }}>
+            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#00BFB8' }} />
+            <Text style={{ fontFamily: fonts.semi, fontSize: 10, letterSpacing: 2.5, color: '#00BFB8' }}>
               {svc.subtitle}
             </Text>
           </View>

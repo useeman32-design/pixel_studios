@@ -67,7 +67,7 @@
   if (qrCanvas && window.PixelQR) {
     var ok = window.PixelQR.render(qrCanvas, "https://pixelstudios.com/card/amina", {
       size: 320,
-      fg: "#0c0c0f",
+      fg: "#0e1315",
       bg: "#f6f6f2",
       radius: 0.24,
       quiet: 2

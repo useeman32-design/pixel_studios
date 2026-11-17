@@ -1,23 +1,23 @@
 /* ============================================================
    PIXEL STUDIOS · Shared light design system
    Used by the public business page and the management dashboard.
-   Same language as the app: charcoal + off-white + lime (#BFF549), Outfit.
+   Same language as the app: charcoal + off-white + lime (#00BFB8), Outfit.
    ============================================================ */
 
 :root {
-  --bg: #f5f5f1;
+  --bg: #f4f7f7;
   --surface: #ffffff;
-  --surface-2: #fafaf7;
-  --ink: #131316;
-  --ink-2: #55555c;
-  --ink-3: #8b8b91;
-  --hairline: #e6e6df;
-  --hairline-2: #d5d5cc;
-  --lime: #a5e22c;
-  --lime-soft: #eef9d8;
-  --lime-ink: #1d2c00;
-  --dark: #0c0c0f;
-  --dark-2: #17171b;
+  --surface-2: #f7fafa;
+  --ink: #101418;
+  --ink-2: #535e60;
+  --ink-3: #7f8a8c;
+  --hairline: #e1e8e8;
+  --hairline-2: #ccd6d6;
+  --lime: #00b3ab;
+  --lime-soft: #e0f5f3;
+  --lime-ink: #0b1514;
+  --dark: #0e1315;
+  --dark-2: #182023;
   --red: #e05252;
   --amber: #e0a03a;
 
@@ -55,7 +55,7 @@ h1, h2, h3, h4, h5 { margin: 0; line-height: 1.14; letter-spacing: -.025em; font
 p { margin: 0; }
 ::selection { background: var(--lime); color: var(--lime-ink); }
 
-.accent { color: #6f9e10; }
+.accent { color: #00837d; }
 .muted { color: var(--ink-3); }
 
 /* ---------------- buttons ---------------- */
@@ -67,8 +67,8 @@ p { margin: 0; }
   white-space: nowrap; cursor: pointer; border: 1px solid transparent;
 }
 .btn svg { width: 16px; height: 16px; flex: 0 0 auto; }
-.btn-primary { background: var(--lime); color: var(--lime-ink); box-shadow: 0 8px 22px -10px rgba(165, 226, 44, .8); }
-.btn-primary:hover { background: #b6f23c; transform: translateY(-2px); }
+.btn-primary { background: var(--lime); color: var(--lime-ink); box-shadow: 0 8px 22px -10px rgba(0, 179, 171, .8); }
+.btn-primary:hover { background: #1fc9c1; transform: translateY(-2px); }
 .btn-dark { background: var(--dark); color: #fff; }
 .btn-dark:hover { background: #1d1d22; transform: translateY(-2px); }
 .btn-outline { border-color: var(--hairline-2); background: var(--surface); color: var(--ink); }
@@ -87,15 +87,15 @@ p { margin: 0; }
   background: rgba(19, 19, 22, .06); color: var(--ink-2);
 }
 .pill .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-.pill-live { background: var(--lime-soft); color: #567d0c; }
-.pill-live .dot { background: var(--lime); box-shadow: 0 0 0 2px rgba(165, 226, 44, .3); }
+.pill-live { background: var(--lime-soft); color: #00726c; }
+.pill-live .dot { background: var(--lime); box-shadow: 0 0 0 2px rgba(0, 179, 171, .3); }
 .pill-paused { background: #fbf1dd; color: #8a6314; }
 .pill-off { background: #fbe9e9; color: #a03a3a; }
 .pill-dark { background: var(--dark); color: #fff; }
 
 .eyebrow {
   display: inline-block; font-size: 11.5px; font-weight: 700; letter-spacing: .14em;
-  text-transform: uppercase; color: #6f9e10; margin-bottom: 12px;
+  text-transform: uppercase; color: #00837d; margin-bottom: 12px;
 }
 
 /* ---------------- cards ---------------- */
@@ -124,7 +124,7 @@ p { margin: 0; }
 .textarea { min-height: 96px; resize: vertical; line-height: 1.55; }
 .input:focus, .select:focus, .textarea:focus {
   border-color: var(--lime);
-  box-shadow: 0 0 0 4px rgba(165, 226, 44, .22);
+  box-shadow: 0 0 0 4px rgba(0, 179, 171, .22);
 }
 .input::placeholder, .textarea::placeholder { color: #b3b3ac; }
 .select {

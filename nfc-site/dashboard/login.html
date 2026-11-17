@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../assets/css/app.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%23BFF549'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='%230C0C0F' font-family='Arial'>▚</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23101418'/><g fill='%2300BFB8'><rect x='38' y='12' width='24' height='24' rx='5'/><rect x='12' y='38' width='24' height='24' rx='5'/><rect x='38' y='64' width='24' height='24' rx='5'/><rect x='64' y='38' width='24' height='24' rx='5'/></g></svg>" />
   <style>
     body {
       min-height: 100vh;
@@ -17,7 +17,7 @@
       place-items: center;
       padding: 28px 18px;
       background:
-        radial-gradient(60% 50% at 15% 0%, rgba(165, 226, 44, .16), transparent 65%),
+        radial-gradient(60% 50% at 15% 0%, rgba(0, 179, 171, .16), transparent 65%),
         radial-gradient(50% 45% at 90% 10%, rgba(255, 255, 255, .5), transparent 65%),
         var(--bg);
     }
@@ -30,7 +30,7 @@
       padding: 30px 28px 26px;
     }
     .auth-brand { display: flex; align-items: center; gap: 9px; font-weight: 800; font-size: 15px; letter-spacing: -.02em; }
-    .auth-brand .mark { display: grid; place-items: center; width: 27px; height: 27px; border-radius: 9px; background: var(--dark); color: var(--lime); font-size: 14px; }
+    .auth-logo { height: 30px; width: auto; }
     .auth-card h1 { font-size: 25px; font-weight: 800; letter-spacing: -.035em; margin-top: 24px; }
     .auth-card .sub { color: var(--ink-2); font-size: 14px; margin-top: 7px; font-weight: 300; }
     .tabs { display: flex; gap: 4px; padding: 4px; background: var(--surface-2); border: 1px solid var(--hairline); border-radius: var(--pill); margin: 22px 0 20px; }
@@ -62,8 +62,8 @@
     .demo-note {
       display: flex; gap: 10px; align-items: flex-start;
       padding: 12px 14px; border-radius: var(--r-sm);
-      background: var(--lime-soft); border: 1px solid rgba(165, 226, 44, .35);
-      font-size: 12.5px; color: #4d6b12; line-height: 1.5; margin-bottom: 18px;
+      background: var(--lime-soft); border: 1px solid rgba(0, 179, 171, .35);
+      font-size: 12.5px; color: #00655f; line-height: 1.5; margin-bottom: 18px;
     }
     .demo-note svg { width: 15px; height: 15px; flex: 0 0 auto; margin-top: 1px; }
     .spin { width: 15px; height: 15px; border-radius: 50%; border: 2px solid rgba(29, 44, 0, .25); border-top-color: var(--lime-ink); animation: sp .7s linear infinite; }
@@ -75,7 +75,7 @@
 <body>
   <div class="auth">
     <div class="auth-card">
-      <a class="auth-brand" href="../index.html"><span class="mark">▚</span>PIXEL STUDIOS</a>
+      <a class="auth-brand" href="../index.html"><img class="auth-logo" src="../assets/img/lockup-light.png" alt="Pixel Studios" /></a>
 
       <h1 id="authTitle">Welcome back</h1>
       <p class="sub" id="authSub">Sign in to manage your cards, devices and live business page.</p>

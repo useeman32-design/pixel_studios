@@ -3,7 +3,13 @@ import { Platform } from 'react-native';
 
 /**
  * Pixel Studios design system — v3
- * Dual theme (charcoal dark / gallery light) with electric lime accents.
+ * Dual theme (brand-black dark / off-white light) with brand teal (#00BFB8) accents.
+ *
+ * Brand palette (sampled from the official logo):
+ *   teal   #00BFB8   · black #101418   · off-white #F4F7F7
+ * NOTE: the property names `lime` / `limeDim` / `onLime` are legacy; they now
+ * carry the brand teal. Renaming them would touch every screen, so the values
+ * moved and the names stayed.
  */
 
 export type Palette = {
@@ -24,33 +30,33 @@ export type Palette = {
 };
 
 export const darkPalette: Palette = {
-  bg: '#0A0A0B',
-  surface: '#141416',
-  surface2: '#1C1C1F',
+  bg: '#0C1011',
+  surface: '#141a1b',
+  surface2: '#1D2426',
   hairline: 'rgba(255,255,255,0.08)',
   hairlineStrong: 'rgba(255,255,255,0.16)',
-  text: '#F4F4F2',
+  text: '#F2F5F5',
   subtext: '#9B9BA1',
   muted: '#5E5E66',
-  lime: '#BFF549',
-  limeDim: 'rgba(191,245,73,0.13)',
-  onLime: '#0A0A0B',
+  lime: '#00BFB8',
+  limeDim: 'rgba(0,191,184,0.13)',
+  onLime: '#0C1011',
   overlay: 'rgba(6,6,8,0.55)',
   navGlass: 'rgba(18,18,20,0.62)',
   isDark: true,
 };
 
 export const lightPalette: Palette = {
-  bg: '#F5F5F1',
+  bg: '#F4F7F7',
   surface: '#FFFFFF',
-  surface2: '#ECECE7',
+  surface2: '#E9EFEF',
   hairline: 'rgba(12,12,14,0.08)',
   hairlineStrong: 'rgba(12,12,14,0.16)',
-  text: '#131316',
+  text: '#101418',
   subtext: '#5D5E64',
   muted: '#9C9DA3',
-  lime: '#A5E22C',
-  limeDim: 'rgba(150,215,40,0.16)',
+  lime: '#00B3AB',
+  limeDim: 'rgba(0,179,171,0.16)',
   onLime: '#101208',
   overlay: 'rgba(20,20,24,0.42)',
   navGlass: 'rgba(255,255,255,0.66)',
