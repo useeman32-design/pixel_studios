@@ -396,6 +396,7 @@ section { padding: 96px 0; position: relative; }
 
 /* the live business page rendered in the screen */
 .scr {
+  color: var(--fd-ink);
   position: absolute;
   inset: 0;
   padding: 52px 14px 14px;
@@ -571,6 +572,7 @@ section { padding: 96px 0; position: relative; }
 
 /* ---------------- the NFC card ---------------- */
 .nfccard {
+  color: var(--fd-ink);
   position: absolute;
   left: -14px;
   bottom: 6px;
@@ -1042,7 +1044,7 @@ section { padding: 96px 0; position: relative; }
 }
 .browser-url svg { width: 10px; height: 10px; fill: var(--brand); }
 
-.dash { display: grid; grid-template-columns: 200px minmax(0, 1fr); min-height: 460px; }
+.dash { display: grid; grid-template-columns: 200px minmax(0, 1fr); min-height: 460px; color: var(--fd-ink); }
 .dash-side {
   border-right: 1px solid var(--hairline);
   padding: 18px 12px;
@@ -1261,6 +1263,7 @@ section { padding: 96px 0; position: relative; }
    CTA
    ============================================================ */
 .cta-band {
+  color: var(--fd-ink);
   position: relative;
   padding: 68px 40px;
   border-radius: var(--r-xl);
@@ -1279,9 +1282,9 @@ section { padding: 96px 0; position: relative; }
   pointer-events: none;
 }
 .cta-band h2 { font-size: clamp(30px, 4.6vw, 54px); letter-spacing: -.04em; position: relative; }
-.cta-band p { color: var(--ink-2); margin-top: 16px; font-size: 16px; font-weight: 300; position: relative; }
+.cta-band p { color: var(--fd-ink-2); margin-top: 16px; font-size: 16px; font-weight: 300; position: relative; }
 .cta-actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 30px; position: relative; }
-.cta-note { margin-top: 18px; font-size: 12.5px; color: var(--ink-3); position: relative; }
+.cta-note { margin-top: 18px; font-size: 12.5px; color: var(--fd-ink-3); position: relative; }
 
 /* ============================================================
    FOOTER
@@ -1462,3 +1465,6 @@ img[src$="-light.svg"] { visibility: hidden; }
 /* logos on surfaces that stay dark in both themes */
 .on-dark img[src$="-light.svg"] { visibility: hidden !important; }
 .on-dark img[src$="-dark.svg"] { visibility: visible !important; }
+
+.cta-band .btn-ghost { border-color: rgba(255, 255, 255, .22); color: var(--fd-ink); background: rgba(255, 255, 255, .04); }
+.cta-band .btn-ghost:hover { border-color: var(--brand); color: var(--brand); background: rgba(0, 191, 184, .08); }
