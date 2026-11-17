@@ -279,3 +279,7 @@ p { margin: 0; }
 img[src$="-dark.svg"] { visibility: hidden; }
 [data-theme="dark"] img[src$="-dark.svg"] { visibility: visible; }
 [data-theme="dark"] img[src$="-light.svg"] { visibility: hidden; }
+
+/* logos on surfaces that stay dark in both themes (sidebar) */
+.on-dark img[src$="-light.svg"] { visibility: hidden !important; }
+.on-dark img[src$="-dark.svg"] { visibility: visible !important; }
