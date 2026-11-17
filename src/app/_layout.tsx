@@ -21,7 +21,7 @@ import {
   ThemeContext,
   ThemeMode,
 } from '../constants/theme';
-import { AuthProvider, hasSession } from '../lib/auth';
+import { AuthProvider } from '../lib/auth';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -39,8 +39,9 @@ export default function RootLayout() {
     Outfit_800ExtraBold,
   });
 
-  // Restore persisted preferences, then route first-time users to onboarding
-  // and users without a session (account or guest) to the auth welcome screen.
+  // Restore persisted preferences, then route first-time users to onboarding.
+  // Guests browse the whole storefront freely - sign-in lives behind the
+  // profile / settings CTAs, never as an entry wall.
   useEffect(() => {
     (async () => {
       try {
@@ -49,8 +50,6 @@ export default function RootLayout() {
         const onboarded = await AsyncStorage.getItem('ps_onboarded');
         if (onboarded !== '1') {
           router.replace('/onboarding');
-        } else if (!(await hasSession())) {
-          router.replace('/auth' as any);
         }
       } catch {
         // storage unavailable — defaults are fine
