@@ -56,7 +56,7 @@ body { background: #e9eeee; }
   color: rgba(255, 255, 255, .82);
   font-size: 11px; font-weight: 500;
 }
-.url-chip svg { width: 10px; height: 10px; fill: var(--lime); }
+.url-chip svg { width: 10px; height: 10px; fill: var(--brand); }
 .icon-btn {
   width: 34px; height: 34px; border-radius: 50%;
   display: grid; place-items: center;
@@ -79,7 +79,7 @@ body { background: #e9eeee; }
 .avatar {
   width: 100%; height: 100%; border-radius: 50%;
   background: linear-gradient(150deg, #00bfb8, #008b85);
-  color: var(--lime-ink);
+  color: var(--on-brand);
   display: grid; place-items: center;
   font-size: 38px; font-weight: 800; letter-spacing: -.04em;
   overflow: hidden;
@@ -89,7 +89,7 @@ body { background: #e9eeee; }
 .verified {
   position: absolute; right: 2px; bottom: 2px;
   width: 28px; height: 28px; border-radius: 50%;
-  background: var(--lime); color: var(--lime-ink);
+  background: var(--brand); color: var(--on-brand);
   border: 3px solid var(--bg);
   display: grid; place-items: center;
   font-size: 13px; font-weight: 900;
@@ -123,7 +123,7 @@ body { background: #e9eeee; }
   transition: transform .22s var(--ease), color .22s, border-color .22s, background .22s;
 }
 .socials a svg { width: 17px; height: 17px; fill: currentColor; }
-.socials a:hover { transform: translateY(-3px); color: var(--ink); border-color: var(--hairline-2); background: var(--lime-soft); }
+.socials a:hover { transform: translateY(-3px); color: var(--ink); border-color: var(--hairline-2); background: var(--brand-soft); }
 
 /* ---------- actions ---------- */
 .actions { padding: 20px; display: flex; flex-direction: column; gap: 10px; }
@@ -150,10 +150,10 @@ body { background: #e9eeee; }
 .act .chev { color: #c4c4bc; flex: 0 0 auto; }
 .act .chev svg { width: 15px; height: 15px; }
 .act.primary { background: var(--dark); border-color: var(--dark); color: #fff; }
-.act.primary .ico { background: rgba(255, 255, 255, .1); border-color: rgba(255, 255, 255, .14); color: var(--lime); }
+.act.primary .ico { background: rgba(255, 255, 255, .1); border-color: rgba(255, 255, 255, .14); color: var(--brand); }
 .act.primary .t2 { color: rgba(255, 255, 255, .55); }
 .act.primary .chev { color: rgba(255, 255, 255, .35); }
-.act.whatsapp .ico { background: var(--lime-soft); border-color: rgba(0, 179, 171, .4); color: #00726c; }
+.act.whatsapp .ico { background: var(--brand-soft); border-color: rgba(0, 179, 171, .4); color: #00726c; }
 .act-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .act-row .act .t2 { display: none; }
 
@@ -209,7 +209,7 @@ body { background: #e9eeee; }
 .hours .row.today { color: var(--ink); font-weight: 600; }
 .hours .row.today .d::after {
   content: "Today"; margin-left: 8px; font-size: 10px; font-weight: 700;
-  padding: 2px 7px; border-radius: var(--pill); background: var(--lime-soft); color: #00726c;
+  padding: 2px 7px; border-radius: var(--pill); background: var(--brand-soft); color: #00726c;
   letter-spacing: .04em; text-transform: uppercase;
 }
 .hours .d { color: var(--ink-2); }
@@ -236,7 +236,7 @@ body { background: #e9eeee; }
   display: flex; align-items: center; gap: 12px;
   font-size: 12.5px; line-height: 1.45;
 }
-.tapnote .w { color: var(--lime); flex: 0 0 auto; }
+.tapnote .w { color: var(--brand); flex: 0 0 auto; }
 .tapnote .w svg { width: 20px; height: 20px; }
 .tapnote b { color: #fff; font-weight: 600; }
 
@@ -253,7 +253,7 @@ body { background: #e9eeee; }
 }
 .page-foot a:hover { color: var(--ink); }
 .powered { display: inline-flex; align-items: center; }
-.powered img { height: 15px; width: auto; margin-left: 8px; }
+.powered img { height: 20px; width: auto; margin-left: 10px; display: block; }
 .page-foot p { font-size: 11px; color: #b3b3ac; margin-top: 9px; }
 
 /* ---------- sticky save bar ---------- */
@@ -276,7 +276,7 @@ body { background: #e9eeee; }
   font-size: 14px; font-weight: 500; width: 100%; text-align: left;
   transition: background .2s, border-color .2s;
 }
-.sheet-item:hover { background: var(--lime-soft); border-color: rgba(0, 179, 171, .4); }
+.sheet-item:hover { background: var(--brand-soft); border-color: rgba(0, 179, 171, .4); }
 .sheet-item svg { width: 16px; height: 16px; color: var(--ink-2); }
 .qr-box { display: grid; place-items: center; padding: 8px 0 16px; }
 .qr-box canvas { border-radius: 12px; box-shadow: var(--shadow-sm); }

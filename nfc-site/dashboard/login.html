@@ -30,7 +30,7 @@
       padding: 30px 28px 26px;
     }
     .auth-brand { display: flex; align-items: center; gap: 9px; font-weight: 800; font-size: 15px; letter-spacing: -.02em; }
-    .auth-logo { height: 30px; width: auto; }
+    .auth-logo { height: 34px; width: auto; display: block; }
     .auth-card h1 { font-size: 25px; font-weight: 800; letter-spacing: -.035em; margin-top: 24px; }
     .auth-card .sub { color: var(--ink-2); font-size: 14px; margin-top: 7px; font-weight: 300; }
     .tabs { display: flex; gap: 4px; padding: 4px; background: var(--surface-2); border: 1px solid var(--hairline); border-radius: var(--pill); margin: 22px 0 20px; }
@@ -56,17 +56,17 @@
     .pass-wrap .eye:hover { color: var(--ink); background: var(--surface-2); }
     .pass-wrap .eye svg { width: 16px; height: 16px; }
     .foot-note { text-align: center; font-size: 12.5px; color: var(--ink-3); margin-top: 20px; line-height: 1.55; }
-    .foot-note a { color: var(--ink); font-weight: 600; text-decoration: underline; text-decoration-color: var(--lime); text-underline-offset: 3px; }
+    .foot-note a { color: var(--ink); font-weight: 600; text-decoration: underline; text-decoration-color: var(--brand); text-underline-offset: 3px; }
     .divider { display: flex; align-items: center; gap: 12px; margin: 20px 0 16px; color: var(--ink-3); font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; }
     .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--hairline); }
     .demo-note {
       display: flex; gap: 10px; align-items: flex-start;
       padding: 12px 14px; border-radius: var(--r-sm);
-      background: var(--lime-soft); border: 1px solid rgba(0, 179, 171, .35);
+      background: var(--brand-soft); border: 1px solid rgba(0, 179, 171, .35);
       font-size: 12.5px; color: #00655f; line-height: 1.5; margin-bottom: 18px;
     }
     .demo-note svg { width: 15px; height: 15px; flex: 0 0 auto; margin-top: 1px; }
-    .spin { width: 15px; height: 15px; border-radius: 50%; border: 2px solid rgba(29, 44, 0, .25); border-top-color: var(--lime-ink); animation: sp .7s linear infinite; }
+    .spin { width: 15px; height: 15px; border-radius: 50%; border: 2px solid rgba(29, 44, 0, .25); border-top-color: var(--on-brand); animation: sp .7s linear infinite; }
     @keyframes sp { to { transform: rotate(360deg); } }
     .legal { text-align: center; font-size: 11.5px; color: var(--ink-3); margin-top: 18px; }
     .legal a { text-decoration: underline; text-decoration-color: var(--hairline-2); text-underline-offset: 2px; }
@@ -75,7 +75,7 @@
 <body>
   <div class="auth">
     <div class="auth-card">
-      <a class="auth-brand" href="../index.html"><img class="auth-logo" src="../assets/img/lockup-light.png" alt="Pixel Studios" /></a>
+      <a class="auth-brand" href="../index.html"><img class="auth-logo" src="../assets/img/lockup-light.svg" alt="Pixel Studios" /></a>
 
       <h1 id="authTitle">Welcome back</h1>
       <p class="sub" id="authSub">Sign in to manage your cards, devices and live business page.</p>

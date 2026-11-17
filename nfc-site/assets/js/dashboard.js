@@ -327,7 +327,7 @@
       DASH.devices.forEach(function (d) { byType[d.type] = (byType[d.type] || 0) + 1; });
       sum.innerHTML =
         '<div class="panel card-pad reveal"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;"><div><div style="font-size:12.5px;color:var(--ink-3)">Total views</div><div style="font-size:28px;font-weight:800;letter-spacing:-.04em;margin-top:4px;">' +
-          num(DASH.devices.reduce(function (a, d) { return a + d.views; }, 0)) + '</div></div><span class="ic lime" style="width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:var(--lime-soft);color:#00726c">' + I.eye + '</span></div></div>' +
+          num(DASH.devices.reduce(function (a, d) { return a + d.views; }, 0)) + '</div></div><span class="ic brand" style="width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:var(--brand-soft);color:#00726c">' + I.eye + '</span></div></div>' +
         '<div class="panel card-pad reveal"><div style="font-size:12.5px;color:var(--ink-3)">Devices by type</div>' +
           '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;">' +
           Object.keys(byType).map(function (k) { return '<span class="pill">' + k + ' × ' + byType[k] + '</span>'; }).join("") +
@@ -710,7 +710,7 @@
           var done = i < o.step;
           return '<div style="display:flex;gap:12px;align-items:flex-start;padding:9px 0;">' +
             '<span style="width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700;flex:0 0 auto;' +
-            (done ? "background:var(--lime);color:var(--lime-ink);" : "background:var(--surface-2);border:1px solid var(--hairline-2);color:var(--ink-3);") + '">' +
+            (done ? "background:var(--brand);color:var(--on-brand);" : "background:var(--surface-2);border:1px solid var(--hairline-2);color:var(--ink-3);") + '">' +
             (done ? "✓" : i + 1) + '</span>' +
             '<span style="font-size:13.5px;' + (done ? "font-weight:600;" : "color:var(--ink-3);") + '">' + s + '</span></div>';
         }).join("") + '</div>' +

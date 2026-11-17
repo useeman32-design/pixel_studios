@@ -213,7 +213,7 @@
     ctx.fillStyle = o.bg || '#FFFFFF';
     ctx.fillRect(0, 0, cssSize, cssSize);
     const cell = cssSize / (n + quiet * 2);
-    ctx.fillStyle = o.fg || '#0B0B0E';
+    ctx.fillStyle = o.fg || '#101418';
     const r = Math.max(0, Math.min(0.5, o.radius || 0.28)) * cell;
     for (let y = 0; y < n; y++) {
       for (let x = 0; x < n; x++) {
