@@ -1,3 +1,10 @@
+## LIVE PREVIEW (GitHub Pages)
+The static site is auto-published by scripts/deploy-web.sh on every app deploy:
+- Landing: https://useeman32-design.github.io/pixel_studios/tap/
+- Client card page: https://useeman32-design.github.io/pixel_studios/tap/card/amina.html
+- Dashboard: https://useeman32-design.github.io/pixel_studios/tap/dashboard/index.html (login: .../dashboard/login.html)
+Note: Pages serves no PHP, so /tap/ runs on built-in demo data; deploy this folder to cPanel for the real API.
+
 # Pixel Studios · NFC platform — cPanel deployment guide
 
 Everything in this folder is **static HTML/CSS/JS** — no build step, no Node,

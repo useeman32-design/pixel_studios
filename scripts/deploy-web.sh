@@ -7,6 +7,7 @@ cd "$(dirname "$0")/.."
 echo "▸ Exporting web build…"
 npx expo export --platform web
 
+
 cd dist
 
 # Clean URLs: expose each root-level route as <route>/index.html
@@ -36,6 +37,18 @@ done
 
 cp "+not-found.html" 404.html
 touch .nojekyll
+# Publish the standalone NFC marketing/product site under /tap/.
+# (/nfc/ is taken by the app's own NFC screen route.) It is plain static
+# HTML/CSS/JS with relative asset paths, so it works from any sub-path.
+# The PHP api/ folder is excluded: GitHub Pages cannot run PHP (it would
+# only expose the source); the pages fall back to their built-in demo data
+# there and use the real API once deployed to cPanel.
+if [ -d ../nfc-site ]; then
+  rm -rf tap
+  cp -r ../nfc-site tap
+  rm -rf tap/api tap/.htaccess
+  echo "▸ NFC site published at /tap/"
+fi
 
 # Relocate the JS bundle to a root-level path.
 # GitHub Pages occasionally delays serving freshly-built files under /_expo/,
