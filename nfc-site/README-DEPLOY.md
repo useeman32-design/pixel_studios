@@ -5,7 +5,7 @@ The static site is auto-published by scripts/deploy-web.sh on every app deploy:
 - Dashboard: https://useeman32-design.github.io/pixel_studios/tap/dashboard/index.html (login: .../dashboard/login.html)
 Note: Pages serves no PHP, so /tap/ runs on built-in demo data; deploy this folder to cPanel for the real API.
 
-# Pixel Studios · NFC platform — cPanel deployment guide
+# Pixel Studios · Design, Print, Smart Cards & Digital — cPanel deployment guide
 
 Everything in this folder is **static HTML/CSS/JS** — no build step, no Node,
 no framework. Upload it and it runs.
@@ -15,7 +15,7 @@ nfc-site/
 ├── index.html                 ← the marketing landing page
 ├── .htaccess                  ← pretty URLs, gzip, caching, security headers
 ├── assets/
-│   ├── css/style.css          ← landing page design system (dark)
+│   ├── css/style.css          ← landing page design system (light/dark)
 │   ├── css/app.css            ← shared light design system
 │   ├── css/card.css           ← public business page
 │   ├── css/dashboard.css      ← management dashboard
@@ -24,7 +24,7 @@ nfc-site/
 │   ├── js/card.js             ← public page: vCard, share, analytics hooks
 │   ├── js/dashboard.js        ← the whole management interface
 │   ├── js/login.js            ← sign in / create account
-│   └── img/                   ← card + tap photography
+│   └── img/                   ← vector logos + card/tap imagery; animated service mockups are built in HTML/CSS
 ├── card/
 │   └── amina.html             ← the page a card tap opens  →  /card/amina
 ├── dashboard/
@@ -78,8 +78,7 @@ Once your SSL is active, uncomment the HTTPS redirect at the top of `.htaccess`.
 
 ## 3 · What works right now, with zero backend
 
-- **Landing page** — hero phone animation, NFC waves, card flip, QR, marquee,
-  reveals, counters, charts, FAQ, WhatsApp links, mobile menu.
+- **Landing page** — rotating four-studio hero. The original animated phone + NFC card demo is preserved; Design, Print, and Mobile & Web have matching HTML/CSS mockups (no generated hero images). Also includes app-backed service catalogue and prices, Smart Card detail, workflow, dashboard sample, FAQ, WhatsApp links and mobile menu.
 - **Public card page** (`/card/amina`) — save contact downloads a **real .vcf**,
   share sheet with a **real QR code**, WhatsApp/call/email/maps links, opening
   hours with today highlighted, click tracking stubs.

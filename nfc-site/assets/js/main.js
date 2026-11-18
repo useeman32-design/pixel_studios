@@ -1,5 +1,5 @@
 /* ============================================================
-   PIXEL STUDIOS · NFC landing — interactions
+   PIXEL STUDIOS · services landing — interactions
    ============================================================ */
 (function () {
   "use strict";
@@ -287,25 +287,46 @@
     }
   }
 
-  /* ---------- hero: rotating services showcase ---------- */
+  /* ---------- hero: service copy + CSS mockup carousel ---------- */
   var heroSlides = $$(".hero-slide");
   var heroPills = $$(".hero-pill");
-  var mockImgs = $$(".mock-img");
-  var badgeText = $("#mockBadgeText");
-  var badgeLabels = ["Web Development", "Mobile Applications", "Printing & Branding", "NFC Digital Cards"];
-  var HERO_DURATION = 5500;
-  var heroIndex = 0, heroTimer = null, heroPaused = false;
+  var visualPanels = $$(".visual-panel");
+  var heroEl = $(".hero");
+  var heroVisual = $("#heroVisual");
+  var HERO_DURATION = 6200;
+  var heroIndex = 0;
+  var heroTimer = null;
+  var pointerPaused = false;
+  var keyboardFocusPaused = false;
+  var keyboardNavigation = false;
 
   function restartFill(pill) {
     if (!pill) return;
     var fill = $(".pill-fill", pill);
     if (!fill) return;
     fill.style.animation = "none";
-    void fill.offsetWidth; // restart the CSS progress animation
+    void fill.offsetWidth;
     fill.style.animation = "";
   }
 
+  function heroIsPaused() {
+    return pointerPaused || keyboardFocusPaused || document.hidden;
+  }
+
+  function syncHeroTimer() {
+    var paused = heroIsPaused();
+    if (heroEl) heroEl.classList.toggle("is-paused", paused);
+    if (paused || reduce || heroSlides.length < 2) {
+      if (heroTimer) { clearInterval(heroTimer); heroTimer = null; }
+      return;
+    }
+    if (!heroTimer) {
+      heroTimer = setInterval(function () { showSlide(heroIndex + 1); }, HERO_DURATION);
+    }
+  }
+
   function showSlide(i) {
+    if (!heroSlides.length) return;
     heroIndex = ((i % heroSlides.length) + heroSlides.length) % heroSlides.length;
     heroSlides.forEach(function (sl, k) {
       var on = k === heroIndex;
@@ -316,59 +337,87 @@
       var on = k === heroIndex;
       pl.classList.toggle("active", on);
       pl.setAttribute("aria-selected", on ? "true" : "false");
+      pl.setAttribute("tabindex", on ? "0" : "-1");
       if (on) restartFill(pl);
     });
-    mockImgs.forEach(function (img, k) { img.classList.toggle("active", k === heroIndex); });
-    if (badgeText) badgeText.textContent = badgeLabels[heroIndex];
+    visualPanels.forEach(function (panel, k) {
+      var on = k === heroIndex;
+      panel.classList.toggle("active", on);
+      panel.setAttribute("aria-hidden", on ? "false" : "true");
+    });
+    syncHeroTimer();
   }
 
-  function heroStart() {
-    if (reduce || heroTimer || heroSlides.length < 2) return;
-    heroTimer = setInterval(function () { showSlide(heroIndex + 1); }, HERO_DURATION);
-  }
-  function heroStop() {
-    if (heroTimer) { clearInterval(heroTimer); heroTimer = null; }
-  }
+  if (heroSlides.length && visualPanels.length) {
+    showSlide(0);
 
-  if (heroSlides.length > 1) {
     heroPills.forEach(function (pl) {
       pl.addEventListener("click", function () {
         showSlide(parseInt(pl.getAttribute("data-go"), 10) || 0);
-        heroStop(); heroStart();
+      });
+      pl.addEventListener("keydown", function (e) {
+        if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+        e.preventDefault();
+        var next = heroIndex + (e.key === "ArrowRight" ? 1 : -1);
+        showSlide(next);
+        if (heroPills[heroIndex]) heroPills[heroIndex].focus();
       });
     });
-    var heroEl = $(".hero");
+
     if (heroEl) {
-      heroEl.addEventListener("mouseenter", function () { heroPaused = true; heroStop(); });
-      heroEl.addEventListener("mouseleave", function () {
-        heroPaused = false;
-        restartFill(heroPills[heroIndex]);
-        heroStart();
+      heroEl.addEventListener("mouseenter", function () {
+        pointerPaused = true;
+        syncHeroTimer();
       });
-      heroEl.addEventListener("focusin", function () { heroStop(); });
-      heroEl.addEventListener("focusout", function () { if (!heroPaused) heroStart(); });
+      heroEl.addEventListener("mouseleave", function () {
+        pointerPaused = false;
+        restartFill(heroPills[heroIndex]);
+        syncHeroTimer();
+      });
+      heroEl.addEventListener("focusin", function () {
+        if (keyboardNavigation) {
+          keyboardFocusPaused = true;
+          syncHeroTimer();
+        }
+      });
+      heroEl.addEventListener("focusout", function () {
+        window.setTimeout(function () {
+          keyboardFocusPaused = keyboardNavigation && heroEl.contains(document.activeElement);
+          syncHeroTimer();
+        }, 0);
+      });
     }
-    document.addEventListener("visibilitychange", function () {
-      if (document.hidden) heroStop();
-      else if (!heroPaused) heroStart();
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Tab" || e.key.indexOf("Arrow") === 0) keyboardNavigation = true;
     });
-    heroStart();
+    document.addEventListener("pointerdown", function () {
+      keyboardNavigation = false;
+      keyboardFocusPaused = false;
+      syncHeroTimer();
+    }, { passive: true });
+    document.addEventListener("visibilitychange", syncHeroTimer);
+    syncHeroTimer();
   }
 
-  /* ---------- hero mockup tilt ---------- */
-  var mockStage = $("#mockStage");
-  var mockFrame = $("#mockFrame");
-  if (mockStage && mockFrame && !reduce &&
+  /* ---------- pointer tilt for CSS-built studio mockups ---------- */
+  if (heroVisual && !reduce &&
       (typeof window.matchMedia !== "function" || window.matchMedia("(pointer: fine)").matches)) {
-    mockStage.addEventListener("mousemove", function (e) {
-      var r = mockStage.getBoundingClientRect();
-      var nx = (e.clientX - r.left) / r.width - 0.5;
-      var ny = (e.clientY - r.top) / r.height - 0.5;
-      mockFrame.style.transform =
-        "rotateY(" + (nx * 14 - 6).toFixed(2) + "deg) rotateX(" + (-ny * 10 + 2).toFixed(2) + "deg)";
+    var tiltedMock = null;
+    heroVisual.addEventListener("mousemove", function (e) {
+      var active = $(".visual-panel.active", heroVisual);
+      var target = active && $(".design-window, .print-desk, .digital-browser", active);
+      if (!target) return; // the original NFC stage has its own phone/card parallax
+      tiltedMock = target;
+      var r = heroVisual.getBoundingClientRect();
+      var nx = (e.clientX - r.left) / r.width - .5;
+      var ny = (e.clientY - r.top) / r.height - .5;
+      var baseY = target.classList.contains("design-window") ? -8 : target.classList.contains("print-desk") ? 7 : 5;
+      target.style.transform = "rotateY(" + (baseY + nx * 9).toFixed(2) + "deg) rotateX(" + (3 - ny * 7).toFixed(2) + "deg)";
     });
-    mockStage.addEventListener("mouseleave", function () {
-      mockFrame.style.transform = "rotateY(-8deg) rotateX(3deg)";
+    heroVisual.addEventListener("mouseleave", function () {
+      if (tiltedMock) tiltedMock.style.removeProperty("transform");
+      tiltedMock = null;
     });
   }
 
