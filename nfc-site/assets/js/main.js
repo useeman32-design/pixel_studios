@@ -293,12 +293,17 @@
   var visualPanels = $$(".visual-panel");
   var heroEl = $(".hero");
   var heroVisual = $("#heroVisual");
+  var rotationToggle = $("#heroRotationToggle");
+  var rotationLabel = rotationToggle && $(".rotation-label", rotationToggle);
+  var slidesRegion = $("#heroSlides");
   var HERO_DURATION = 6200;
   var heroIndex = 0;
   var heroTimer = null;
   var pointerPaused = false;
-  var keyboardFocusPaused = false;
+  var keyboardPaused = false;
   var keyboardNavigation = false;
+  var userPaused = false;
+  var userRequestedPlay = false;
 
   function restartFill(pill) {
     if (!pill) return;
@@ -309,20 +314,42 @@
     fill.style.animation = "";
   }
 
-  function heroIsPaused() {
-    return pointerPaused || keyboardFocusPaused || document.hidden;
+  function shouldRotate() {
+    if (document.hidden || userPaused || heroSlides.length < 2) return false;
+    if (reduce && !userRequestedPlay) return false;
+    if (!userRequestedPlay && (pointerPaused || keyboardPaused)) return false;
+    return true;
   }
 
-  function syncHeroTimer() {
-    var paused = heroIsPaused();
-    if (heroEl) heroEl.classList.toggle("is-paused", paused);
-    if (paused || reduce || heroSlides.length < 2) {
-      if (heroTimer) { clearInterval(heroTimer); heroTimer = null; }
-      return;
+  function updateRotationControl() {
+    var playing = !!heroTimer;
+    if (heroEl) {
+      heroEl.classList.toggle("is-paused", !playing);
+      heroEl.classList.toggle("is-playing", playing);
     }
-    if (!heroTimer) {
-      heroTimer = setInterval(function () { showSlide(heroIndex + 1); }, HERO_DURATION);
+    if (slidesRegion) slidesRegion.setAttribute("aria-live", playing ? "off" : "polite");
+    if (rotationToggle) {
+      var label = playing ? "Pause automatic service rotation" : "Start automatic service rotation";
+      if (!playing && reduce && !userRequestedPlay) label += "; reduced motion is enabled";
+      rotationToggle.setAttribute("aria-label", label);
+      rotationToggle.setAttribute("aria-pressed", playing ? "true" : "false");
+      rotationToggle.setAttribute("title", playing ? "Pause slide rotation" : "Play slide rotation");
+      if (rotationLabel) rotationLabel.textContent = playing ? "Pause" : "Play";
     }
+  }
+
+  function syncHeroTimer(reset) {
+    if (shouldRotate()) {
+      if (reset && heroTimer) {
+        clearInterval(heroTimer);
+        heroTimer = null;
+      }
+      if (!heroTimer) heroTimer = setInterval(function () { showSlide(heroIndex + 1); }, HERO_DURATION);
+    } else if (heroTimer) {
+      clearInterval(heroTimer);
+      heroTimer = null;
+    }
+    updateRotationControl();
   }
 
   function showSlide(i) {
@@ -345,24 +372,42 @@
       panel.classList.toggle("active", on);
       panel.setAttribute("aria-hidden", on ? "false" : "true");
     });
-    syncHeroTimer();
+    syncHeroTimer(true);
   }
 
   if (heroSlides.length && visualPanels.length) {
-    showSlide(0);
-
-    heroPills.forEach(function (pl) {
+    if (heroPills[0]) heroPills[0].setAttribute("tabindex", "0");
+    heroPills.forEach(function (pl, index) {
+      if (index > 0) pl.setAttribute("tabindex", "-1");
       pl.addEventListener("click", function () {
         showSlide(parseInt(pl.getAttribute("data-go"), 10) || 0);
       });
       pl.addEventListener("keydown", function (e) {
-        if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+        var next = heroIndex;
+        if (e.key === "ArrowRight") next = heroIndex + 1;
+        else if (e.key === "ArrowLeft") next = heroIndex - 1;
+        else if (e.key === "Home") next = 0;
+        else if (e.key === "End") next = heroSlides.length - 1;
+        else return;
         e.preventDefault();
-        var next = heroIndex + (e.key === "ArrowRight" ? 1 : -1);
         showSlide(next);
         if (heroPills[heroIndex]) heroPills[heroIndex].focus();
       });
     });
+
+    if (rotationToggle) {
+      rotationToggle.addEventListener("click", function () {
+        if (heroTimer) {
+          userPaused = true;
+          userRequestedPlay = false;
+        } else {
+          userPaused = false;
+          userRequestedPlay = true;
+          keyboardPaused = false;
+        }
+        syncHeroTimer();
+      });
+    }
 
     if (heroEl) {
       heroEl.addEventListener("mouseenter", function () {
@@ -376,28 +421,21 @@
       });
       heroEl.addEventListener("focusin", function () {
         if (keyboardNavigation) {
-          keyboardFocusPaused = true;
+          keyboardPaused = true;
           syncHeroTimer();
         }
       });
-      heroEl.addEventListener("focusout", function () {
-        window.setTimeout(function () {
-          keyboardFocusPaused = keyboardNavigation && heroEl.contains(document.activeElement);
-          syncHeroTimer();
-        }, 0);
-      });
+      // WAI-ARIA carousel behavior: focus stops rotation; it stays stopped until Play is chosen.
     }
 
     document.addEventListener("keydown", function (e) {
-      if (e.key === "Tab" || e.key.indexOf("Arrow") === 0) keyboardNavigation = true;
-    });
+      if (e.key === "Tab" || e.key.indexOf("Arrow") === 0 || e.key === "Home" || e.key === "End") keyboardNavigation = true;
+    }, true);
     document.addEventListener("pointerdown", function () {
       keyboardNavigation = false;
-      keyboardFocusPaused = false;
-      syncHeroTimer();
     }, { passive: true });
     document.addEventListener("visibilitychange", syncHeroTimer);
-    syncHeroTimer();
+    showSlide(0);
   }
 
   /* ---------- pointer tilt for CSS-built studio mockups ---------- */

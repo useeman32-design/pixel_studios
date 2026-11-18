@@ -78,7 +78,9 @@ Once your SSL is active, uncomment the HTTPS redirect at the top of `.htaccess`.
 
 ## 3 · What works right now, with zero backend
 
-- **Landing page** — rotating four-studio hero. The original animated phone + NFC card demo is preserved; Design, Print, and Mobile & Web have matching HTML/CSS mockups (no generated hero images). Also includes app-backed service catalogue and prices, Smart Card detail, workflow, dashboard sample, FAQ, WhatsApp links and mobile menu.
+- **Landing page** — rotating four-studio hero with an explicit accessible play/pause control. The original animated phone + NFC card demo is preserved; Design, Print, and Mobile & Web have matching HTML/CSS mockups (no generated hero images). Also includes the app-backed service catalogue and prices, product sample rooms, a local project shortlist, Smart Card detail, workflow, dashboard sample, FAQ, WhatsApp links and mobile menu.
+- **Product sample rooms** — each of the 27 catalogue Add buttons opens that product's sample screen with three product-specific CSS/vector concept directions, offer options, listed app price, and a clear fictional-concept disclaimer. Visitors can shortlist products and send one WhatsApp brief. The standalone shortlist stores only selected product IDs in `localStorage.ps_project_items_v1`; it does not submit personal data to a server.
+- **Profile template library** (`/profiles/`) — 50 original, fictional profile concepts across ten industries. Search and filter the gallery, then preview each responsive page in mobile or desktop mode. Profile pages include relevant services, an owner introduction, a sample content/portfolio section, and team members where suitable. These are demonstrations, not clients, testimonials, completed work or real contactable businesses.
 - **Public card page** (`/card/amina`) — save contact downloads a **real .vcf**,
   share sheet with a **real QR code**, WhatsApp/call/email/maps links, opening
   hours with today highlighted, click tracking stubs.
@@ -99,7 +101,16 @@ Three switches, all commented in the files:
 | `assets/js/dashboard.js`    | `DASH.api`          | your API root, e.g. `"/api"` — `Dash.load()` then replaces the demo data |
 | `assets/js/login.js`        | `DEMO_MODE`         | `false` → real register/login against `../backend/*.php`                 |
 | `assets/js/card.js`         | `PixelAPI.base`     | your API root — logs `view` and `track` events                           |
+| `assets/js/product-samples.js` | `PixelStudiosAPI.onProjectBriefChange(items)` | optional shortlist callback; no server request by default |
 | `api/config.php`            | `DB_*` constants    | your MySQL credentials                                                  |
+
+The product shortlist also dispatches `pixelstudios:projectchange` on `window`
+with `event.detail.items`, an array of `{id, title, studio, listedPrice}` objects.
+If you connect a backend, define `window.PixelStudiosAPI.onProjectBriefChange`
+before `assets/js/product-samples.js` loads and send that explicit selection to
+your own endpoint. No name, phone number, profile data or other visitor detail
+is part of this hook. Without your callback, local shortlist + WhatsApp works
+as a standalone flow.
 
 The `api/` folder is a **ready-made PHP + MySQL backend** whose routes match
 exactly what the front-end already calls. Import `api/schema.sql`, fill in
@@ -110,10 +121,12 @@ exactly what the front-end already calls. Import `api/schema.sql`, fill in
 ## 5 · Going live checklist
 
 - [ ] Contents of `nfc-site/` are directly inside `public_html`
-- [ ] Landing page loads at `https://yourdomain.com`
+- [ ] Landing page loads at `https://yourdomain.com` and the hero rotates with a visible play/pause control
+- [ ] Each of the 27 catalogue Add buttons opens the matching product samples; project shortlist can be cleared and sent
+- [ ] `/profiles/` opens all 50 fictional sample profiles, with search, industry filters and responsive page previews
 - [ ] `/card/amina` opens the sample business page
 - [ ] `/dashboard` opens the management interface
-- [ ] WhatsApp links use your real number (search the HTML for `2349031528732`)
+- [ ] Confirm all app-backed offer prices and replace/check WhatsApp links for your real business number (search `2349031528732`)
 - [ ] Delete or replace the demo data in `assets/js/dashboard.js`
 - [ ] Delete the demo INSERTs at the bottom of `api/schema.sql`
 - [ ] Uncomment the HTTPS redirect in `.htaccess`
