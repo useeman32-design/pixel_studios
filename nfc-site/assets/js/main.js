@@ -287,6 +287,91 @@
     }
   }
 
+  /* ---------- hero: rotating services showcase ---------- */
+  var heroSlides = $$(".hero-slide");
+  var heroPills = $$(".hero-pill");
+  var mockImgs = $$(".mock-img");
+  var badgeText = $("#mockBadgeText");
+  var badgeLabels = ["Web Development", "Mobile Applications", "Printing & Branding", "NFC Digital Cards"];
+  var HERO_DURATION = 5500;
+  var heroIndex = 0, heroTimer = null, heroPaused = false;
+
+  function restartFill(pill) {
+    if (!pill) return;
+    var fill = $(".pill-fill", pill);
+    if (!fill) return;
+    fill.style.animation = "none";
+    void fill.offsetWidth; // restart the CSS progress animation
+    fill.style.animation = "";
+  }
+
+  function showSlide(i) {
+    heroIndex = ((i % heroSlides.length) + heroSlides.length) % heroSlides.length;
+    heroSlides.forEach(function (sl, k) {
+      var on = k === heroIndex;
+      sl.classList.toggle("active", on);
+      sl.setAttribute("aria-hidden", on ? "false" : "true");
+    });
+    heroPills.forEach(function (pl, k) {
+      var on = k === heroIndex;
+      pl.classList.toggle("active", on);
+      pl.setAttribute("aria-selected", on ? "true" : "false");
+      if (on) restartFill(pl);
+    });
+    mockImgs.forEach(function (img, k) { img.classList.toggle("active", k === heroIndex); });
+    if (badgeText) badgeText.textContent = badgeLabels[heroIndex];
+  }
+
+  function heroStart() {
+    if (reduce || heroTimer || heroSlides.length < 2) return;
+    heroTimer = setInterval(function () { showSlide(heroIndex + 1); }, HERO_DURATION);
+  }
+  function heroStop() {
+    if (heroTimer) { clearInterval(heroTimer); heroTimer = null; }
+  }
+
+  if (heroSlides.length > 1) {
+    heroPills.forEach(function (pl) {
+      pl.addEventListener("click", function () {
+        showSlide(parseInt(pl.getAttribute("data-go"), 10) || 0);
+        heroStop(); heroStart();
+      });
+    });
+    var heroEl = $(".hero");
+    if (heroEl) {
+      heroEl.addEventListener("mouseenter", function () { heroPaused = true; heroStop(); });
+      heroEl.addEventListener("mouseleave", function () {
+        heroPaused = false;
+        restartFill(heroPills[heroIndex]);
+        heroStart();
+      });
+      heroEl.addEventListener("focusin", function () { heroStop(); });
+      heroEl.addEventListener("focusout", function () { if (!heroPaused) heroStart(); });
+    }
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden) heroStop();
+      else if (!heroPaused) heroStart();
+    });
+    heroStart();
+  }
+
+  /* ---------- hero mockup tilt ---------- */
+  var mockStage = $("#mockStage");
+  var mockFrame = $("#mockFrame");
+  if (mockStage && mockFrame && !reduce &&
+      (typeof window.matchMedia !== "function" || window.matchMedia("(pointer: fine)").matches)) {
+    mockStage.addEventListener("mousemove", function (e) {
+      var r = mockStage.getBoundingClientRect();
+      var nx = (e.clientX - r.left) / r.width - 0.5;
+      var ny = (e.clientY - r.top) / r.height - 0.5;
+      mockFrame.style.transform =
+        "rotateY(" + (nx * 14 - 6).toFixed(2) + "deg) rotateX(" + (-ny * 10 + 2).toFixed(2) + "deg)";
+    });
+    mockStage.addEventListener("mouseleave", function () {
+      mockFrame.style.transform = "rotateY(-8deg) rotateX(3deg)";
+    });
+  }
+
   /* ---------- inject the keyframes JS relies on ---------- */
   var style = document.createElement("style");
   style.textContent =
