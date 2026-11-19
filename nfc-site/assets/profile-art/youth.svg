@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" role="img" aria-label="Original vector sample artwork for youth">
+<defs><linearGradient id="g-youth" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e9edf4"/><stop offset="1" stop-color="#84b8bf" stop-opacity=".46"/></linearGradient><pattern id="grain" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="2" cy="3" r="1" fill="#2d3d64" opacity=".055"/></pattern></defs>
+<rect width="800" height="520" rx="28" fill="url(#g-youth)"/><circle cx="328" cy="77" r="156" fill="#da9a54" opacity=".075"/><rect width="800" height="520" rx="28" fill="url(#grain)"/>
+<g stroke-linecap="round" stroke-linejoin="round"><rect width="800" height="520" fill="#e9edf4"/><rect x="148" y="95" width="502" height="318" rx="18" fill="#fff" stroke="#84b8bf" stroke-width="7"/><path d="M400 142v222q-93-60-185-8V134q92-44 185 8Zm0 0v222q94-60 185-8V134q-92-44-185 8Z" fill="#da9a54"/><path d="M251 194h111m-111 34h104m-104 35h98m88-69h111m-111 34h104m-104 35h98" stroke="#e9edf4" stroke-width="9" stroke-linecap="round" opacity=".8"/><path d="M115 433h570" stroke="#2d3d64" stroke-width="8" stroke-linecap="round" opacity=".18"/><circle cx="675" cy="119" r="36" fill="#84b8bf"/><path d="m659 119 12 12 22-27" fill="none" stroke="#2d3d64" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></g>
+<path d="M0 491q205-30 412 0t388-4" fill="none" stroke="#da9a54" stroke-width="3" opacity=".35"/>
+</svg>

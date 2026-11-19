@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" role="img" aria-label="Original vector sample artwork for atelier">
+<defs><linearGradient id="g-atelier" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f0e7e6"/><stop offset="1" stop-color="#d3a669" stop-opacity=".46"/></linearGradient><pattern id="grain" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="2" cy="3" r="1" fill="#51334c" opacity=".055"/></pattern></defs>
+<rect width="800" height="520" rx="28" fill="url(#g-atelier)"/><circle cx="423" cy="83" r="156" fill="#bf7581" opacity=".075"/><rect width="800" height="520" rx="28" fill="url(#grain)"/>
+<g stroke-linecap="round" stroke-linejoin="round"><rect width="800" height="520" fill="#f0e7e6"/><rect x="89" y="70" width="622" height="385" rx="18" fill="#fff"/><path d="M400 101v63m0 0q-45-42-91-9l-95 83 62 54 49-35-24 150h198l-24-150 49 35 62-54-95-83q-46-33-91 9Z" fill="#bf7581"/><path d="M354 172q46 39 92 0M327 276h146M311 323h178" stroke="#f0e7e6" stroke-width="8" opacity=".78"/><path d="M185 430h430" stroke="#51334c" stroke-width="5" opacity=".15"/><circle cx="153" cy="115" r="24" fill="#d3a669"/><circle cx="647" cy="398" r="28" fill="#d3a669" opacity=".76"/></g>
+<path d="M0 491q205-30 412 0t388-4" fill="none" stroke="#bf7581" stroke-width="3" opacity=".35"/>
+</svg>

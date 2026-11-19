@@ -6,12 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#0c1011" />
   <title>Sample Profile Library — Pixel Studios</title>
-  <meta name="description" content="Explore 50 fictional, mobile-ready business profile concepts across ten industries. Browse page previews, owner profiles, services and sample sections." />
+  <meta name="description" content="Explore 200 fictional business profile concepts across ten industries, with niche-specific page layouts, original sample artwork, and responsive previews." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../assets/css/style.css?v=2.3" />
   <link rel="stylesheet" href="profiles.css?v=1.0" />
+  <link rel="stylesheet" href="profiles-designs.css?v=2.0" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23101418'/><g fill='%2300BFB8'><rect x='38' y='12' width='24' height='24' rx='5'/><rect x='12' y='38' width='24' height='24' rx='5'/><rect x='38' y='64' width='24' height='24' rx='5'/><rect x='64' y='38' width='24' height='24' rx='5'/></g></svg>" />
 </head>
 <body class="profile-library-page">
@@ -35,8 +36,8 @@
           <a class="profile-back-link" href="../#nfc"><span aria-hidden="true">←</span> Smart Cards &amp; business profiles</a>
           <span class="profile-eyebrow"><span class="eyebrow-dot"></span> PROFILE TEMPLATE LIBRARY</span>
           <h1>Good profiles start<br />with <span>being understood.</span></h1>
-          <p>Explore 50 mobile-ready profile concepts across 10 industries. Open a page preview, browse its sections, and see how an owner, services and team can come together.</p>
-          <div class="profile-hero-proof"><span><strong>50</strong> fictional profile concepts</span><span><strong>10</strong> industries</span><span><strong>100%</strong> responsive previews</span></div>
+          <p>Explore 200 fictional profile concepts across 10 industries. Each preview is shaped around what visitors in that niche need to find, with original sample artwork and a different page composition.</p>
+          <div class="profile-hero-proof"><span><strong>200</strong> fictional profile concepts</span><span><strong>10</strong> industries</span><span><strong>50+</strong> page compositions</span></div>
         </div>
         <div class="profile-hero-card" aria-hidden="true">
           <div class="profile-hero-card-top"><span class="mini-mark"><i></i><i></i><i></i><i></i></span><span class="profile-card-live"><i></i> PAGE PREVIEW</span></div>
@@ -46,7 +47,7 @@
             <div class="hero-device-title"><span>REAL ESTATE · ABUJA</span><b>Find a place that<br />fits your next chapter.</b><p>Personal guidance for the move ahead.</p><i>Request a viewing&nbsp; →</i></div>
             <div class="hero-device-bottom"><span>Overview</span><span>Services</span><span>Contact</span></div>
           </div>
-          <div class="profile-hero-card-foot"><span>One page. Your story.</span><span>01 / 50</span></div>
+          <div class="profile-hero-card-foot"><span>One page. Your story.</span><span>01 / 200</span></div>
         </div>
       </div>
       <div class="profile-hero-edge"><div class="wrap"><span>BUILT FOR BUSINESSES THAT ARE READY TO BE FOUND</span><span>Fictional demo concepts · No real clients or endorsements</span></div></div>
@@ -56,7 +57,7 @@
       <div class="wrap">
         <div class="library-heading-row">
           <div><span class="profile-section-kicker">FIND YOUR STARTING POINT</span><h2 id="libraryHeading">Browse the library</h2><p>Filter by industry or search for a name, service, role or city.</p></div>
-          <div class="library-stat"><span class="library-stat-icon" aria-hidden="true">✳</span><span><strong id="profileResultCount">50</strong><small>profile concepts</small></span></div>
+          <div class="library-stat"><span class="library-stat-icon" aria-hidden="true">✳</span><span><strong id="profileResultCount">200</strong><small>profile concepts</small></span></div>
         </div>
 
         <div class="profile-search-row">
@@ -67,9 +68,9 @@
           <div class="profile-filter-head"><span>INDUSTRY</span><span id="filterHint">Showing every concept</span></div>
           <div class="profile-filter-list" id="profileFilters" role="group" aria-label="Filter profile concepts by industry"></div>
         </div>
-        <div class="profile-results-bar"><span id="profileResultsText" role="status" aria-live="polite">Showing all 50 concepts</span><span>Choose any card to explore its sample page <span aria-hidden="true">↘</span></span></div>
-        <div class="profile-grid" id="profileGrid" aria-live="polite"></div>
-        <div class="profile-empty" id="profileEmpty" hidden><div class="empty-search-mark" aria-hidden="true">⌕</div><h3>No matching profiles yet</h3><p>Try another name, service, city or industry.</p><button class="btn btn-ghost" id="resetProfileFilters" type="button">Show all 50 profiles</button></div>
+        <div class="profile-results-bar"><span id="profileResultsText" role="status" aria-live="polite">Showing all 200 concepts</span><span>Choose any card to explore its sample page <span aria-hidden="true">↘</span></span></div>
+        <div class="profile-grid" id="profileGrid"></div>
+        <div class="profile-empty" id="profileEmpty" hidden><div class="empty-search-mark" aria-hidden="true">⌕</div><h3>No matching profiles yet</h3><p>Try another name, service, city or industry.</p><button class="btn btn-ghost" id="resetProfileFilters" type="button">Show all 200 profiles</button></div>
       </div>
     </section>
 
@@ -84,7 +85,7 @@
     <div class="profile-preview-shell">
       <header class="profile-preview-toolbar">
         <div class="preview-toolbar-brand"><span class="mini-mark"><i></i><i></i><i></i><i></i></span><div><strong>PIXEL STUDIOS</strong><small>PROFILE SAMPLE ROOM</small></div></div>
-        <div class="preview-toolbar-actions"><div class="preview-size-switch" role="group" aria-label="Preview size"><button type="button" data-preview-size="mobile" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18.5h2"/></svg><span>Mobile</span></button><button type="button" data-preview-size="desktop" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="3" width="19" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span>Desktop</span></button></div><button type="button" class="preview-link-button" id="copyProfileLink"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.5.5l3-3A5 5 0 0 0 13.4 3L11.7 4.7M14 11a5 5 0 0 0-7.5-.5l-3 3A5 5 0 0 0 10.6 21l1.7-1.7"/></svg><span>Copy link</span></button><button class="preview-close" type="button" data-close-preview aria-label="Close page preview">×</button></div>
+        <div class="preview-toolbar-actions"><div class="preview-size-switch" role="group" aria-label="Preview size"><button type="button" data-preview-size="mobile" aria-label="Mobile preview" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18.5h2"/></svg><span>Mobile</span></button><button type="button" data-preview-size="desktop" aria-label="Desktop preview" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="3" width="19" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span>Desktop</span></button></div><button type="button" class="preview-motion-toggle" id="previewMotionToggle" data-motion-toggle aria-pressed="true" aria-label="Motion on — turn sample animations off"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h4l3-7 4 14 3-7h2"/></svg><span data-motion-label>Motion on</span></button><button type="button" class="preview-link-button" id="copyProfileLink" aria-label="Copy link to this profile preview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.5.5l3-3A5 5 0 0 0 13.4 3L11.7 4.7M14 11a5 5 0 0 0-7.5-.5l-3 3A5 5 0 0 0 10.6 21l1.7-1.7"/></svg><span>Copy link</span></button><button class="preview-close" type="button" data-close-preview aria-label="Close page preview">×</button></div>
       </header>
       <div class="profile-preview-body">
         <section class="preview-stage" aria-label="Sample business profile page preview">
@@ -92,11 +93,12 @@
           <div class="preview-window is-mobile" id="previewWindow"><div class="preview-page" id="profilePageLive"></div></div>
         </section>
         <aside class="preview-sidebar">
-          <div class="preview-sidebar-top"><span class="preview-number" id="previewNumber">PROFILE CONCEPT 01 / 50</span><span class="fictional-tag"><i></i> FICTIONAL</span></div>
+          <div class="preview-sidebar-top"><span class="preview-number" id="previewNumber">PROFILE CONCEPT 001 / 200</span><span class="fictional-tag"><i></i> FICTIONAL</span></div>
           <div class="preview-brand-block"><div class="preview-brand-logo" id="previewBrandLogo"></div><div><span id="previewCategory">PROPERTY &amp; BUILT ENVIRONMENT</span><h2 id="previewBrandName">Cedarstone Realty</h2></div></div>
           <p class="preview-tagline" id="previewTagline"></p>
           <div class="preview-rule"></div>
-          <div class="preview-details-list"><div><span>Owner profile</span><strong id="previewOwner"></strong><small id="previewRole"></small></div><div><span>Sample location</span><strong id="previewCity"></strong></div><div><span>Page structure</span><strong id="previewPageStructure">Overview · Services · Sample sections</strong></div></div>
+          <div class="preview-details-list"><div><span>Owner profile</span><strong id="previewOwner"></strong><small id="previewRole"></small></div><div><span>Sample location</span><strong id="previewCity"></strong></div><div><span>Distinct layout</span><strong id="previewPageStructure">Niche-specific sample design</strong></div></div>
+          <div class="preview-focus-summary"><span>DESIGNED AROUND VISITOR NEEDS</span><p id="previewLayoutFocus"></p></div>
           <div class="preview-page-controls"><span>PAGE PREVIEW</span><div id="previewPageTabs" role="tablist" aria-label="Preview profile pages"></div></div>
           <div class="preview-sidebar-note" id="previewSidebarNote"></div>
           <div class="preview-sidebar-actions"><a class="btn btn-primary" id="previewDiscussLink" href="https://wa.me/2349031528732" target="_blank" rel="noopener">Discuss a similar profile <span aria-hidden="true">↗</span></a><button type="button" class="preview-close-secondary" data-close-preview>Back to library</button></div>
@@ -108,6 +110,7 @@
 
   <script src="../assets/js/theme.js?v=2.0"></script>
   <script src="../assets/js/profile-templates.js?v=1.0"></script>
-  <script src="profiles.js?v=1.2"></script>
+  <script src="../assets/js/profile-expansion.js?v=2.0"></script>
+  <script src="profiles.js?v=2.0"></script>
 </body>
 </html>

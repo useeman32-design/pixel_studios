@@ -1,5 +1,5 @@
 /*
- * Pixel Studios · 50 fictional profile concepts.
+ * Pixel Studios · 50 original seed profile concepts (expanded to 200 by profile-expansion.js).
  * Names, people, companies, locations, services and portfolio items below are demonstration data,
  * not client work, testimonials, licensing claims, or contactable businesses.
  */

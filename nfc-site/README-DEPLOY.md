@@ -80,7 +80,20 @@ Once your SSL is active, uncomment the HTTPS redirect at the top of `.htaccess`.
 
 - **Landing page** — rotating four-studio hero with an explicit accessible play/pause control. The original animated phone + NFC card demo is preserved; Design, Print, and Mobile & Web have matching HTML/CSS mockups (no generated hero images). Also includes the app-backed service catalogue and prices, product sample rooms, a local project shortlist, Smart Card detail, workflow, dashboard sample, FAQ, WhatsApp links and mobile menu.
 - **Product sample rooms** — each of the 27 catalogue Add buttons opens that product's sample screen with three product-specific CSS/vector concept directions, offer options, listed app price, and a clear fictional-concept disclaimer. Visitors can shortlist products and send one WhatsApp brief. The standalone shortlist stores only selected product IDs in `localStorage.ps_project_items_v1`; it does not submit personal data to a server.
-- **Profile template library** (`/profiles/`) — 50 original, fictional profile concepts across ten industries. Search and filter the gallery, then preview each responsive page in mobile or desktop mode. Profile pages include relevant services, an owner introduction, a sample content/portfolio section, and team members where suitable. These are demonstrations, not clients, testimonials, completed work or real contactable businesses.
+- **Profile template library** (`/profiles/`) — exactly 200 original, fictional profile concepts across ten industry groups (20 per group), with 51 niche-specific layout families and 143 local vector sample illustrations. Search and filter the gallery, then preview each page in mobile or desktop mode. Page compositions vary by visitor task: listings, portfolios, menus, service desks, appointment paths, dashboards, itineraries, learning guides and more. Images are local SVGs; image alternatives, reduced-motion support and a motion toggle are included. Every name, person, business, menu, price, project and detail is invented sample content—not a client, testimonial, completed project or real contactable business.
+### Profile-library design research and implementation
+
+The 200 concepts are organised as ten groups with twenty distinct niches in each. Each profile is assigned a composition family and visitor-task note rather than receiving only a different accent colour. The preview renderer gives those niches different page structures—for example, comparison-first property listings, editorial architecture/portfolio spreads, a task-first patient information page, a restaurant menu with ordering and visit details, a product storefront with product/fulfilment prompts, a school admissions path, a delivery route board, and an energy-assessment flow. Sample-only actions do not submit real bookings or enquiries.
+
+The patterns follow established user-needs and accessibility guidance:
+- [ONS Service Manual: writing for users](https://service-manual.ons.gov.uk/content/writing-for-users) and [structuring content](https://service-manual.ons.gov.uk/content/writing-for-users/structuring-content) informed concise, task-led sections and descriptive headings.
+- [NHS England GP website guidance](https://www.england.nhs.uk/long-read/creating-a-highly-usable-and-accessible-gp-website-for-patients/) informed patient-first routes to appointments, contact, opening information and visit preparation.
+- [Shopify product-page guidance](https://www.shopify.com/blog/product-page) informed product imagery/details plus visible shipping, returns and purchase questions; [Toast restaurant website guidance](https://pos.toasttab.com/blog/on-the-line/examples-restaurant-websites) informed menus, hours, location and ordering/reservation paths.
+- [University of the Arts London portfolio guidance](https://www.arts.ac.uk/students/student-careers/career-resources/how-to-build-a-portfolio) informed curated, image-led creative work and clear contact routes.
+- [W3C WAI image guidance](https://www.w3.org/WAI/tutorials/images/) informed informative image alternatives and empty alternatives for decorative card thumbnails. [WCAG reflow guidance](https://www.w3.org/WAI/WCAG21/Understanding/reflow.html) informed narrow-screen layout checks. [web.dev motion guidance](https://web.dev/learn/accessibility/motion) informed short, non-looping animation, reduced-motion support and a visible motion toggle.
+
+All 143 sample illustrations are generated locally as original SVG artwork by `scripts/generate-profile-art.js`; there are no external image dependencies in the preview. To regenerate them after changing a profile's art key, run `node scripts/generate-profile-art.js`. Offline content checks are available in `scripts/test-profile-library.js`.
+
 - **Public card page** (`/card/amina`) — save contact downloads a **real .vcf**,
   share sheet with a **real QR code**, WhatsApp/call/email/maps links, opening
   hours with today highlighted, click tracking stubs.
@@ -123,7 +136,8 @@ exactly what the front-end already calls. Import `api/schema.sql`, fill in
 - [ ] Contents of `nfc-site/` are directly inside `public_html`
 - [ ] Landing page loads at `https://yourdomain.com` and the hero rotates with a visible play/pause control
 - [ ] Each of the 27 catalogue Add buttons opens the matching product samples; project shortlist can be cleared and sent
-- [ ] `/profiles/` opens all 50 fictional sample profiles, with search, industry filters and responsive page previews
+- [ ] `/profiles/` opens exactly 200 fictional concepts (20 in each industry group), with search, industry filters and 51 distinct niche-layout families
+- [ ] Verify preview pages at mobile and desktop widths, sample-image alt text, fictional labels, animation toggle and reduced-motion behavior
 - [ ] `/card/amina` opens the sample business page
 - [ ] `/dashboard` opens the management interface
 - [ ] Confirm all app-backed offer prices and replace/check WhatsApp links for your real business number (search `2349031528732`)

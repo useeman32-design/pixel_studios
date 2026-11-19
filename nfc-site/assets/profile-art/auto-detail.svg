@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" role="img" aria-label="Original vector sample artwork for auto-detail">
+<defs><linearGradient id="g-auto-detail" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e8eeed"/><stop offset="1" stop-color="#e0bd65" stop-opacity=".46"/></linearGradient><pattern id="grain" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="2" cy="3" r="1" fill="#263e4a" opacity=".055"/></pattern></defs>
+<rect width="800" height="520" rx="28" fill="url(#g-auto-detail)"/><circle cx="472" cy="87" r="156" fill="#da8956" opacity=".075"/><rect width="800" height="520" rx="28" fill="url(#grain)"/>
+<g stroke-linecap="round" stroke-linejoin="round"><rect width="800" height="520" fill="#e8eeed"/><path d="M0 369q200-76 408-7t392-25v183H0Z" fill="#e0bd65" opacity=".5"/><path d="M0 430h800" stroke="#263e4a" stroke-width="12" opacity=".22"/><path d="m184 321 47-94h239l69 94 58 22v69H140v-67z" fill="#da8956"/><path d="M258 246h144v73H221zM420 246h44l55 73H420z" fill="#e8eeed"/><circle cx="252" cy="409" r="34" fill="#263e4a"/><circle cx="520" cy="409" r="34" fill="#263e4a"/><circle cx="252" cy="409" r="15" fill="#e0bd65"/><circle cx="520" cy="409" r="15" fill="#e0bd65"/><path d="M89 143h102v66H89zM108 143v-24h65v24" fill="#e0bd65"/><path d="M125 164h31" stroke="#263e4a" stroke-width="7" stroke-linecap="round"/></g>
+<path d="M0 491q205-30 412 0t388-4" fill="none" stroke="#da8956" stroke-width="3" opacity=".35"/>
+</svg>
