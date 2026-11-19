@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" role="img" aria-label="Original vector sample artwork for people">
+<defs><linearGradient id="g-people" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#eaf0e5"/><stop offset="1" stop-color="#ddc87e" stop-opacity=".46"/></linearGradient><pattern id="grain" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="2" cy="3" r="1" fill="#315546" opacity=".055"/></pattern></defs>
+<rect width="800" height="520" rx="28" fill="url(#g-people)"/><circle cx="262" cy="167" r="156" fill="#d6845d" opacity=".075"/><rect width="800" height="520" rx="28" fill="url(#grain)"/>
+<g stroke-linecap="round" stroke-linejoin="round"><rect width="800" height="520" fill="#eaf0e5"/><path d="M95 393h610" stroke="#315546" stroke-width="9" stroke-linecap="round" opacity=".2"/><circle cx="280" cy="188" r="54" fill="#d6845d"/><circle cx="407" cy="164" r="62" fill="#ddc87e"/><circle cx="536" cy="190" r="52" fill="#315546"/><path d="M198 380q5-132 82-132t82 132m-9 0q8-160 93-160t90 160m-1 0q6-128 82-128t82 128" fill="#d6845d" opacity=".68"/><path d="M397 351v-72m0 32q-50-5-56-47 51-7 56 47Zm0-28q49-7 56-48-50-8-56 48Z" fill="#eaf0e5"/><circle cx="397" cy="266" r="14" fill="#d6845d"/></g>
+<path d="M0 491q205-30 412 0t388-4" fill="none" stroke="#d6845d" stroke-width="3" opacity=".35"/>
+</svg>

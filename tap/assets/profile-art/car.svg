@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" role="img" aria-label="Original vector sample artwork for car">
+<defs><linearGradient id="g-car" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e0ecec"/><stop offset="1" stop-color="#e2c575" stop-opacity=".46"/></linearGradient><pattern id="grain" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="2" cy="3" r="1" fill="#1b4b54" opacity=".055"/></pattern></defs>
+<rect width="800" height="520" rx="28" fill="url(#g-car)"/><circle cx="233" cy="92" r="156" fill="#dc8754" opacity=".075"/><rect width="800" height="520" rx="28" fill="url(#grain)"/>
+<g stroke-linecap="round" stroke-linejoin="round"><rect width="800" height="520" fill="#e0ecec"/><circle cx="618" cy="114" r="66" fill="#dc8754" opacity=".8"/><path d="M0 290q160-92 327 3t473-8v235H0Z" fill="#e2c575" opacity=".8"/><path d="M0 367q194-115 388-2t412-21v176H0Z" fill="#1b4b54" opacity=".78"/><path d="M70 437q115-28 198-112 71-70 156-67 85 3 132-78" fill="none" stroke="#e0ecec" stroke-width="9" stroke-dasharray="14 16" stroke-linecap="round"/><path d="M558 181c0-42 60-42 60 0 0 26-30 61-30 61s-30-35-30-61Z" fill="#dc8754"/><circle cx="588" cy="181" r="10" fill="#e0ecec"/><path d="M105 105h104m-52-52v104" stroke="#1b4b54" stroke-width="5" opacity=".26"/></g>
+<path d="M0 491q205-30 412 0t388-4" fill="none" stroke="#dc8754" stroke-width="3" opacity=".35"/>
+</svg>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" role="img" aria-label="Original vector sample artwork for electrical">
+<defs><linearGradient id="g-electrical" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ecece4"/><stop offset="1" stop-color="#d4ae69" stop-opacity=".46"/></linearGradient><pattern id="grain" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="2" cy="3" r="1" fill="#2e4145" opacity=".055"/></pattern></defs>
+<rect width="800" height="520" rx="28" fill="url(#g-electrical)"/><circle cx="379" cy="190" r="156" fill="#cf7755" opacity=".075"/><rect width="800" height="520" rx="28" fill="url(#grain)"/>
+<g stroke-linecap="round" stroke-linejoin="round"><rect width="800" height="520" fill="#ecece4"/><rect x="113" y="269" width="574" height="171" rx="21" fill="#2e4145"/><path d="M286 269v-66q0-24 24-24h177q24 0 24 24v66" fill="none" stroke="#2e4145" stroke-width="22"/><rect x="156" y="305" width="488" height="82" rx="12" fill="#d4ae69"/><circle cx="400" cy="345" r="18" fill="#cf7755"/><path d="m231 190 74-74m-93 51 33 33m247-22 69-69m-47 2 42 42" stroke="#cf7755" stroke-width="18" stroke-linecap="round"/><path d="M205 158l31 31m283-62 42 42" stroke="#2e4145" stroke-width="8" stroke-linecap="round"/><circle cx="603" cy="125" r="42" fill="#d4ae69" opacity=".7"/></g>
+<path d="M0 491q205-30 412 0t388-4" fill="none" stroke="#cf7755" stroke-width="3" opacity=".35"/>
+</svg>
